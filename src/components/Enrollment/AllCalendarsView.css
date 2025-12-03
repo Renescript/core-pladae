@@ -1,0 +1,324 @@
+/* Estilos para AllCalendarsView - Vista de comparación de calendarios */
+
+.all-calendars-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.calendars-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.calendars-header h2 {
+  font-size: 2em;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.schedule-info {
+  font-size: 1.1em;
+  color: #666;
+  margin: 10px 0;
+}
+
+.calendar-hint {
+  font-size: 0.95em;
+  color: #999;
+  font-style: italic;
+}
+
+/* Banner de selección global */
+.global-selection-banner {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.banner-icon {
+  font-size: 1.5em;
+  background: rgba(255, 255, 255, 0.2);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.banner-text {
+  flex: 1;
+  font-size: 1em;
+}
+
+/* Secciones de calendarios */
+.calendars-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.calendar-section {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.calendar-section:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.calendar-section-header {
+  padding: 20px 25px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-left: 5px solid;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.calendar-section-header:hover {
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
+.calendar-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.3em;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.header-info h3 {
+  margin: 0 0 5px 0;
+  font-size: 1.3em;
+  color: #333;
+}
+
+.header-info p {
+  margin: 0;
+  font-size: 0.95em;
+  color: #666;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.install-badge {
+  background: #ff9800;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.expand-btn {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  padding: 5px 10px;
+}
+
+.expand-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Contenido del calendario */
+.calendar-content {
+  padding: 25px;
+  background: white;
+  animation: expandContent 0.3s ease-out;
+}
+
+@keyframes expandContent {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 2000px;
+  }
+}
+
+/* Información de instalación */
+.calendar-install-info {
+  padding: 25px;
+  background: linear-gradient(135deg, #fff9e6 0%, #ffe8b3 100%);
+  border-top: 1px solid #ffd966;
+}
+
+.install-instructions {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.install-instructions p {
+  margin: 10px 0;
+  color: #333;
+}
+
+.install-instructions ol {
+  margin: 15px 0;
+  padding-left: 25px;
+}
+
+.install-instructions ol li {
+  margin: 8px 0;
+  color: #555;
+  line-height: 1.6;
+}
+
+.install-command {
+  display: block;
+  background: #2d3748;
+  color: #48bb78;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.95em;
+  margin: 10px 0;
+  overflow-x: auto;
+}
+
+.install-note {
+  margin-top: 15px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.install-note code {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+/* Footer */
+.calendars-footer {
+  margin-top: 30px;
+  padding: 25px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 16px;
+  border-left: 4px solid #2196f3;
+}
+
+.footer-info h4 {
+  margin: 0 0 15px 0;
+  color: #1565c0;
+  font-size: 1.2em;
+}
+
+.footer-info ul {
+  margin: 0;
+  padding-left: 25px;
+}
+
+.footer-info ul li {
+  margin: 8px 0;
+  color: #333;
+  line-height: 1.6;
+}
+
+.footer-info strong {
+  color: #1565c0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .all-calendars-container {
+    padding: 15px;
+  }
+
+  .calendars-header h2 {
+    font-size: 1.5em;
+  }
+
+  .calendar-section-header {
+    padding: 15px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .calendar-content {
+    padding: 15px;
+  }
+
+  .calendar-install-info {
+    padding: 15px;
+  }
+
+  .banner-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+/* Asegurar que los calendarios internos se vean bien */
+.calendar-content .enrollment-step {
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
+}
+
+.calendar-content .enrollment-step h2 {
+  display: none; /* Ocultar el título duplicado */
+}
+
+.calendar-content .schedule-info {
+  display: none; /* Ocultar el texto duplicado */
+}
