@@ -1,20 +1,100 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createEnrollment } from '../../services/api';
 import GridScheduleSelector from './GridScheduleSelector';
 import PlanSelector from './PlanSelector';
 import StudentForm from './StudentForm';
 import PaymentWebpay from './PaymentWebpay';
 
+const STORAGE_KEY = 'test_enrollment_draft';
+
+/**
+ * Guarda el progreso del formulario en sessionStorage
+ */
+const saveDraftToSession = (data) => {
+  try {
+    const safeDraft = {
+      currentStep: data.currentStep,
+      selectedSchedule: data.selectedSchedule,
+      selectedPlan: data.selectedPlan,
+      studentData: {
+        firstName: data.studentData?.firstName || '',
+        lastName: data.studentData?.lastName || '',
+        phone: data.studentData?.phone || '',
+        // NO guardamos el email por seguridad
+      },
+      timestamp: Date.now()
+    };
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(safeDraft));
+    console.log('💾 Progreso guardado (test-enrollment)');
+  } catch (error) {
+    console.error('Error al guardar draft:', error);
+  }
+};
+
+/**
+ * Recupera el progreso guardado del sessionStorage
+ */
+const loadDraftFromSession = () => {
+  try {
+    const draft = sessionStorage.getItem(STORAGE_KEY);
+    if (!draft) return null;
+
+    const parsed = JSON.parse(draft);
+
+    // Verificar que no sea muy antiguo (1 hora)
+    const ONE_HOUR = 60 * 60 * 1000;
+    if (Date.now() - parsed.timestamp > ONE_HOUR) {
+      console.log('⏰ Draft expirado (más de 1 hora)');
+      sessionStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+
+    console.log('✅ Draft recuperado (test-enrollment):', parsed);
+    return parsed;
+  } catch (error) {
+    console.error('Error al cargar draft:', error);
+    return null;
+  }
+};
+
+/**
+ * Limpia el draft del sessionStorage
+ */
+const clearDraftFromSession = () => {
+  try {
+    sessionStorage.removeItem(STORAGE_KEY);
+    console.log('🗑️ Draft eliminado (test-enrollment)');
+  } catch (error) {
+    console.error('Error al limpiar draft:', error);
+  }
+};
+
 const TestEnrollmentForm = ({ onClose, onSuccess }) => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedSchedule, setSelectedSchedule] = useState(null);
-  const [selectedPlan, setSelectedPlan] = useState(null);
-  const [studentData, setStudentData] = useState({
+  // Intentar cargar draft guardado
+  const savedDraft = loadDraftFromSession();
+
+  const [currentStep, setCurrentStep] = useState(savedDraft?.currentStep || 1);
+  const [selectedSchedule, setSelectedSchedule] = useState(savedDraft?.selectedSchedule || null);
+  const [selectedPlan, setSelectedPlan] = useState(savedDraft?.selectedPlan || null);
+  const [studentData, setStudentData] = useState(savedDraft?.studentData || {
     firstName: '',
     lastName: '',
     email: '',
     phone: ''
   });
+
+  // Auto-guardar progreso cuando cambie el estado
+  useEffect(() => {
+    // Solo guardar si hay algún progreso (evitar guardar estado inicial vacío)
+    if (currentStep > 1 || selectedSchedule || selectedPlan || studentData.firstName) {
+      saveDraftToSession({
+        currentStep,
+        selectedSchedule,
+        selectedPlan,
+        studentData
+      });
+    }
+  }, [currentStep, selectedSchedule, selectedPlan, studentData]);
 
   // Nuevo orden: Horario → Plan → Datos → Pago
   const canProceedToStep2 = selectedSchedule !== null;
@@ -28,6 +108,12 @@ const TestEnrollmentForm = ({ onClose, onSuccess }) => {
   const handleNextStep = () => {
     if (currentStep === 1 && canProceedToStep2) setCurrentStep(2);
     else if (currentStep === 2 && canProceedToStep3) setCurrentStep(3);
+  };
+
+  // Limpiar draft al cerrar
+  const handleClose = () => {
+    clearDraftFromSession();
+    onClose();
   };
 
   const handleEnrollmentComplete = async (paymentData) => {
@@ -55,6 +141,8 @@ const TestEnrollmentForm = ({ onClose, onSuccess }) => {
       // Si hay un link de pago de Transbank, redirigir
       if (result.transbank_payment && result.transbank_payment.full_url) {
         console.log('Redirigiendo a Transbank:', result.transbank_payment.full_url);
+        // Limpiar draft antes de redirigir
+        clearDraftFromSession();
         window.location.href = result.transbank_payment.full_url;
         return;
       }
@@ -68,6 +156,9 @@ const TestEnrollmentForm = ({ onClose, onSuccess }) => {
         ...paymentData,
         enrollmentResponse: result
       };
+
+      // Limpiar draft después de éxito
+      clearDraftFromSession();
 
       onSuccess && onSuccess(successData);
     } catch (error) {
@@ -85,7 +176,7 @@ const TestEnrollmentForm = ({ onClose, onSuccess }) => {
 
   return (
     <div className="enrollment-container">
-        <button className="close-button" onClick={onClose}>×</button>
+        <button className="close-button" onClick={handleClose}>×</button>
 
         <div className="enrollment-progress">
           <div className={`progress-step ${getStepClass(1)}`}>

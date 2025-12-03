@@ -1,12 +1,66 @@
 const API_BASE_URL = 'https://decided-east-calling-threatening.trycloudflare.com/api/v1';
 
 /**
+ * Headers para datos que pueden cachearse (cursos, planes, métodos de pago)
+ * Cache público de 5 minutos
+ */
+const CACHEABLE_HEADERS = {
+  'Content-Type': 'application/json',
+  'Cache-Control': 'public, max-age=300',
+};
+
+/**
+ * Headers para datos sensibles o dinámicos (inscripciones, pagos, calendarios)
+ * Sin caché, siempre consultar al servidor
+ */
+const NO_CACHE_HEADERS = {
+  'Content-Type': 'application/json',
+  'Cache-Control': 'no-store, no-cache, must-revalidate',
+  'Pragma': 'no-cache',
+};
+
+/**
+ * Timeout por defecto para las peticiones (10 segundos)
+ */
+const DEFAULT_TIMEOUT = 10000;
+
+/**
+ * Realiza un fetch con timeout y manejo de AbortController
+ * @param {string} url - URL a consultar
+ * @param {Object} options - Opciones de fetch
+ * @param {number} timeout - Timeout en milisegundos (por defecto 10s)
+ * @returns {Promise<Response>} Respuesta del fetch
+ */
+const fetchWithTimeout = async (url, options = {}, timeout = DEFAULT_TIMEOUT) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error('La petición tardó demasiado tiempo. Por favor, intenta nuevamente.');
+    }
+    throw error;
+  }
+};
+
+/**
  * Obtiene la lista de cursos desde la API
  * @returns {Promise<Array>} Lista de cursos
  */
 export const getCourses = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/courses`);
+    const response = await fetchWithTimeout(`${API_BASE_URL}/courses`, {
+      method: 'GET',
+      headers: CACHEABLE_HEADERS
+    });
 
     if (!response.ok) {
       throw new Error(`Error HTTP: ${response.status}`);
@@ -74,7 +128,10 @@ export const getDummyPlans = () => {
  */
 export const getPlans = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/payment_plans`);
+    const response = await fetchWithTimeout(`${API_BASE_URL}/payment_plans`, {
+      method: 'GET',
+      headers: CACHEABLE_HEADERS
+    });
 
     if (!response.ok) {
       throw new Error(`Error HTTP: ${response.status}`);
@@ -102,7 +159,10 @@ export const getPlans = async () => {
  */
 export const getPaymentMethods = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/payment_methods`);
+    const response = await fetchWithTimeout(`${API_BASE_URL}/payment_methods`, {
+      method: 'GET',
+      headers: CACHEABLE_HEADERS
+    });
 
     if (!response.ok) {
       throw new Error(`Error HTTP: ${response.status}`);
@@ -137,11 +197,9 @@ export const getPaymentMethods = async () => {
  */
 export const createEnrollment = async (enrollmentData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/enrollments`, {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/enrollments`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: NO_CACHE_HEADERS,
       body: JSON.stringify({
         enrollment: enrollmentData
       }),
@@ -177,7 +235,10 @@ export const getSectionCalendar = async (sectionId) => {
     const url = `${API_BASE_URL}/sections/${sectionId}/calendar`;
     console.log('📅 Llamando a URL:', url);
 
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url, {
+      method: 'GET',
+      headers: NO_CACHE_HEADERS
+    });
 
     console.log('📅 Response status:', response.status, response.ok);
 
@@ -223,7 +284,10 @@ export const getPreviewClassDates = async (sectionId, startDate, paymentPlanId) 
     const url = `${API_BASE_URL}/sections/${sectionId}/preview_class_dates?start_date=${startDate}&payment_plan_id=${paymentPlanId}`;
     console.log('📆 Obteniendo vista previa de fechas:', url);
 
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url, {
+      method: 'GET',
+      headers: NO_CACHE_HEADERS
+    });
 
     console.log('📆 Response status:', response.status, response.ok);
 
@@ -275,11 +339,9 @@ export const getThreeMonthsRange = () => {
  */
 export const confirmTransbankPayment = async (tokenWs) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/transbank/callback`, {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/transbank/callback`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: NO_CACHE_HEADERS,
       body: JSON.stringify({
         token_ws: tokenWs
       }),
@@ -477,12 +539,18 @@ const generateCourseColor = (courseId) => {
 export const getCoursesSchedulesGrid = async () => {
   try {
     // Intentar primero con el endpoint específico de grilla
-    let response = await fetch(`${API_BASE_URL}/courses/schedules-grid`);
+    let response = await fetchWithTimeout(`${API_BASE_URL}/courses/schedules-grid`, {
+      method: 'GET',
+      headers: CACHEABLE_HEADERS
+    });
 
     // Si no existe, usar el endpoint general de cursos
     if (!response.ok) {
       console.log('Endpoint /schedules-grid no disponible, usando /courses');
-      response = await fetch(`${API_BASE_URL}/courses`);
+      response = await fetchWithTimeout(`${API_BASE_URL}/courses`, {
+        method: 'GET',
+        headers: CACHEABLE_HEADERS
+      });
     }
 
     if (!response.ok) {
