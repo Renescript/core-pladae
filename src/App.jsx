@@ -29,7 +29,7 @@ function AppHeader() {
     <header className="app-header">
       <div className="container">
         <div className="logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
-          <img src='/public/logo-gustarte.svg' alt="GUSTARTE" />
+          <img src='/logo-gustarte.svg' alt="GUSTARTE" />
         </div>
         <nav>
           <a href="#courses">Cursos</a>
