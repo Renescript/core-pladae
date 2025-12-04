@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://academy-mgmt.onrender.com/api/v1';
+const API_BASE_URL = '/api/v1';
 
 /**
  * Headers para datos que pueden cachearse (cursos, planes, métodos de pago)
@@ -539,18 +539,22 @@ const generateCourseColor = (courseId) => {
 export const getCoursesSchedulesGrid = async () => {
   try {
     // Intentar primero con el endpoint específico de grilla
+    console.log('🔍 Intentando obtener horarios desde:', `${API_BASE_URL}/courses/schedules-grid`);
     let response = await fetchWithTimeout(`${API_BASE_URL}/courses/schedules-grid`, {
       method: 'GET',
       headers: CACHEABLE_HEADERS
     });
 
+    console.log('📡 Response status:', response.status, response.ok);
+
     // Si no existe, usar el endpoint general de cursos
     if (!response.ok) {
-      console.log('Endpoint /schedules-grid no disponible, usando /courses');
+      console.log('⚠️ Endpoint /schedules-grid no disponible, intentando /courses');
       response = await fetchWithTimeout(`${API_BASE_URL}/courses`, {
         method: 'GET',
         headers: CACHEABLE_HEADERS
       });
+      console.log('📡 Response /courses status:', response.status, response.ok);
     }
 
     if (!response.ok) {
@@ -558,6 +562,7 @@ export const getCoursesSchedulesGrid = async () => {
     }
 
     const result = await response.json();
+    console.log('📦 Respuesta cruda del API:', result);
 
     if (result.success) {
       // Transformar los datos del backend al formato esperado por el componente
@@ -609,8 +614,9 @@ export const getCoursesSchedulesGrid = async () => {
       throw new Error('La respuesta de la API no fue exitosa');
     }
   } catch (error) {
-    console.error('Error al obtener horarios desde la API:', error);
-    console.warn('Usando datos dummy como fallback');
+    console.error('❌ Error al obtener horarios desde la API:', error);
+    console.error('❌ Error details:', error.message);
+    console.warn('⚠️ Usando datos dummy como fallback');
     // Fallback a datos dummy si falla la API
     return getDummyGridCalendarData();
   }

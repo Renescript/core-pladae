@@ -10,6 +10,15 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://back-academia.onrender.com',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  },
   optimizeDeps: {
     include: [
       '@mui/material',
