@@ -97,6 +97,14 @@ const GridScheduleSelector = ({ selectedSchedule, onSelectSchedule }) => {
            selectedSchedule.timeSlot === courseData.timeSlot;
   };
 
+  // Sincronizar selectedDate cuando se carga un draft guardado
+  useEffect(() => {
+    if (selectedSchedule?.selectedDate) {
+      console.log('🔄 Sincronizando selectedDate desde draft guardado:', selectedSchedule.selectedDate);
+      setSelectedDate(selectedSchedule.selectedDate);
+    }
+  }, [selectedSchedule?.selectedDate]);
+
   // Cargar fechas disponibles cuando se selecciona un horario
   useEffect(() => {
     console.log('🔄 useEffect EJECUTADO - selectedSchedule cambió:', selectedSchedule);
