@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://decided-east-calling-threatening.trycloudflare.com/api/v1';
+const API_BASE_URL = 'https://academy-mgmt.onrender.com/api/v1';
 
 /**
  * Headers para datos que pueden cachearse (cursos, planes, métodos de pago)
