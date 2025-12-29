@@ -1,0 +1,281 @@
+.enrollment-summary {
+  margin-top: 2rem;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  border: none;
+}
+
+.summary-header {
+  display: none;
+}
+
+.summary-header h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.75rem;
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+.summary-subtitle {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+.summary-content {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 0;
+}
+
+@media (max-width: 1024px) {
+  .summary-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.summary-section {
+  display: flex;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.summary-section:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
+}
+
+.section-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.section-content {
+  flex: 1;
+}
+
+.section-content h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.main-info {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  line-height: 1.2;
+}
+
+.schedule-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.info-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+}
+
+.badge-icon {
+  font-size: 1rem;
+}
+
+/* Plan Section */
+.plan-description {
+  margin: 0 0 1rem 0;
+  color: #6c757d;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.plan-price-display {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f0f2ff 0%, #fff 100%);
+  border-radius: 8px;
+  border: 2px solid #667eea;
+}
+
+.price-label {
+  font-size: 0.95rem;
+  color: #6c757d;
+  font-weight: 600;
+}
+
+.price-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #667eea;
+  line-height: 1;
+}
+
+/* Dates Section */
+.dates-grid {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  padding: 1.25rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.date-item {
+  flex: 1;
+  text-align: center;
+}
+
+.date-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.date-value {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-transform: capitalize;
+}
+
+.date-divider {
+  font-size: 1.5rem;
+  color: #667eea;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.total-classes-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: 24px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.classes-icon {
+  font-size: 1.25rem;
+}
+
+.classes-text {
+  font-size: 1rem;
+}
+
+/* Footer */
+.summary-footer {
+  display: none;
+}
+
+.footer-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.footer-text {
+  margin: 0;
+  color: #856404;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .enrollment-summary {
+    padding: 1.5rem;
+  }
+
+  .summary-header h3 {
+    font-size: 1.5rem;
+  }
+
+  .summary-section {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .section-icon {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .main-info {
+    font-size: 1.25rem;
+  }
+
+  .schedule-info {
+    flex-direction: column;
+  }
+
+  .info-badge {
+    justify-content: center;
+  }
+
+  .dates-grid {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .date-divider {
+    transform: rotate(90deg);
+  }
+
+  .price-value {
+    font-size: 1.5rem;
+  }
+
+  .summary-footer {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.enrollment-summary {
+  animation: fadeInUp 0.5s ease;
+}

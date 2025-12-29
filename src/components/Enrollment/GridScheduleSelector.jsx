@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react';
-import { getCoursesSchedulesGrid, getSectionCalendar } from '../../services/api';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { getCoursesSchedulesGrid } from '../../services/api';
+import StartDateSelector from './StartDateSelector';
 import './CopyWeeklyScheduleSelector.css';
 
 const GridScheduleSelector = ({ selectedSchedule, onSelectSchedule }) => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [visibleCourses, setVisibleCourses] = useState({});
-  const [availableDates, setAvailableDates] = useState([]);
-  const [loadingDates, setLoadingDates] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedStartDate, setSelectedStartDate] = useState(null);
+  const [availableDates, setAvailableDates] = useState([]); // Almacenar fechas disponibles
+  const startDateSelectorRef = useRef(null); // Referencia para scroll
 
   const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
   const dayNames = {
@@ -21,12 +22,6 @@ const GridScheduleSelector = ({ selectedSchedule, onSelectSchedule }) => {
   };
 
   const timeSlots = ['10:00-12:00', '12:30-14:30', '15:30-17:30', '18:30-20:30'];
-
-  // Log para debugging
-  console.log('🔍 RENDER - availableDates:', availableDates);
-  console.log('🔍 RENDER - availableDates.length:', availableDates.length);
-  console.log('🔍 RENDER - loadingDates:', loadingDates);
-  console.log('🔍 RENDER - selectedSchedule:', selectedSchedule);
 
   useEffect(() => {
     const loadCourses = async () => {
@@ -97,51 +92,6 @@ const GridScheduleSelector = ({ selectedSchedule, onSelectSchedule }) => {
            selectedSchedule.timeSlot === courseData.timeSlot;
   };
 
-  // Sincronizar selectedDate cuando se carga un draft guardado
-  useEffect(() => {
-    if (selectedSchedule?.selectedDate) {
-      console.log('🔄 Sincronizando selectedDate desde draft guardado:', selectedSchedule.selectedDate);
-      setSelectedDate(selectedSchedule.selectedDate);
-    }
-  }, [selectedSchedule?.selectedDate]);
-
-  // Cargar fechas disponibles cuando se selecciona un horario
-  useEffect(() => {
-    console.log('🔄 useEffect EJECUTADO - selectedSchedule cambió:', selectedSchedule);
-
-    const loadAvailableDates = async () => {
-      if (!selectedSchedule || !selectedSchedule.section) {
-        console.log('⚠️ No hay selectedSchedule o section, limpiando fechas');
-        setAvailableDates([]);
-        setSelectedDate(null);
-        return;
-      }
-
-      try {
-        setLoadingDates(true);
-        const sectionId = selectedSchedule.section.id;
-
-        console.log(`📅 Cargando fechas para sección ${sectionId} (próximos 3 meses automáticos)`);
-
-        const calendar = await getSectionCalendar(sectionId);
-        console.log('📅 Fechas disponibles (tipo):', typeof calendar, Array.isArray(calendar));
-        console.log('📅 Fechas disponibles (datos):', calendar);
-        console.log('📅 Cantidad de fechas recibidas:', calendar?.length);
-
-        console.log('⚡ A PUNTO DE ACTUALIZAR ESTADO con:', calendar);
-        setAvailableDates(calendar || []);
-        console.log('📅 setAvailableDates EJECUTADO con array de longitud:', (calendar || []).length);
-      } catch (error) {
-        console.error('❌ Error al cargar fechas disponibles:', error);
-        console.log('⚡ Limpiando availableDates por error');
-        setAvailableDates([]);
-      } finally {
-        setLoadingDates(false);
-      }
-    };
-
-    loadAvailableDates();
-  }, [selectedSchedule]);
 
   const handleCourseClick = (courseData) => {
     const isSelected = isScheduleSelected(courseData);
@@ -149,22 +99,78 @@ const GridScheduleSelector = ({ selectedSchedule, onSelectSchedule }) => {
     if (isSelected) {
       // Deseleccionar
       onSelectSchedule(null);
+      setSelectedStartDate(null);
       setAvailableDates([]);
-      setSelectedDate(null);
     } else {
-      // Seleccionar (solo uno)
-      onSelectSchedule(courseData);
+      // Adaptar estructura para compatibilidad con StartDateSelector
+      const [startTime, endTime] = courseData.timeSlot.split('-');
+      const adaptedSchedule = {
+        ...courseData,
+        course: {
+          name: courseData.courseName,
+          id: courseData.courseId
+        },
+        startTime: startTime,
+        endTime: endTime
+      };
+      onSelectSchedule(adaptedSchedule);
+
+      // Hacer scroll hacia el calendario
+      setTimeout(() => {
+        if (startDateSelectorRef.current) {
+          // Buscar el calendar-container dentro del StartDateSelector
+          const calendarContainer = startDateSelectorRef.current.querySelector('.calendar-container');
+          const element = calendarContainer || startDateSelectorRef.current;
+          const yOffset = -80; // Offset para posicionamiento óptimo
+          const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+          // Scroll más suave y lento
+          const start = window.pageYOffset;
+          const distance = y - start;
+          const duration = 1000; // 1 segundo de duración
+          let startTime = null;
+
+          function animation(currentTime) {
+            if (startTime === null) startTime = currentTime;
+            const timeElapsed = currentTime - startTime;
+            const progress = Math.min(timeElapsed / duration, 1);
+
+            // Easing function para suavidad
+            const ease = progress < 0.5
+              ? 4 * progress * progress * progress
+              : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+            window.scrollTo(0, start + distance * ease);
+
+            if (timeElapsed < duration) {
+              requestAnimationFrame(animation);
+            }
+          }
+
+          requestAnimationFrame(animation);
+        }
+      }, 150);
     }
   };
 
-  const handleDateSelect = (date) => {
-    setSelectedDate(date);
-    // Actualizar el schedule con la fecha seleccionada
+  const handleAvailableDatesLoad = useCallback((dates) => {
+    console.log('📅 Fechas disponibles recibidas en GridScheduleSelector:', dates);
+    setAvailableDates(dates);
+    // No llamar a onSelectSchedule aquí para evitar loops
+    // Las fechas se pasarán cuando el usuario seleccione una fecha de inicio
+  }, []);
+
+  const handleStartDateSelect = (date) => {
+    setSelectedStartDate(date);
+    // Actualizar el schedule con la fecha seleccionada Y las fechas disponibles
     if (selectedSchedule) {
-      onSelectSchedule({
+      const updatedSchedule = {
         ...selectedSchedule,
-        selectedDate: date
-      });
+        selectedDate: { date: date },
+        availableDates: availableDates // Asegurar que siempre tenga availableDates
+      };
+      console.log('📅 GridScheduleSelector - actualizando schedule con:', updatedSchedule);
+      onSelectSchedule(updatedSchedule);
     }
   };
 
@@ -184,111 +190,91 @@ const GridScheduleSelector = ({ selectedSchedule, onSelectSchedule }) => {
         Haz clic en el curso y horario que deseas.
       </p>
 
-      {/* Filtro de cursos */}
-      <div className="course-filter">
-        <div className="filter-header">
-          <h3>Filtrar Cursos</h3>
-          <div className="filter-actions">
-            <button onClick={() => toggleAllCourses(true)}>Mostrar todos</button>
-            <button onClick={() => toggleAllCourses(false)}>Ocultar todos</button>
+      <div className="schedule-selector-layout">
+        {/* Columna izquierda: Lista de cursos */}
+        <div className="courses-sidebar">
+          <div className="sidebar-header">
+            <h3>Cursos Disponibles</h3>
+            <div className="filter-actions">
+              <button className="filter-btn" onClick={() => toggleAllCourses(true)}>
+                Mostrar todos
+              </button>
+              <button className="filter-btn" onClick={() => toggleAllCourses(false)}>
+                Ocultar todos
+              </button>
+            </div>
           </div>
-        </div>
-        <div className="filter-options">
-          {courses.map(course => (
-            <label
-              key={course.id}
-              className={`filter-item ${visibleCourses[course.id] ? 'active' : ''}`}
-              style={{ '--course-color': course.color }}
-            >
-              <input
-                type="checkbox"
-                checked={visibleCourses[course.id] || false}
-                onChange={() => toggleCourseVisibility(course.id)}
-              />
-              <span className="filter-color" style={{ backgroundColor: course.color }}></span>
-              <span className="filter-name">{course.name}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div className="grid-calendar-container">
-        <div className="grid-calendar">
-          {/* Header con días */}
-          <div className="grid-header">
-            <div className="time-header"></div>
-            {days.map(day => (
-              <div key={day} className="day-header">
-                {dayNames[day]}
-              </div>
+          <div className="courses-list">
+            {courses.map(course => (
+              <label
+                key={course.id}
+                className={`course-item ${visibleCourses[course.id] ? 'active' : ''}`}
+              >
+                <input
+                  type="checkbox"
+                  checked={visibleCourses[course.id] || false}
+                  onChange={() => toggleCourseVisibility(course.id)}
+                />
+                <span className="course-color-indicator" style={{ backgroundColor: course.color }}></span>
+                <span className="course-item-name">{course.name}</span>
+              </label>
             ))}
           </div>
+        </div>
 
-          {/* Filas de horarios */}
-          {timeSlots.map(timeSlot => (
-            <div key={timeSlot} className="grid-row">
-              <div className="time-cell">{timeSlot}</div>
-              {days.map(day => {
-                const cellCourses = getCoursesAtCell(day, timeSlot);
-                return (
-                  <div key={`${day}-${timeSlot}`} className="grid-cell">
-                    {cellCourses.map((courseData, idx) => {
-                      const isSelected = isScheduleSelected(courseData);
-                      return (
-                        <div
-                          key={`${courseData.courseId}-${idx}`}
-                          className={`course-block ${isSelected ? 'selected' : ''}`}
-                          style={{ backgroundColor: courseData.color }}
-                          onClick={() => handleCourseClick(courseData)}
-                        >
-                          <span className="course-name">{courseData.courseName}</span>
-                        </div>
-                      );
-                    })}
+        {/* Columna derecha: Grilla de horarios */}
+        <div className="schedule-grid-wrapper">
+          <div className="grid-calendar-container">
+            <div className="grid-calendar">
+              {/* Header con días */}
+              <div className="grid-header">
+                <div className="time-header"></div>
+                {days.map(day => (
+                  <div key={day} className="day-header">
+                    {dayNames[day]}
                   </div>
-                );
-              })}
+                ))}
+              </div>
+
+              {/* Filas de horarios */}
+              {timeSlots.map(timeSlot => (
+                <div key={timeSlot} className="grid-row">
+                  <div className="time-cell">{timeSlot}</div>
+                  {days.map(day => {
+                    const cellCourses = getCoursesAtCell(day, timeSlot);
+                    return (
+                      <div key={`${day}-${timeSlot}`} className="grid-cell">
+                        {cellCourses.map((courseData, idx) => {
+                          const isSelected = isScheduleSelected(courseData);
+                          return (
+                            <div
+                              key={`${courseData.courseId}-${idx}`}
+                              className={`course-block ${isSelected ? 'selected' : ''}`}
+                              style={{ backgroundColor: courseData.color }}
+                              onClick={() => handleCourseClick(courseData)}
+                            >
+                              <span className="course-name">{courseData.courseName}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
-      {selectedSchedule && (
-        <div className="available-dates-section">
-            <h4>Selecciona una fecha de inicio</h4>
-
-            {loadingDates ? (
-              <div className="loading-dates">Cargando fechas disponibles...</div>
-            ) : availableDates.length > 0 ? (
-              <div className="dates-grid">
-                {availableDates.map((dateItem, idx) => {
-                  const isDateSelected = selectedDate?.date === dateItem.date;
-                  const hasAvailability = dateItem.available_places > 0;
-
-                  return (
-                    <div
-                      key={idx}
-                      className={`date-card ${isDateSelected ? 'selected' : ''} ${!hasAvailability ? 'full' : ''}`}
-                      onClick={() => hasAvailability && handleDateSelect(dateItem)}
-                      style={{ cursor: hasAvailability ? 'pointer' : 'not-allowed' }}
-                    >
-                      <div className="date-label">{new Date(dateItem.date + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}</div>
-                      <div className="date-availability">
-                        {hasAvailability ? (
-                          <span className="available">{dateItem.available_places} cupos</span>
-                        ) : (
-                          <span className="full-text">Completo</span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="no-dates">No hay fechas disponibles en los próximos 3 meses</div>
-            )}
-        </div>
-      )}
+      <div ref={startDateSelectorRef}>
+        <StartDateSelector
+          selectedSchedule={selectedSchedule}
+          selectedStartDate={selectedStartDate}
+          onSelectStartDate={handleStartDateSelect}
+          onAvailableDatesLoad={handleAvailableDatesLoad}
+        />
+      </div>
     </div>
   );
 };

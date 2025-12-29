@@ -1,13 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { getPlans, getPreviewClassDates } from '../../services/api';
+import ClassPreviewCalendar from './ClassPreviewCalendar';
+import EnrollmentSummary from './EnrollmentSummary';
+import EditableClassList from './EditableClassList';
 import './CopyWeeklyScheduleSelector.css';
 
-const PlanSelector = ({ selectedPlan, onSelectPlan, selectedSchedules = [], selectedSchedule = null }) => {
+const PlanSelector = ({
+  selectedPlan,
+  onSelectPlan,
+  selectedSchedules = [],
+  selectedSchedule = null,
+  availableDates = [], // Fechas disponibles del Paso 1
+  onValidationChange, // Callback para notificar el estado de validación
+  onClassDatesChange // Callback para pasar las fechas finales al padre
+}) => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [previewDates, setPreviewDates] = useState([]);
+  const [editedClassDates, setEditedClassDates] = useState(null); // Fechas editadas por el usuario
   const [loadingPreview, setLoadingPreview] = useState(false);
+  const [isClassDatesValid, setIsClassDatesValid] = useState(true); // Estado de validación
+  const [showDateEditor, setShowDateEditor] = useState(false); // Control para mostrar/ocultar editor
+  const previewSectionRef = useRef(null); // Referencia para scroll
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -34,6 +49,7 @@ const PlanSelector = ({ selectedPlan, onSelectPlan, selectedSchedules = [], sele
       // Solo cargar si hay plan seleccionado, horario seleccionado y fecha de inicio
       if (!selectedPlan || !selectedSchedule || !selectedSchedule.selectedDate) {
         setPreviewDates([]);
+        setEditedClassDates(null);
         return;
       }
 
@@ -49,9 +65,11 @@ const PlanSelector = ({ selectedPlan, onSelectPlan, selectedSchedules = [], sele
         console.log('📆 Fechas de clases previstas:', dates);
 
         setPreviewDates(dates || []);
+        setEditedClassDates(null); // Resetear fechas editadas cuando cambia el plan
       } catch (error) {
         console.error('Error al cargar vista previa de fechas:', error);
         setPreviewDates([]);
+        setEditedClassDates(null);
       } finally {
         setLoadingPreview(false);
       }
@@ -59,6 +77,40 @@ const PlanSelector = ({ selectedPlan, onSelectPlan, selectedSchedules = [], sele
 
     loadPreviewDates();
   }, [selectedPlan, selectedSchedule]);
+
+  // Manejar cambios en las fechas de clases editadas por el usuario
+  const handleClassDatesChange = (newDates) => {
+    console.log('📝 Fechas de clases actualizadas:', newDates);
+    setEditedClassDates(newDates);
+    // Notificar al padre las fechas finales
+    if (onClassDatesChange) {
+      onClassDatesChange(newDates);
+    }
+  };
+
+  // Manejar cambios en el estado de validación
+  const handleValidationChange = useCallback((isValid) => {
+    console.log('✅ Estado de validación actualizado:', isValid);
+    setIsClassDatesValid(isValid);
+  }, []);
+
+  // Notificar al padre sobre el estado de validación
+  useEffect(() => {
+    if (onValidationChange) {
+      onValidationChange(isClassDatesValid);
+    }
+  }, [isClassDatesValid, onValidationChange]);
+
+  // Notificar al padre las fechas cuando se cargan o actualizan
+  useEffect(() => {
+    const currentDates = editedClassDates || previewDates;
+    if (onClassDatesChange && currentDates.length > 0) {
+      onClassDatesChange(currentDates);
+    }
+  }, [editedClassDates, previewDates, onClassDatesChange]);
+
+  // Usar fechas editadas si existen, o las fechas del preview
+  const displayedClassDates = editedClassDates || previewDates;
 
   // Validar compatibilidad entre plan y horarios seleccionados
   const validatePlanCompatibility = (plan) => {
@@ -111,6 +163,40 @@ const PlanSelector = ({ selectedPlan, onSelectPlan, selectedSchedules = [], sele
 
     console.log('Plan seleccionado:', plan);
     onSelectPlan(plan);
+    setShowDateEditor(false); // Resetear el estado del editor al cambiar plan
+
+    // Scroll suave hacia la vista previa después de seleccionar
+    setTimeout(() => {
+      if (previewSectionRef.current) {
+        const yOffset = -80;
+        const y = previewSectionRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+        // Custom smooth scroll animation
+        const start = window.pageYOffset;
+        const distance = y - start;
+        const duration = 1000;
+        let startTime = null;
+
+        function animation(currentTime) {
+          if (startTime === null) startTime = currentTime;
+          const timeElapsed = currentTime - startTime;
+          const progress = Math.min(timeElapsed / duration, 1);
+
+          // Easing function
+          const ease = progress < 0.5
+            ? 4 * progress * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+          window.scrollTo(0, start + distance * ease);
+
+          if (timeElapsed < duration) {
+            requestAnimationFrame(animation);
+          }
+        }
+
+        requestAnimationFrame(animation);
+      }
+    }, 150);
   };
 
   if (loading) {
@@ -222,32 +308,58 @@ const PlanSelector = ({ selectedPlan, onSelectPlan, selectedSchedules = [], sele
         })}
       </div>
 
-      {/* Vista previa de fechas de clases */}
+      {/* Vista previa de fechas de clases en calendario */}
       {selectedPlan && selectedSchedule && selectedSchedule.selectedDate && (
-        <div className="preview-dates-section">
-          <h3>📆 Fechas de tus clases</h3>
-          <p className="preview-description">
-            Con el plan <strong>{selectedPlan.plan}</strong> iniciando el{' '}
-            <strong>{new Date(selectedSchedule.selectedDate.date + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</strong>
-          </p>
-
+        <div className="preview-dates-section" ref={previewSectionRef}>
           {loadingPreview ? (
-            <div className="loading-preview">Cargando fechas de clases...</div>
-          ) : previewDates.length > 0 ? (
-            <div className="preview-dates-grid">
-              {previewDates.map((date, idx) => (
-                <div key={idx} className="preview-date-card">
-                  <div className="date-number">{idx + 1}</div>
-                  <div className="date-info">
-                    {new Date(date + 'T00:00:00').toLocaleDateString('es-ES', {
-                      weekday: 'short',
-                      day: 'numeric',
-                      month: 'short'
-                    })}
-                  </div>
-                </div>
-              ))}
+            <div className="loading-preview">
+              <div className="spinner"></div>
+              <p>Cargando fechas de clases...</p>
             </div>
+          ) : displayedClassDates.length > 0 ? (
+            <>
+              <ClassPreviewCalendar
+                classDates={displayedClassDates}
+                startDate={selectedSchedule.selectedDate.date}
+              />
+
+              {/* Checkbox para mostrar/ocultar el editor de fechas */}
+              <div className="change-dates-checkbox-container">
+                <label className="change-dates-checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={showDateEditor}
+                    onChange={(e) => setShowDateEditor(e.target.checked)}
+                    className="change-dates-checkbox"
+                  />
+                  <span className="checkbox-text">Quiero cambiar las fechas de mis clases</span>
+                </label>
+              </div>
+
+              {/* <EnrollmentSummary
+                selectedSchedule={selectedSchedule}
+                selectedPlan={selectedPlan}
+                classDates={displayedClassDates}
+                startDate={selectedSchedule.selectedDate.date}
+              /> */}
+
+              {/* Editor de fechas - solo visible cuando showDateEditor es true */}
+              {showDateEditor && (
+                <EditableClassList
+                  classDates={displayedClassDates}
+                  availableDates={availableDates}
+                  onClassDatesChange={handleClassDatesChange}
+                  onValidationChange={handleValidationChange}
+                  dayOfWeek={selectedSchedule.day}
+                />
+              )}
+              {/* Debug info */}
+              {console.log('📊 PlanSelector pasando a EditableClassList:', {
+                displayedClassDates,
+                availableDates,
+                availableDatesLength: availableDates?.length
+              })}
+            </>
           ) : (
             <div className="no-preview">No se pudieron cargar las fechas de clases</div>
           )}

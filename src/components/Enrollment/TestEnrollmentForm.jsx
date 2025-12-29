@@ -82,6 +82,8 @@ const TestEnrollmentForm = ({ onClose, onSuccess }) => {
     email: '',
     phone: ''
   });
+  const [isClassDatesValid, setIsClassDatesValid] = useState(true); // Estado de validación de fechas
+  const [finalClassDates, setFinalClassDates] = useState(null); // Fechas finales editadas por el usuario
 
   // Auto-guardar progreso cuando cambie el estado
   useEffect(() => {
@@ -96,10 +98,9 @@ const TestEnrollmentForm = ({ onClose, onSuccess }) => {
     }
   }, [currentStep, selectedSchedule, selectedPlan, studentData]);
 
-  // Nuevo orden: Horario → Plan → Datos → Pago
-  const canProceedToStep2 = selectedSchedule !== null;
-  const canProceedToStep3 = selectedPlan !== null;
-  const canProceedToStep4 = true; // Siempre puede proceder desde datos
+  // Nuevo orden: Horario + Fecha → Plan → Datos → Pago
+  const canProceedToStep2 = selectedSchedule !== null && selectedSchedule.selectedDate?.date;
+  const canProceedToStep3 = selectedPlan !== null && isClassDatesValid; // Incluir validación de fechas
 
   const handleSelectPlan = (plan) => {
     setSelectedPlan(plan);
@@ -128,7 +129,10 @@ const TestEnrollmentForm = ({ onClose, onSuccess }) => {
       payment_method_id: paymentData.paymentMethodId,
       enrollment_amount: 1,
       total_tuition_fee: selectedPlan.price,
-      start_date: selectedSchedule.selectedDate.date
+      start_date: selectedSchedule.selectedDate.date,
+      section_dates: {
+        [selectedSchedule.section.id]: finalClassDates || []
+      }
     };
 
     console.log('Enviando inscripción al backend:', enrollmentPayload);
@@ -181,7 +185,7 @@ const TestEnrollmentForm = ({ onClose, onSuccess }) => {
         <div className="enrollment-progress">
           <div className={`progress-step ${getStepClass(1)}`}>
             <div className="step-number">1</div>
-            <div className="step-label">Horario</div>
+            <div className="step-label">Horario y Fecha</div>
           </div>
           <div className="progress-line"></div>
           <div className={`progress-step ${getStepClass(2)}`}>
@@ -225,6 +229,9 @@ const TestEnrollmentForm = ({ onClose, onSuccess }) => {
                 selectedPlan={selectedPlan}
                 onSelectPlan={handleSelectPlan}
                 selectedSchedule={selectedSchedule}
+                availableDates={selectedSchedule?.availableDates || []}
+                onValidationChange={setIsClassDatesValid}
+                onClassDatesChange={setFinalClassDates}
               />
               <div className="step-actions">
                 <button className="btn-secondary" onClick={() => setCurrentStep(1)}>
@@ -234,10 +241,16 @@ const TestEnrollmentForm = ({ onClose, onSuccess }) => {
                   className="btn-primary"
                   onClick={handleNextStep}
                   disabled={!canProceedToStep3}
+                  title={!isClassDatesValid ? 'Corrige las fechas duplicadas para continuar' : ''}
                 >
                   Continuar
                 </button>
               </div>
+              {!isClassDatesValid && selectedPlan && (
+                <div className="validation-error-message">
+                  ⚠️ No puedes continuar hasta que corrijas las fechas duplicadas
+                </div>
+              )}
             </>
           )}
 

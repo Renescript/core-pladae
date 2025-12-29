@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createEnrollment } from '../../services/api';
 import WeeklyScheduleSelector from './WeeklyScheduleSelector';
+import StartDateSelector from './StartDateSelector';
 import PlanSelector from './PlanSelector';
 import StudentForm from './StudentForm';
 import PaymentWebpay from './PaymentWebpay';
@@ -16,6 +17,7 @@ const saveDraftToSession = (data) => {
     const safeDraft = {
       currentStep: data.currentStep,
       selectedSchedule: data.selectedSchedule,
+      selectedStartDate: data.selectedStartDate,
       selectedPlan: data.selectedPlan,
       studentData: {
         firstName: data.studentData?.firstName || '',
@@ -79,6 +81,7 @@ const EnrollmentForm = ({ onClose, onSuccess }) => {
 
   const [currentStep, setCurrentStep] = useState(savedDraft?.currentStep || 1);
   const [selectedSchedule, setSelectedSchedule] = useState(savedDraft?.selectedSchedule || null);
+  const [selectedStartDate, setSelectedStartDate] = useState(savedDraft?.selectedStartDate || null);
   const [selectedPlan, setSelectedPlan] = useState(savedDraft?.selectedPlan || null);
   const [studentData, setStudentData] = useState(savedDraft?.studentData || {
     firstName: '',
@@ -89,23 +92,23 @@ const EnrollmentForm = ({ onClose, onSuccess }) => {
     address: ''
   });
 
-  // Nuevo orden: Horario → Plan → Datos → Pago
-  const canProceedToStep2 = selectedSchedule !== null;
+  // Nuevo orden: Horario + Fecha → Plan → Datos → Pago
+  const canProceedToStep2 = selectedSchedule !== null && selectedStartDate !== null;
   const canProceedToStep3 = selectedPlan !== null;
-  const canProceedToStep4 = true; // Siempre puede proceder desde datos
 
   // Auto-guardar progreso cuando cambie el estado
   useEffect(() => {
     // Solo guardar si hay algún progreso (evitar guardar estado inicial vacío)
-    if (currentStep > 1 || selectedSchedule || selectedPlan || studentData.firstName) {
+    if (currentStep > 1 || selectedSchedule || selectedStartDate || selectedPlan || studentData.firstName) {
       saveDraftToSession({
         currentStep,
         selectedSchedule,
+        selectedStartDate,
         selectedPlan,
         studentData
       });
     }
-  }, [currentStep, selectedSchedule, selectedPlan, studentData]);
+  }, [currentStep, selectedSchedule, selectedStartDate, selectedPlan, studentData]);
 
   const handleSelectPlan = (plan) => {
     setSelectedPlan(plan);
@@ -133,7 +136,7 @@ const EnrollmentForm = ({ onClose, onSuccess }) => {
       payment_method_id: paymentData.paymentMethodId,
       enrollment_amount: 1,
       total_tuition_fee: selectedPlan.price,
-      start_date: selectedSchedule.date
+      start_date: selectedStartDate || selectedSchedule.date
     };
 
     console.log('Enviando inscripción al backend:', enrollmentPayload);
@@ -186,7 +189,7 @@ const EnrollmentForm = ({ onClose, onSuccess }) => {
         <div className="enrollment-progress">
           <div className={`progress-step ${getStepClass(1)}`}>
             <div className="step-number">1</div>
-            <div className="step-label">Horario</div>
+            <div className="step-label">Horario y Fecha</div>
           </div>
           <div className="progress-line"></div>
           <div className={`progress-step ${getStepClass(2)}`}>
@@ -212,6 +215,13 @@ const EnrollmentForm = ({ onClose, onSuccess }) => {
                 selectedSchedule={selectedSchedule}
                 onSelectSchedule={setSelectedSchedule}
               />
+
+              <StartDateSelector
+                selectedSchedule={selectedSchedule}
+                selectedStartDate={selectedStartDate}
+                onSelectStartDate={setSelectedStartDate}
+              />
+
               <div className="step-actions">
                 <button
                   className="btn-primary"

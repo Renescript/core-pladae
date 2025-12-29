@@ -12,7 +12,7 @@ function AppHeader() {
   const location = useLocation();
 
   const handleEnrollClick = () => {
-    navigate('/enrollment');
+    navigate('/inscripcion');
   };
 
   const handleLogoClick = () => {
@@ -20,7 +20,7 @@ function AppHeader() {
   };
 
   // No mostrar header en las páginas de enrollment y pago
-  const hideHeaderPaths = ['/enrollment', '/copy-enrollment', '/test-enrollment', '/payment/success', '/payment/failure'];
+  const hideHeaderPaths = ['/enrollment', '/copy-enrollment', '/inscripcion', '/payment/success', '/payment/failure'];
   if (hideHeaderPaths.includes(location.pathname)) {
     return null;
   }
@@ -29,7 +29,7 @@ function AppHeader() {
     <header className="app-header">
       <div className="container">
         <div className="logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
-          <img src='/logo-gustarte.svg' alt="GUSTARTE" />
+          <img src='/logo-gustarte-bla.png' alt="GUSTARTE" />
         </div>
         <nav>
           <a href="#courses">Cursos</a>
@@ -47,7 +47,7 @@ function AppFooter() {
   const location = useLocation();
 
   // No mostrar footer en las páginas de enrollment y pago
-  const hideFooterPaths = ['/enrollment', '/copy-enrollment', '/test-enrollment', '/payment/success', '/payment/failure'];
+  const hideFooterPaths = ['/enrollment', '/copy-enrollment', '/inscripcion', '/payment/success', '/payment/failure'];
   if (hideFooterPaths.includes(location.pathname)) {
     return null;
   }
@@ -88,7 +88,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/enrollment" element={<EnrollmentPage />} />
           <Route path="/copy-enrollment" element={<CopyEnrollmentPage />} />
-          <Route path="/test-enrollment" element={<TestEnrollmentPage />} />
+          <Route path="/inscripcion" element={<TestEnrollmentPage />} />
           <Route path="/payment/success" element={<PaymentSuccess />} />
           <Route path="/payment/failure" element={<PaymentFailure />} />
         </Routes>

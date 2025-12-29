@@ -1,4 +1,7 @@
-const API_BASE_URL = '/api/v1';
+// Use full backend URL in production, proxy in development
+const API_BASE_URL = import.meta.env.MODE === 'production'
+  ? 'https://springs-bra-pioneer-bolt.trycloudflare.com'
+  : '/api/v1';
 
 /**
  * Headers para datos que pueden cachearse (cursos, planes, métodos de pago)

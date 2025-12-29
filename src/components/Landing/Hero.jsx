@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 
-const Hero = ({ onEnrollClick, onCopyEnrollClick }) => {
+const Hero = ({ onInscripcionClick }) => {
   const [currentImage, setCurrentImage] = useState(0);
 
   const images = [
     '/gus1.jpeg',
-    '/gus2.jpeg',
     '/gus3.jpeg',
     '/gus4.jpeg'
   ];
@@ -32,47 +31,47 @@ const Hero = ({ onEnrollClick, onCopyEnrollClick }) => {
 
   return (
     <section className="hero">
-      <div className="hero-content">
-        <h1>GUSTARTE</h1>
-        <p className="hero-subtitle">
-          CENTRO ARTÍSTICO
-        </p>
-        <p className="hero-description">
-          Clases presenciales con instructores experimentados en pintura,
-          dibujo, escultura, fotografía y arte digital.
-        </p>
-        <button className="cta-button" onClick={onEnrollClick}>
-          Inscríbete Ahora
-        </button>
-        <button className="cta-button copy-enrollment" onClick={onCopyEnrollClick}>
-          Copy Enrollment
-        </button>
-      </div>
+      <div className="hero-container">
+        <div className="hero-content">
+          <p className="hero-subtitle">
+            CENTRO ARTÍSTICO
+          </p>
+          <h1>GUSTARTE</h1>
 
-      <div className="hero-carousel">
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className={`carousel-image ${index === currentImage ? 'active' : ''}`}
-            style={{ backgroundImage: `url(${image})` }}
-          />
-        ))}
+          <p className="hero-description">
+            Clases presenciales con instructores experimentados en pintura,
+            dibujo y escultura. Arte al alcance de todos.
+          </p>
+          <button className="cta-button" onClick={onInscripcionClick}>
+            Inscríbete Ahora
+          </button>
+        </div>
 
-        <button className="carousel-nav prev" onClick={prevImage}>
-          ‹
-        </button>
-        <button className="carousel-nav next" onClick={nextImage}>
-          ›
-        </button>
-
-        <div className="carousel-indicators">
-          {images.map((_, index) => (
-            <button
+        <div className="hero-carousel">
+          {images.map((image, index) => (
+            <div
               key={index}
-              className={`indicator ${index === currentImage ? 'active' : ''}`}
-              onClick={() => goToImage(index)}
+              className={`carousel-image ${index === currentImage ? 'active' : ''}`}
+              style={{ backgroundImage: `url(${image})` }}
             />
           ))}
+
+          <button className="carousel-nav prev" onClick={prevImage}>
+            ‹
+          </button>
+          <button className="carousel-nav next" onClick={nextImage}>
+            ›
+          </button>
+
+          <div className="carousel-indicators">
+            {images.map((_, index) => (
+              <button
+                key={index}
+                className={`indicator ${index === currentImage ? 'active' : ''}`}
+                onClick={() => goToImage(index)}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -92,85 +92,111 @@ const PaymentWebpay = ({ enrollmentData, onBack, onComplete }) => {
       <div className="payment-summary">
         <h3>Resumen de tu Inscripción</h3>
 
-        <div className="summary-section">
-          <h4>Curso y Horario</h4>
-          {enrollmentData.schedule ? (
-            <>
-              <p>{enrollmentData.schedule.courseName}</p>
-              <p className="summary-detail">
-                {enrollmentData.schedule.day?.toUpperCase()} • {enrollmentData.schedule.timeSlot}
-              </p>
-              <p className="summary-detail">Profesor: {enrollmentData.schedule.teacher}</p>
-              {enrollmentData.schedule.selectedDate && (
-                <p className="summary-detail">
-                  Inicio: {new Date(enrollmentData.schedule.selectedDate.date + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                </p>
-              )}
-            </>
-          ) : course ? (
-            <>
-              <p>{course.name}</p>
-              <p className="summary-detail">Duración: {course.duration} - Instructor: {course.instructor}</p>
-            </>
-          ) : null}
-        </div>
-
-        <div className="summary-section">
-          <h4>Plan</h4>
-          <p>{plan.plan}</p>
-          <p className="summary-detail">{plan.description}</p>
-          {plan.number_of_classes && (
-            <p className="summary-detail">{plan.number_of_classes} clases incluidas</p>
-          )}
-        </div>
-
-        {sections && sections.length > 0 && (
-          <div className="summary-section">
-            <h4>Horarios Seleccionados ({sections.length} {sections.length === 1 ? 'clase' : 'clases'})</h4>
-            {sections.map((section, index) => (
-              <div key={section.id} className="section-summary">
-                <p className="section-title">Clase {index + 1}: {section.teacher_name}</p>
-                {section.schedule && section.schedule.map((scheduleItem, idx) => (
-                  <p key={idx} className="summary-detail">
-                    {scheduleItem.day} {scheduleItem.start_time} - {scheduleItem.end_time}
-                  </p>
-                ))}
+        {/* Curso y Horario */}
+        {enrollmentData.schedule && (
+          <div className="summary-card">
+            <div className="summary-card-header">Curso y Horario</div>
+            <div className="summary-card-content">
+              <div className="info-row">
+                <span className="info-label">Curso:</span>
+                <span className="info-value">{enrollmentData.schedule.courseName}</span>
               </div>
-            ))}
+              {/* <div className="info-row">
+                <span className="info-label">Día:</span>
+                <span className="info-value">{enrollmentData.schedule.day?.toUpperCase()}</span>
+              </div> */}
+              <div className="info-row">
+                <span className="info-label">Horario:</span>
+                <span className="info-value">{enrollmentData.schedule.timeSlot}</span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Profesor/a:</span>
+                <span className="info-value">{enrollmentData.schedule.teacher}</span>
+              </div>
+              {enrollmentData.schedule.selectedDate && (
+                <div className="info-row">
+                  <span className="info-label">Inicio:</span>
+                  <span className="info-value">
+                    {new Date(enrollmentData.schedule.selectedDate.date + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
-        <div className="summary-section">
-          <h4>Estudiante</h4>
-          <p>{student.firstName} {student.lastName}</p>
-          <p className="summary-detail">{student.email}</p>
+        {/* Plan */}
+        <div className="summary-card">
+          <div className="summary-card-header">Plan Seleccionado</div>
+          <div className="summary-card-content">
+            <div className="info-row">
+              <span className="info-label">Plan:</span>
+              <span className="info-value">{plan.plan}</span>
+            </div>
+            <div className="info-row">
+              <span className="info-label">Descripción:</span>
+              <span className="info-value">{plan.description}</span>
+            </div>
+            {plan.number_of_classes && (
+              <div className="info-row">
+                <span className="info-label">Clases:</span>
+                <span className="info-value">{plan.number_of_classes} clases incluidas</span>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="payment-total">
-          <span>Total a Pagar:</span>
-          <span className="total-amount">${totalAmount.toLocaleString('es-CL')}</span>
+        {/* Estudiante */}
+        <div className="summary-card">
+          <div className="summary-card-header">Datos del Estudiante</div>
+          <div className="summary-card-content">
+            <div className="info-row">
+              <span className="info-label">Nombre:</span>
+              <span className="info-value">{student.firstName} {student.lastName}</span>
+            </div>
+            <div className="info-row">
+              <span className="info-label">Email:</span>
+              <span className="info-value">{student.email}</span>
+            </div>
+            {student.phone && (
+              <div className="info-row">
+                <span className="info-label">Teléfono:</span>
+                <span className="info-value">{student.phone}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Total */}
+        <div className="payment-total-card">
+          <span className="total-label">Total a Pagar</span>
+          <span className="total-amount">${totalAmount.toLocaleString('es-CL')} CLP</span>
         </div>
       </div>
 
       {/* Selección de método de pago */}
       <div className="payment-method-selection">
         <h3>Selecciona tu método de pago</h3>
-        <div className="payment-methods-grid">
-          {paymentMethods.map((method) => (
-            <div
-              key={method.id}
-              className={`payment-method-option ${selectedPaymentMethod?.id === method.id ? 'selected' : ''}`}
-              onClick={() => setSelectedPaymentMethod(method)}
-            >
-              <div className="payment-method-icon">
-                {method.payment_method.toLowerCase().includes('tarjeta') ? '💳' : '💰'}
+        <div className="payment-methods-simple">
+          {paymentMethods.map((method) => {
+            const isWebpay = method.payment_method.toLowerCase().includes('webpay') ||
+                           method.payment_method.toLowerCase().includes('transbank') ||
+                           method.payment_method.toLowerCase().includes('tarjeta');
+
+            return (
+              <div
+                key={method.id}
+                className={`payment-logo-wrapper ${selectedPaymentMethod?.id === method.id ? 'selected' : ''}`}
+                onClick={() => setSelectedPaymentMethod(method)}
+              >
+                {isWebpay ? (
+                  <img src="/webpay.png" alt="Webpay" className="webpay-logo-large" />
+                ) : (
+                  <span className="payment-emoji-large">💰</span>
+                )}
               </div>
-              <div className="payment-method-name">{method.payment_method}</div>
-              {method.description && (
-                <div className="payment-method-description">{method.description}</div>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
