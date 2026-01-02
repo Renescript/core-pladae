@@ -19,7 +19,7 @@ const CopyWeeklyScheduleSelector = ({ selectedSchedules, onSelectSchedules }) =>
     saturday: 'SÁBADO'
   };
 
-  const timeSlots = ['10:00-12:00', '12:30-14:30', '15:30-17:30', '18:30-20:30'];
+  const timeSlots = ['10:00-12:00', '12:30-14:30', '15:30-16:30', '18:30-20:30'];
 
   useEffect(() => {
     const loadCourses = async () => {

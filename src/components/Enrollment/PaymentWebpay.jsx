@@ -8,9 +8,21 @@ const PaymentWebpay = ({ enrollmentData, onBack, onComplete }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { course, plan, sections, student } = enrollmentData;
-  // TODO: El precio será agregado al backend próximamente
-  const totalAmount = plan.price || 0;
+  const { schedules = [], startDates = {}, plan, student } = enrollmentData;
+  const totalAmount = plan?.price || 0;
+
+  const getDayName = (day) => {
+    const dayNames = {
+      'monday': 'Lunes',
+      'tuesday': 'Martes',
+      'wednesday': 'Miércoles',
+      'thursday': 'Jueves',
+      'friday': 'Viernes',
+      'saturday': 'Sábado',
+      'sunday': 'Domingo'
+    };
+    return dayNames[day?.toLowerCase()] || day;
+  };
 
   useEffect(() => {
     const fetchPaymentMethods = async () => {
@@ -92,35 +104,49 @@ const PaymentWebpay = ({ enrollmentData, onBack, onComplete }) => {
       <div className="payment-summary">
         <h3>Resumen de tu Inscripción</h3>
 
-        {/* Curso y Horario */}
-        {enrollmentData.schedule && (
+        {/* Cursos y Horarios */}
+        {schedules.length > 0 && (
           <div className="summary-card">
-            <div className="summary-card-header">Curso y Horario</div>
+            <div className="summary-card-header">
+              Cursos y Horarios ({schedules.length} {schedules.length === 1 ? 'curso' : 'cursos'})
+            </div>
             <div className="summary-card-content">
-              <div className="info-row">
-                <span className="info-label">Curso:</span>
-                <span className="info-value">{enrollmentData.schedule.courseName}</span>
-              </div>
-              {/* <div className="info-row">
-                <span className="info-label">Día:</span>
-                <span className="info-value">{enrollmentData.schedule.day?.toUpperCase()}</span>
-              </div> */}
-              <div className="info-row">
-                <span className="info-label">Horario:</span>
-                <span className="info-value">{enrollmentData.schedule.timeSlot}</span>
-              </div>
-              <div className="info-row">
-                <span className="info-label">Profesor/a:</span>
-                <span className="info-value">{enrollmentData.schedule.teacher}</span>
-              </div>
-              {enrollmentData.schedule.selectedDate && (
-                <div className="info-row">
-                  <span className="info-label">Inicio:</span>
-                  <span className="info-value">
-                    {new Date(enrollmentData.schedule.selectedDate.date + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                  </span>
-                </div>
-              )}
+              {schedules.map((schedule, index) => {
+                const sectionId = schedule.section?.id;
+                const startDate = startDates[sectionId];
+                return (
+                  <div key={sectionId || index} className="course-summary-item-payment">
+                    {index > 0 && <div className="course-divider"></div>}
+                    <div className="info-row">
+                      <span className="info-label">Curso {schedules.length > 1 ? `${index + 1}:` : ':'}</span>
+                      <span className="info-value">{schedule.courseName}</span>
+                    </div>
+                    <div className="info-row">
+                      <span className="info-label">Horario:</span>
+                      <span className="info-value">{getDayName(schedule.day)} {schedule.timeSlot}</span>
+                    </div>
+                    {schedule.teacher && (
+                      <div className="info-row">
+                        <span className="info-label">Profesor/a:</span>
+                        <span className="info-value">{schedule.teacher}</span>
+                      </div>
+                    )}
+                    {startDate && (
+                      <div className="info-row">
+                        <span className="info-label">Inicio:</span>
+                        <span className="info-value">
+                          {new Date(startDate + 'T00:00:00').toLocaleDateString('es-ES', {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                          })}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

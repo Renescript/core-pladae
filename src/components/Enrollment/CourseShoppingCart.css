@@ -1,0 +1,270 @@
+/* Course Shopping Cart - Sidebar del carrito */
+.course-cart-sidebar {
+  width: 100%;
+  height: fit-content;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.cart-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.cart-count {
+  background: #3498db;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Empty cart state */
+.cart-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+.cart-empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.cart-empty-text {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 8px 0;
+}
+
+.cart-empty-hint {
+  font-size: 14px;
+  color: #999;
+  margin: 0;
+}
+
+/* Cart items list */
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  max-height: 500px;
+}
+
+.cart-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.cart-item:hover {
+  background: #f0f1f3;
+  transform: translateX(-2px);
+}
+
+.item-color {
+  width: 4px;
+  min-width: 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.item-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-course-name {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-schedule {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.item-teacher {
+  margin: 0;
+  font-size: 11px;
+  color: #999;
+}
+
+.remove-btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: #e74c3c;
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.remove-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  background: #c0392b;
+}
+
+/* Cart summary */
+.cart-summary {
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.summary-row:last-child {
+  margin-bottom: 0;
+}
+
+.summary-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.summary-value {
+  font-size: 16px;
+  color: #333;
+}
+
+/* Compatible plans preview */
+.compatible-plans-preview {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #e8f5e9;
+  border-radius: 8px;
+  border-left: 4px solid #4caf50;
+}
+
+.plans-preview-title {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.plans-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.plan-chip {
+  background: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #c8e6c9;
+}
+
+.plan-chip-name {
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.plan-chip-info {
+  color: #666;
+  font-size: 11px;
+}
+
+/* Continue button */
+.btn-continue {
+  width: 100%;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary.btn-continue {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-primary.btn-continue:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary.btn-continue:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .course-cart-sidebar {
+    position: static;
+    width: 100%;
+    max-height: none;
+    margin-top: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .course-cart-sidebar {
+    padding: 16px;
+  }
+
+  .cart-items {
+    max-height: 300px;
+  }
+
+  .item-course-name {
+    font-size: 13px;
+  }
+
+  .item-schedule {
+    font-size: 11px;
+  }
+}

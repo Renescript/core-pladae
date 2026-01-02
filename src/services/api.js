@@ -1,6 +1,6 @@
 // Use full backend URL in production, proxy in development
 const API_BASE_URL = import.meta.env.MODE === 'production'
-  ? 'https://springs-bra-pioneer-bolt.trycloudflare.com'
+  ? 'https://back-academia.onrender.com/api/v1'
   : '/api/v1';
 
 /**
@@ -154,6 +154,94 @@ export const getPlans = async () => {
     // Fallback a datos dummy si falla la API
     return getDummyPlans();
   }
+};
+
+/**
+ * Obtiene la lista de planes de duración (meses con descuentos) desde la API
+ * @returns {Promise<Array>} Lista de planes de duración
+ */
+export const getDurationPlans = async () => {
+  try {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/duration_plans`, {
+      method: 'GET',
+      headers: CACHEABLE_HEADERS
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // La API devuelve { success: true, data: [...] } o { duration_plans: [...] }
+    if (result.success) {
+      return result.data;
+    } else if (result.duration_plans) {
+      return result.duration_plans;
+    } else {
+      throw new Error('La respuesta de la API no fue exitosa');
+    }
+  } catch (error) {
+    console.error('Error al obtener los planes de duración desde la API:', error);
+    console.warn('Usando planes de duración dummy como fallback');
+    // Fallback a datos dummy si falla la API
+    return getDummyDurationPlans();
+  }
+};
+
+/**
+ * Planes de duración dummy para desarrollo/fallback
+ * @returns {Array} Lista de planes de duración
+ */
+export const getDummyDurationPlans = () => {
+  return [
+    {
+      id: 1,
+      months: 1,
+      name: '1 mes',
+      discount_percentage: 0,
+      is_popular: false,
+      is_best_value: false,
+      description: 'Plan mensual estándar',
+      order: 1,
+      active: true
+    },
+    {
+      id: 2,
+      months: 2,
+      name: '2 meses',
+      discount_percentage: 10,
+      is_popular: false,
+      is_best_value: false,
+      description: 'Ahorra 10%',
+      order: 2,
+      active: true
+    },
+    {
+      id: 3,
+      months: 3,
+      name: '3 meses',
+      discount_percentage: 15,
+      is_popular: true,
+      is_best_value: false,
+      description: 'Ahorra 15%',
+      badge: 'Más popular',
+      order: 3,
+      active: true
+    },
+    {
+      id: 4,
+      months: 6,
+      name: '6 meses',
+      discount_percentage: 20,
+      is_popular: false,
+      is_best_value: true,
+      description: 'Ahorra 20%',
+      badge: 'Mejor oferta',
+      order: 4,
+      active: true
+    }
+  ];
 };
 
 /**
@@ -579,6 +667,7 @@ export const getCoursesSchedulesGrid = async () => {
             name: course.title,
             color: courseColor,
             category: course.category || 'General',
+            price_per_class: course.price_per_class || course.price || 15000, // Precio por técnica
             schedules: course.sections.flatMap(section => {
               // Cada sección puede tener múltiples horarios en su schedule array
               return section.schedule.map(scheduleItem => {
@@ -592,6 +681,7 @@ export const getCoursesSchedulesGrid = async () => {
                   teacherId: section.teacher_id,
                   places: section.places,
                   available: section.available_places !== null ? section.available_places : section.places,
+                  pricePerSession: section.price_per_session || section.price || course.price_per_class || course.price || 15000, // Precio por sesión con fallback
                   section: {
                     id: section.id,
                     startDate: section.start_date || new Date().toISOString().split('T')[0],

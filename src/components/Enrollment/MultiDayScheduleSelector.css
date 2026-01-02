@@ -1,0 +1,175 @@
+.multi-day-progress {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid #e2e8f0;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.progress-header h3 {
+  font-size: 1.25rem;
+  color: #2d3748;
+  margin: 0;
+}
+
+.progress-counter {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
+  border-radius: 10px;
+}
+
+.day-tabs {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.day-tab {
+  flex: 1;
+  min-width: 100px;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.day-tab:hover {
+  border-color: #667eea;
+  background: #f7fafc;
+}
+
+.day-tab.active {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.day-tab.completed {
+  border-color: #48bb78;
+  background: #f0fff4;
+  color: #48bb78;
+}
+
+.day-tab.completed.active {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+}
+
+.day-tab-number {
+  font-size: 0.9rem;
+}
+
+.day-tab-check {
+  font-size: 1rem;
+}
+
+.current-day-summary {
+  background: linear-gradient(135deg, #f0f9fb 0%, #e6f7ff 100%);
+  border-left: 4px solid #47a1bf;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.current-day-summary p {
+  margin: 0;
+  color: #2d3748;
+  font-size: 0.95rem;
+}
+
+.current-day-summary strong {
+  color: #47a1bf;
+  font-weight: 700;
+}
+
+.btn-save-day {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-save-day:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .multi-day-progress {
+    padding: 1rem;
+  }
+
+  .progress-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .progress-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .day-tabs {
+    gap: 0.5rem;
+  }
+
+  .day-tab {
+    min-width: 80px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .day-tab-number {
+    font-size: 0.8rem;
+  }
+
+  .current-day-summary {
+    padding: 0.8rem 1rem;
+  }
+
+  .current-day-summary p {
+    font-size: 0.85rem;
+  }
+}

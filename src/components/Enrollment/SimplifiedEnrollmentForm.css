@@ -1,0 +1,49 @@
+.simplified-enrollment-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f9fb 0%, #ffffff 100%);
+  padding: 2rem 0;
+  position: relative;
+}
+
+.simplified-enrollment-header {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 100;
+}
+
+.simplified-enrollment-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Animaciones de entrada */
+.simplified-step {
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .simplified-enrollment-container {
+    padding: 1rem 0;
+  }
+
+  .simplified-enrollment-header {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+}

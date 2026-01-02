@@ -27,21 +27,18 @@ const StartDateSelector = ({
         setError(null);
 
         console.log('📅 Cargando fechas disponibles para sección:', selectedSchedule.section.id);
+        console.log('📅 selectedSchedule completo:', selectedSchedule);
         const dates = await getSectionCalendar(selectedSchedule.section.id);
+        console.log('📅 FECHAS CRUDAS DEL BACKEND:', dates);
+        console.log('📅 Total de fechas recibidas:', dates.length);
 
-        // Filtrar solo las fechas que coinciden con el día de la semana seleccionado
-        const targetDay = getDayOfWeek(selectedSchedule.day);
-        const filteredDates = dates.filter(dateObj => {
-          const date = new Date(dateObj.date + 'T00:00:00');
-          return date.getDay() === targetDay;
-        });
-
-        console.log('📅 Fechas disponibles filtradas:', filteredDates);
-        setAvailableDates(filteredDates);
+        // El backend ya devuelve las fechas correctas para esta sección
+        // NO necesitamos filtrar por día de la semana porque la sección ya tiene sus días definidos
+        setAvailableDates(dates);
 
         // Pasar las fechas disponibles al componente padre si hay callback
         if (onAvailableDatesLoad) {
-          onAvailableDatesLoad(filteredDates);
+          onAvailableDatesLoad(dates);
         }
       } catch (err) {
         console.error('Error al cargar fechas disponibles:', err);
@@ -55,7 +52,7 @@ const StartDateSelector = ({
     };
 
     loadAvailableDates();
-  }, [selectedSchedule?.section?.id, selectedSchedule?.day]); // Remover onAvailableDatesLoad para evitar loop infinito
+  }, [selectedSchedule?.section?.id]); // Solo recargar cuando cambie la sección
 
   // Convierte el nombre del día en inglés a número (0=domingo, 1=lunes, etc.)
   const getDayOfWeek = (dayName) => {
@@ -203,9 +200,9 @@ const StartDateSelector = ({
           </button>
         </div>
 
-        <div className="calendar-grid">
+        <div className="date-calendar-grid">
           {/* Nombres de los días */}
-          <div className="calendar-weekdays">
+          <div className="date-calendar-weekdays">
             <div>Lun</div>
             <div>Mar</div>
             <div>Mié</div>
@@ -216,7 +213,7 @@ const StartDateSelector = ({
           </div>
 
           {/* Días del mes */}
-          <div className="calendar-days">
+          <div className="date-calendar-days">
             {days.map((dayObj, index) => {
               const isAvailable = dayObj.isCurrentMonth && isDateAvailable(dayObj.date);
               const isSelected = selectedStartDate === dayObj.date.toISOString().split('T')[0];
@@ -225,7 +222,7 @@ const StartDateSelector = ({
               return (
                 <button
                   key={index}
-                  className={`calendar-day
+                  className={`date-calendar-day
                     ${!dayObj.isCurrentMonth ? 'other-month' : ''}
                     ${isAvailable ? 'available' : ''}
                     ${isSelected ? 'selected' : ''}
