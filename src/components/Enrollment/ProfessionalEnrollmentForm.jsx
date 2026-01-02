@@ -98,7 +98,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
   // Funciones de cálculo de precios
   const calculateMonthlyPrice = () => {
     // Obtener el precio desde la técnica o desde el horario más bajo seleccionado
-    let pricePerClass = 15000; // Fallback
+    let pricePerClass = 7000; // Fallback
 
     if (technique?.price_per_class) {
       pricePerClass = technique.price_per_class;

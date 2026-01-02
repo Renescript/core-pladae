@@ -109,7 +109,7 @@ export const getDummyPlans = () => {
       sessions_per_month: 8,
       price: 85000,
       number_of_classes: 8,
-      enrollment_amount: 15000
+      enrollment_amount: 7000
     },
     {
       id: 3,
@@ -667,7 +667,7 @@ export const getCoursesSchedulesGrid = async () => {
             name: course.title,
             color: courseColor,
             category: course.category || 'General',
-            price_per_class: course.price_per_class || course.price || 15000, // Precio por técnica
+            price_per_class: course.price_per_class || course.price || 7000, // Precio por técnica
             schedules: course.sections.flatMap(section => {
               // Cada sección puede tener múltiples horarios en su schedule array
               return section.schedule.map(scheduleItem => {
@@ -681,7 +681,7 @@ export const getCoursesSchedulesGrid = async () => {
                   teacherId: section.teacher_id,
                   places: section.places,
                   available: section.available_places !== null ? section.available_places : section.places,
-                  pricePerSession: section.price_per_session || section.price || course.price_per_class || course.price || 15000, // Precio por sesión con fallback
+                  pricePerSession: section.price_per_session || section.price || course.price_per_class || course.price || 7000, // Precio por sesión con fallback
                   section: {
                     id: section.id,
                     startDate: section.start_date || new Date().toISOString().split('T')[0],

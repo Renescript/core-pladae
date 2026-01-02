@@ -40,7 +40,7 @@ const DurationSelector = ({
   // Calcular información de precio para cada opción
   const calculatePriceInfo = (months, discount) => {
     // Usar el precio mensual pasado como prop, o calcular uno por defecto
-    const effectiveMonthlyPrice = monthlyPrice || (15000 * frequency * 4);
+    const effectiveMonthlyPrice = monthlyPrice || (7000 * frequency * 4);
     const subtotal = effectiveMonthlyPrice * months;
     const discountAmount = Math.round(subtotal * (discount / 100));
     const finalPrice = subtotal - discountAmount;

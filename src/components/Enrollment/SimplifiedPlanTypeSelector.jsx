@@ -13,14 +13,14 @@ const SimplifiedPlanTypeSelector = ({ selectedPlanType, onSelectPlanType, onCont
     {
       id: 'monthly',
       name: 'Plan mensual',
-      description: 'Clases en 4 semanas',
+      description: 'Clases distribuidas en un mes',
       icon: '📅',
       recommended: true
     },
     {
       id: 'extended',
       name: 'Plan extendido',
-      description: 'Clases distribuidas en el tiempo',
+      description: 'Clases distribuidas según tu disponibilidad',
       icon: '📆',
       recommended: false
     },

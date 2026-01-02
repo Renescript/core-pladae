@@ -45,7 +45,7 @@ const EditableScheduleCalendar = ({
 
   // Calcular precio
   const calculatePrice = () => {
-    const pricePerClass = 15000;
+    const pricePerClass = 7000;
     const monthlyPrice = pricePerClass * frequency * 4;
     const subtotal = monthlyPrice * durationMonths;
 
