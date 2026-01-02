@@ -42,9 +42,15 @@ const Hero = ({ onInscripcionClick }) => {
             Clases presenciales con instructores experimentados en pintura,
             dibujo y escultura. Arte al alcance de todos.
           </p>
-          <button className="cta-button" onClick={onInscripcionClick}>
-            Inscríbete Ahora
-          </button>
+          <div className="cta-buttons-group">
+            <button className="cta-button primary" onClick={onInscripcionClick}>
+              Inscríbete Ahora
+            </button>
+            <button className="cta-button secondary" onClick={onInscripcionClick}>
+              <span className="new-badge">NUEVO</span>
+              Prueba el Flujo Mejorado ✨
+            </button>
+          </div>
         </div>
 
         <div className="hero-carousel">

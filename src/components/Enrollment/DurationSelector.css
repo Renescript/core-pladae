@@ -1,0 +1,274 @@
+.duration-selector-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.loading-plans {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+}
+
+.loading-plans .spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-plans p {
+  color: #718096;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.duration-selector-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.duration-selector-header h2 {
+  font-size: 2rem;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.step-indicator {
+  color: #718096;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.duration-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.duration-card {
+  position: relative;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.duration-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
+}
+
+.duration-card.selected {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #667eea05 0%, #764ba210 100%);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
+}
+
+.badge {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-popular {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.badge-best-value {
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  color: #2d3748;
+}
+
+.duration-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.duration-card-header h3 {
+  font-size: 1.5rem;
+  color: #2d3748;
+  margin: 0;
+}
+
+.discount-badge {
+  background: #48bb78;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.duration-card-body {
+  text-align: center;
+}
+
+.total-classes {
+  color: #4a5568;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.price-original {
+  color: #a0aec0;
+  text-decoration: line-through;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.price-final {
+  color: #2d3748;
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.price-monthly {
+  color: #718096;
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+}
+
+.savings {
+  color: #48bb78;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+.plan-description {
+  color: #718096;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.selection-checkmark {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 30px;
+  height: 30px;
+  background: #667eea;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.duration-selector-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-primary,
+.btn-secondary {
+  flex: 1;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: white;
+  color: #4a5568;
+  border: 2px solid #e2e8f0;
+}
+
+.btn-secondary:hover {
+  background: #f7fafc;
+  border-color: #cbd5e0;
+}
+
+/* Responsive para tablets */
+@media (max-width: 768px) {
+  .duration-options-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .duration-selector-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .duration-card-header h3 {
+    font-size: 1.25rem;
+  }
+
+  .price-final {
+    font-size: 1.75rem;
+  }
+}
+
+/* Responsive para móviles */
+@media (max-width: 480px) {
+  .duration-selector-container {
+    padding: 1rem;
+  }
+
+  .duration-card {
+    padding: 1rem;
+  }
+
+  .badge {
+    font-size: 0.65rem;
+    padding: 0.3rem 0.8rem;
+  }
+
+  .duration-selector-actions {
+    flex-direction: column;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+}

@@ -3,6 +3,7 @@ import LandingPage from './pages/LandingPage';
 import EnrollmentPage from './pages/EnrollmentPage';
 import CopyEnrollmentPage from './pages/CopyEnrollmentPage';
 import TestEnrollmentPage from './pages/TestEnrollmentPage';
+import CalendarTestPage from './pages/CalendarTestPage';
 import PaymentSuccess from './components/Enrollment/PaymentSuccess';
 import PaymentFailure from './components/Enrollment/PaymentFailure';
 import './App.css';
@@ -20,7 +21,7 @@ function AppHeader() {
   };
 
   // No mostrar header en las páginas de enrollment y pago
-  const hideHeaderPaths = ['/enrollment', '/copy-enrollment', '/inscripcion', '/payment/success', '/payment/failure'];
+  const hideHeaderPaths = ['/enrollment', '/copy-enrollment', '/inscripcion', '/calendar-test', '/payment/success', '/payment/failure'];
   if (hideHeaderPaths.includes(location.pathname)) {
     return null;
   }
@@ -47,7 +48,7 @@ function AppFooter() {
   const location = useLocation();
 
   // No mostrar footer en las páginas de enrollment y pago
-  const hideFooterPaths = ['/enrollment', '/copy-enrollment', '/inscripcion', '/payment/success', '/payment/failure'];
+  const hideFooterPaths = ['/enrollment', '/copy-enrollment', '/inscripcion', '/calendar-test', '/payment/success', '/payment/failure'];
   if (hideFooterPaths.includes(location.pathname)) {
     return null;
   }
@@ -89,6 +90,7 @@ function App() {
           <Route path="/enrollment" element={<EnrollmentPage />} />
           <Route path="/copy-enrollment" element={<CopyEnrollmentPage />} />
           <Route path="/inscripcion" element={<TestEnrollmentPage />} />
+          <Route path="/calendar-test" element={<CalendarTestPage />} />
           <Route path="/payment/success" element={<PaymentSuccess />} />
           <Route path="/payment/failure" element={<PaymentFailure />} />
         </Routes>

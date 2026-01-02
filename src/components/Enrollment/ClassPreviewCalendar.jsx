@@ -103,9 +103,9 @@ const ClassPreviewCalendar = ({ classDates, startDate }) => {
           </button>
         </div>
 
-        <div className="calendar-grid">
+        <div className="date-calendar-grid">
           {/* Nombres de los días */}
-          <div className="calendar-weekdays">
+          <div className="date-calendar-weekdays">
             <div>Lun</div>
             <div>Mar</div>
             <div>Mié</div>
@@ -116,7 +116,7 @@ const ClassPreviewCalendar = ({ classDates, startDate }) => {
           </div>
 
           {/* Días del mes */}
-          <div className="calendar-days">
+          <div className="date-calendar-days">
             {days.map((dayObj, index) => {
               const isClass = dayObj.isCurrentMonth && isClassDate(dayObj.date);
               const isStart = dayObj.isCurrentMonth && isStartDate(dayObj.date);
@@ -132,7 +132,7 @@ const ClassPreviewCalendar = ({ classDates, startDate }) => {
               return (
                 <div
                   key={index}
-                  className={`calendar-day
+                  className={`date-calendar-day
                     ${!dayObj.isCurrentMonth ? 'other-month' : ''}
                     ${isClass ? 'class-date' : ''}
                     ${isStart ? 'start-date' : ''}

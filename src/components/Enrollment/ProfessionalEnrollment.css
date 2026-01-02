@@ -1,0 +1,351 @@
+/* Professional Enrollment - Minimal & Clean Design */
+
+/* Variables */
+:root {
+  --prof-primary: #2563eb;
+  --prof-primary-dark: #1d4ed8;
+  --prof-gray-50: #f9fafb;
+  --prof-gray-100: #f3f4f6;
+  --prof-gray-200: #e5e7eb;
+  --prof-gray-300: #d1d5db;
+  --prof-gray-400: #9ca3af;
+  --prof-gray-500: #6b7280;
+  --prof-gray-600: #4b5563;
+  --prof-gray-700: #374151;
+  --prof-gray-800: #1f2937;
+  --prof-gray-900: #111827;
+}
+
+/* Container */
+.prof-enrollment-container {
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 0;
+}
+
+.prof-enrollment-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+/* Step Layout */
+.prof-step {
+  animation: profFadeIn 0.3s ease;
+}
+
+@keyframes profFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.prof-step-header {
+  margin-bottom: 3rem;
+}
+
+.prof-step-number {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--prof-gray-500);
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.prof-step-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--prof-gray-900);
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+/* Technique Cards */
+.prof-techniques-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.prof-technique-card {
+  background: #ffffff;
+  border: 2px solid var(--prof-gray-200);
+  border-radius: 8px;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.prof-technique-card:hover {
+  border-color: var(--prof-primary);
+}
+
+.prof-technique-card.selected {
+  border-color: var(--prof-primary);
+  border-width: 3px;
+  background: #eff6ff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+}
+
+.prof-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--prof-gray-900);
+  margin: 0 0 0.5rem 0;
+}
+
+.prof-card-description {
+  font-size: 0.9375rem;
+  color: var(--prof-gray-600);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.prof-selected-indicator {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 24px;
+  height: 24px;
+  background: var(--prof-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 0.875rem;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.prof-selected-indicator::after {
+  content: '✓';
+}
+
+/* Calendar Section */
+.prof-calendar-section {
+  margin-bottom: 3rem;
+  border-top: 1px solid var(--prof-gray-200);
+  padding-top: 2rem;
+}
+
+.prof-calendar-toggle {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--prof-gray-300);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--prof-gray-700);
+  transition: all 0.2s ease;
+}
+
+.prof-calendar-toggle:hover {
+  border-color: var(--prof-gray-400);
+  background: var(--prof-gray-50);
+}
+
+.toggle-icon {
+  font-size: 0.75rem;
+  color: var(--prof-gray-500);
+  transition: transform 0.2s ease;
+}
+
+.toggle-icon.open {
+  transform: rotate(180deg);
+}
+
+.prof-calendar-content {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: var(--prof-gray-50);
+  border-radius: 8px;
+}
+
+.prof-calendar-note {
+  font-size: 0.875rem;
+  color: var(--prof-gray-600);
+  margin: 0 0 1.5rem 0;
+  font-style: italic;
+}
+
+.prof-calendar-grid {
+  overflow-x: auto;
+}
+
+.prof-calendar-header {
+  display: grid;
+  grid-template-columns: 120px repeat(6, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.prof-time-column {
+  /* Empty space for time column */
+}
+
+.prof-day-header {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--prof-gray-700);
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.prof-calendar-row {
+  display: grid;
+  grid-template-columns: 120px repeat(6, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.prof-time-cell {
+  font-size: 0.8125rem;
+  color: var(--prof-gray-600);
+  padding: 0.75rem 0.5rem;
+  font-weight: 500;
+}
+
+.prof-slot-cell {
+  background: #ffffff;
+  border: 1px solid var(--prof-gray-200);
+  border-radius: 4px;
+  padding: 0.75rem 0.5rem;
+  font-size: 0.75rem;
+  text-align: center;
+  color: var(--prof-gray-600);
+}
+
+.prof-slot-cell.available {
+  background: #ffffff;
+  border-color: var(--prof-gray-300);
+}
+
+.prof-slot-cell.limited {
+  background: #fef3c7;
+  border-color: #fbbf24;
+  color: #92400e;
+}
+
+.prof-slot-cell.unavailable {
+  background: var(--prof-gray-100);
+  color: var(--prof-gray-400);
+}
+
+/* Buttons */
+.prof-step-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--prof-gray-200);
+}
+
+.prof-btn {
+  padding: 0.875rem 2rem;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-family: inherit;
+}
+
+.prof-btn-primary {
+  background: var(--prof-primary);
+  color: #ffffff;
+}
+
+.prof-btn-primary:hover:not(:disabled) {
+  background: var(--prof-primary-dark);
+}
+
+.prof-btn-primary:disabled {
+  background: var(--prof-gray-300);
+  color: var(--prof-gray-500);
+  cursor: not-allowed;
+}
+
+.prof-btn-secondary {
+  background: #ffffff;
+  color: var(--prof-gray-700);
+  border: 1px solid var(--prof-gray-300);
+}
+
+.prof-btn-secondary:hover {
+  background: var(--prof-gray-50);
+  border-color: var(--prof-gray-400);
+}
+
+/* Header Controls */
+.prof-header-controls {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 100;
+}
+
+.prof-header-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--prof-gray-300);
+  background: #ffffff;
+  color: var(--prof-gray-600);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.prof-header-btn:hover {
+  background: var(--prof-gray-50);
+  border-color: var(--prof-gray-400);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .prof-enrollment-content {
+    padding: 2rem 1rem;
+  }
+
+  .prof-step-title {
+    font-size: 1.5rem;
+  }
+
+  .prof-techniques-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .prof-calendar-header,
+  .prof-calendar-row {
+    grid-template-columns: 100px repeat(6, minmax(100px, 1fr));
+  }
+
+  .prof-step-actions {
+    flex-direction: column-reverse;
+  }
+
+  .prof-btn {
+    width: 100%;
+  }
+}
