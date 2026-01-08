@@ -716,6 +716,35 @@ export const getCoursesSchedulesGrid = async () => {
 };
 
 /**
+ * Obtiene los planes semanales desde la API
+ * @returns {Promise<Array>} Lista de planes semanales con frecuencia
+ */
+export const getWeeklyPlans = async () => {
+  try {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/weekly_plans`, {
+      method: 'GET',
+      headers: CACHEABLE_HEADERS
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // La API devuelve { success: true, data: [...] }
+    if (result.success) {
+      return result.data;
+    } else {
+      throw new Error('La respuesta de la API no fue exitosa');
+    }
+  } catch (error) {
+    console.error('Error al obtener los planes semanales:', error);
+    throw error;
+  }
+};
+
+/**
  * Datos dummy para el calendario estilo grilla (copy-enrollment)
  * @returns {Array} Lista de cursos con horarios en formato grilla
  */
