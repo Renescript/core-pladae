@@ -272,3 +272,124 @@
     width: 100%;
   }
 }
+
+/* Estilos para clase de prueba */
+.trial-class-payment {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+}
+
+.trial-class-card {
+  background: linear-gradient(135deg, #f0f9fb 0%, #ffffff 100%);
+  border: 3px solid #47a1bf;
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 8px 24px rgba(71, 161, 191, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.trial-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, #47a1bf 0%, #5ca1a9 100%);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 12px rgba(71, 161, 191, 0.3);
+}
+
+.trial-icon {
+  font-size: 1.5rem;
+}
+
+.trial-details {
+  text-align: center;
+}
+
+.trial-details h3 {
+  font-size: 1.5rem;
+  color: #1f2937;
+  margin: 0 0 0.75rem 0;
+  font-weight: 700;
+}
+
+.trial-description {
+  color: #6b7280;
+  font-size: 1rem;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.trial-price-section {
+  text-align: center;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+}
+
+.trial-price-label {
+  font-size: 0.9rem;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
+
+.trial-price-value {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #059669;
+  margin: 0.5rem 0;
+  line-height: 1;
+}
+
+.trial-price-note {
+  font-size: 1rem;
+  color: #47a1bf;
+  font-weight: 600;
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .trial-class-card {
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .trial-badge {
+    font-size: 1rem;
+    padding: 0.6rem 1.2rem;
+  }
+
+  .trial-icon {
+    font-size: 1.25rem;
+  }
+
+  .trial-details h3 {
+    font-size: 1.25rem;
+  }
+
+  .trial-description {
+    font-size: 0.9rem;
+  }
+
+  .trial-price-value {
+    font-size: 2.5rem;
+  }
+
+  .trial-price-section {
+    padding: 1.5rem;
+  }
+}

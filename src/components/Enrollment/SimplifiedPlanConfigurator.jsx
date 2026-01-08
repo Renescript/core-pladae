@@ -8,6 +8,7 @@ const SimplifiedPlanConfigurator = ({
   frequency,
   selectedDays,
   onFrequencyChange,
+  onPlanSelect, // Nueva prop para pasar el plan completo
   onDaysChange,
   onContinue,
   onBack
@@ -83,14 +84,24 @@ const SimplifiedPlanConfigurator = ({
 
   const handleTrialClick = () => {
     if (trialClass) {
+      console.log('🎨 Click en clase de prueba:', trialClass);
       onFrequencyChange(trialClass.weekly_classes);
+      if (onPlanSelect) {
+        console.log('📤 Enviando plan de prueba al padre:', trialClass);
+        onPlanSelect(trialClass);
+      }
       onDaysChange([]);
       setIsTrialSelected(true);
     }
   };
 
   const handleRegularPlanClick = (plan) => {
+    console.log('📊 Click en plan regular:', plan);
     onFrequencyChange(plan.weekly_classes);
+    if (onPlanSelect) {
+      console.log('📤 Enviando plan regular al padre:', plan);
+      onPlanSelect(plan);
+    }
     // Limpiar días seleccionados si cambia la frecuencia
     if (selectedDays.length > plan.weekly_classes) {
       onDaysChange([]);

@@ -288,21 +288,32 @@ export const getPaymentMethods = async () => {
  */
 export const createEnrollment = async (enrollmentData) => {
   try {
+    const requestBody = {
+      enrollment: enrollmentData
+    };
+
+    console.log('🌐 ========== REQUEST AL BACKEND ==========');
+    console.log('🌐 Endpoint: POST', `${API_BASE_URL}/enrollments`);
+    console.log('🌐 Body completo (con wrapper):');
+    console.log(JSON.stringify(requestBody, null, 2));
+    console.log('🌐 =========================================');
+
     const response = await fetchWithTimeout(`${API_BASE_URL}/enrollments`, {
       method: 'POST',
       headers: NO_CACHE_HEADERS,
-      body: JSON.stringify({
-        enrollment: enrollmentData
-      }),
+      body: JSON.stringify(requestBody),
     });
 
+    console.log('🌐 Response status:', response.status, response.ok);
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('🌐 Error response:', errorText);
       throw new Error(`Error HTTP: ${response.status}`);
     }
 
-    console.log('enrollmentData enviado:', enrollmentData);
-
     const result = await response.json();
+    console.log('🌐 Response del backend:', result);
 
     if (result.success) {
       return result;
@@ -740,6 +751,39 @@ export const getWeeklyPlans = async () => {
     }
   } catch (error) {
     console.error('Error al obtener los planes semanales:', error);
+    throw error;
+  }
+};
+
+/**
+ * Obtiene los períodos de pago (meses con descuentos) desde la API
+ * @returns {Promise<Array>} Lista de períodos de pago
+ */
+export const getPaymentPeriods = async () => {
+  try {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/payment_periods`, {
+      method: 'GET',
+      headers: CACHEABLE_HEADERS
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // La API devuelve { success: true, data: [...] }
+    if (result.success) {
+      // Convertir discount_percentage de string a número
+      return result.data.map(period => ({
+        ...period,
+        discount_percentage: parseFloat(period.discount_percentage) || 0
+      }));
+    } else {
+      throw new Error('La respuesta de la API no fue exitosa');
+    }
+  } catch (error) {
+    console.error('Error al obtener los períodos de pago:', error);
     throw error;
   }
 };

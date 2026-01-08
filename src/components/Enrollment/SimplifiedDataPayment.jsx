@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getPaymentMethods } from '../../services/api';
 import './SimplifiedTechniqueSelector.css';
 import './SimplifiedDataPayment.css';
 
@@ -11,27 +12,51 @@ const SimplifiedDataPayment = ({
   onBack
 }) => {
   const [errors, setErrors] = useState({});
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const paymentMethods = [
-    {
-      id: 'webpay',
-      name: 'Tarjeta (Webpay)',
-      icon: '💳',
-      description: 'Débito o Crédito'
-    },
-    {
-      id: 'transfer',
-      name: 'Transferencia',
-      icon: '🏦',
-      description: 'Transferencia bancaria'
-    },
-    {
-      id: 'paypal',
-      name: 'PayPal',
-      icon: '🔵',
-      description: 'Pago internacional'
+  // Mapeo de iconos por tipo de método de pago
+  const getPaymentIcon = (methodName) => {
+    const name = methodName.toLowerCase();
+    if (name.includes('webpay') || name.includes('tarjeta') || name.includes('card')) {
+      return '💳';
     }
-  ];
+    if (name.includes('transfer') || name.includes('banco')) {
+      return '🏦';
+    }
+    if (name.includes('paypal')) {
+      return '🔵';
+    }
+    if (name.includes('efectivo') || name.includes('cash')) {
+      return '💵';
+    }
+    return '💰'; // Icono por defecto
+  };
+
+  // Cargar métodos de pago desde la API
+  useEffect(() => {
+    const loadPaymentMethods = async () => {
+      try {
+        setLoading(true);
+        const methods = await getPaymentMethods();
+        console.log('💳 Métodos de pago cargados:', methods);
+        setPaymentMethods(methods);
+      } catch (error) {
+        console.error('Error al cargar métodos de pago:', error);
+        // Fallback en caso de error
+        setPaymentMethods([
+          {
+            id: 1,
+            payment_method: 'Webpay',
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPaymentMethods();
+  }, []);
 
   const handleInputChange = (field, value) => {
     onStudentDataChange({
@@ -177,26 +202,33 @@ const SimplifiedDataPayment = ({
         <div className="form-section">
           <h3 className="form-section-title">Pago seguro 🔒</h3>
 
-          <div className="payment-methods-list">
-            {paymentMethods.map(method => (
-              <div
-                key={method.id}
-                className={`payment-method-card ${paymentMethod === method.id ? 'selected' : ''}`}
-                onClick={() => onPaymentMethodChange(method.id)}
-              >
-                <div className="radio-indicator">
-                  {paymentMethod === method.id && <div className="radio-dot"></div>}
-                </div>
+          {loading ? (
+            <div className="loading-message">
+              <p>Cargando métodos de pago...</p>
+            </div>
+          ) : (
+            <div className="payment-methods-list">
+              {paymentMethods.map(method => (
+                <div
+                  key={method.id}
+                  className={`payment-method-card ${paymentMethod === method.id ? 'selected' : ''}`}
+                  onClick={() => onPaymentMethodChange(method.id)}
+                >
+                  <div className="radio-indicator">
+                    {paymentMethod === method.id && <div className="radio-dot"></div>}
+                  </div>
 
-                <div className="payment-method-icon">{method.icon}</div>
+                  <div className="payment-method-icon">
+                    {getPaymentIcon(method.payment_method)}
+                  </div>
 
-                <div className="payment-method-content">
-                  <h4 className="payment-method-name">{method.name}</h4>
-                  <p className="payment-method-description">{method.description}</p>
+                  <div className="payment-method-content">
+                    <h4 className="payment-method-name">{method.payment_method}</h4>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           {errors.payment && (
             <span className="error-message">{errors.payment}</span>
