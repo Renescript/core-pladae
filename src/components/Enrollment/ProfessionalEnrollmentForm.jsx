@@ -5,6 +5,7 @@ import SimplifiedPlanConfigurator from './SimplifiedPlanConfigurator';
 import MultiDayScheduleSelector from './MultiDayScheduleSelector';
 import DurationSelector from './DurationSelector';
 import EditableScheduleCalendar from './EditableScheduleCalendar';
+import AddAnotherCoursePrompt from './AddAnotherCoursePrompt';
 import SimplifiedDataPayment from './SimplifiedDataPayment';
 import './ProfessionalEnrollment.css';
 import './ProfessionalEnrollmentOverrides.css';
@@ -83,6 +84,9 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
     phone: ''
   });
   const [paymentMethod, setPaymentMethod] = useState(savedDraft?.paymentMethod || null);
+
+  // Estado para manejar múltiples enrollments
+  const [completedEnrollments, setCompletedEnrollments] = useState([]);
 
   // Cargar períodos de pago al montar el componente
   useEffect(() => {
@@ -339,9 +343,8 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
     setSelectedSchedules(newSchedules);
   };
 
-  const handleEnrollmentComplete = async () => {
-    const priceInfo = calculateFinalPrice();
-
+  // Crear el objeto de enrollment del curso actual
+  const buildCurrentEnrollment = () => {
     // Extraer section_ids únicos de los horarios seleccionados
     const sectionIds = selectedSchedules
       .map(s => s.sectionId)
@@ -372,31 +375,145 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
     // Obtener la primera fecha de inicio
     const startDate = classDates.length > 0 ? classDates[0] : null;
 
-    // Calcular enrollment_amount (matrícula)
-    // Por ahora usar el precio del plan semanal o un valor por defecto
-    const enrollmentAmount = weeklyPlan?.enrollment_fee || 0;
+    // Buscar el payment_period_id según durationMonths
+    const paymentPeriod = paymentPeriods.find(p => p.months === durationMonths);
 
-    const enrollmentPayload = {
+    return {
       name: `${studentData.firstName} ${studentData.lastName}`,
       email: studentData.email,
       phone: studentData.phone,
       weekly_plan_id: weeklyPlan?.id,
       payment_method_id: paymentMethod,
-      enrollment_amount: enrollmentAmount,
-      total_tuition_fee: priceInfo.finalPrice,
+      payment_period_id: paymentPeriod?.id || null,
       start_date: startDate,
-      section_id: sectionIds[0] || null,
       section_ids: sectionIds,
       section_dates: sectionDates
+    };
+  };
+
+  // Manejar cuando el usuario quiere agregar otro curso
+  const handleAddAnotherCourse = () => {
+    // Extraer section_ids únicos de los horarios seleccionados
+    const sectionIds = selectedSchedules
+      .map(s => s.sectionId)
+      .filter(id => id != null);
+
+    // Agrupar fechas por section_id
+    const sectionDates = {};
+
+    selectedSchedules.forEach(schedule => {
+      const sectionId = schedule.sectionId;
+      if (!sectionId) return;
+
+      // Filtrar fechas que corresponden a este día de la semana
+      const dayMap = {
+        'sunday': 0, 'monday': 1, 'tuesday': 2, 'wednesday': 3,
+        'thursday': 4, 'friday': 5, 'saturday': 6
+      };
+      const targetDay = dayMap[schedule.dayOfWeek];
+
+      const datesForThisSection = classDates.filter(dateStr => {
+        const date = new Date(dateStr + 'T00:00:00');
+        return date.getDay() === targetDay;
+      });
+
+      sectionDates[sectionId] = datesForThisSection;
+    });
+
+    // Obtener la primera fecha de inicio
+    const startDate = classDates.length > 0 ? classDates[0] : null;
+
+    // Buscar el payment_period_id según durationMonths
+    const paymentPeriod = paymentPeriods.find(p => p.months === durationMonths);
+
+    // Calcular el precio de este curso
+    const priceInfo = calculateFinalPrice();
+
+    // Guardar solo los datos del curso (sin name, email, phone, payment_method_id)
+    // Esos se agregarán al final cuando se complete el formulario
+    const enrollmentWithDetails = {
+      weekly_plan_id: weeklyPlan?.id,
+      payment_period_id: paymentPeriod?.id || null,
+      start_date: startDate,
+      section_ids: sectionIds,
+      section_dates: sectionDates,
+      _displayInfo: {
+        technique: technique?.name,
+        frequency,
+        durationMonths,
+        totalClasses: classDates.length,
+        schedules: selectedSchedules,
+        priceInfo: {
+          monthlyPrice: priceInfo.monthlyPrice,
+          subtotal: priceInfo.subtotal,
+          discountPercent: priceInfo.discountPercent,
+          discountAmount: priceInfo.discountAmount,
+          finalPrice: priceInfo.finalPrice
+        }
+      }
+    };
+
+    setCompletedEnrollments([...completedEnrollments, enrollmentWithDetails]);
+
+    // Reset del flujo para agregar otro curso
+    setTechnique(null);
+    setFrequency(null);
+    setWeeklyPlan(null);
+    setSelectedSchedules([]);
+    setDurationMonths(null);
+    setClassDates([]);
+    setAvailableDates([]);
+    setIsCalendarValid(true);
+
+    // Volver al paso 1
+    setCurrentStep(1);
+  };
+
+  // Manejar cuando el usuario continúa sin agregar más cursos
+  const handleContinueToPayment = () => {
+    setCurrentStep(7); // Ir al paso de datos y pago
+  };
+
+  // Enviar todos los enrollments al backend
+  const handleEnrollmentComplete = async () => {
+    // Construir el enrollment actual
+    const currentEnrollment = buildCurrentEnrollment();
+
+    // Datos comunes para todos los enrollments (nombre, email, teléfono, método de pago)
+    const commonData = {
+      name: `${studentData.firstName} ${studentData.lastName}`,
+      email: studentData.email,
+      phone: studentData.phone,
+      payment_method_id: paymentMethod
+    };
+
+    // Completar todos los enrollments con los datos comunes
+    const allEnrollments = [
+      // Enrollments completados anteriormente
+      ...completedEnrollments.map(enrollment => ({
+        ...commonData,
+        weekly_plan_id: enrollment.weekly_plan_id,
+        payment_period_id: enrollment.payment_period_id,
+        start_date: enrollment.start_date,
+        section_ids: enrollment.section_ids,
+        section_dates: enrollment.section_dates
+      })),
+      // Enrollment actual (ya tiene todos los datos)
+      currentEnrollment
+    ];
+
+    const payload = {
+      enrollments: allEnrollments
     };
 
     try {
       console.log('📤 ========== PAYLOAD COMPLETO ==========');
-      console.log('📤 Enviando inscripción:', enrollmentPayload);
+      console.log('📤 Enviando enrollments:', payload);
       console.log('📤 JSON stringificado:');
-      console.log(JSON.stringify(enrollmentPayload, null, 2));
+      console.log(JSON.stringify(payload, null, 2));
       console.log('📤 ======================================');
-      const result = await createEnrollment(enrollmentPayload);
+
+      const result = await createEnrollment(payload);
 
       if (result.transbank_payment && result.transbank_payment.full_url) {
         clearDraft();
@@ -405,14 +522,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
       }
 
       const successData = {
-        technique,
-        frequency,
-        selectedSchedules,
-        durationMonths,
-        classDates,
-        priceInfo,
-        student: studentData,
-        paymentMethod,
+        enrollments: allEnrollments,
         enrollmentResponse: result
       };
 
@@ -499,21 +609,52 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
               availableDates={availableDates}
               onClassDatesChange={setClassDates}
               onValidationChange={setIsCalendarValid}
-              onContinue={() => setCurrentStep(6)}
+              onContinue={() => {
+                // Si ya hay 1 curso completado (segundo curso), ir directo al pago
+                if (completedEnrollments.length >= 1) {
+                  setCurrentStep(7);
+                } else {
+                  setCurrentStep(6);
+                }
+              }}
               onBack={() => setCurrentStep(4)}
               onEditStep={handleEditStep}
             />
           )}
 
-          {/* Paso 6: Datos personales y pago */}
+          {/* Paso 6: ¿Agregar otro curso? */}
           {currentStep === 6 && (
+            <AddAnotherCoursePrompt
+              completedEnrollments={completedEnrollments}
+              currentCourse={{
+                technique: technique?.name,
+                frequency,
+                durationMonths
+              }}
+              onAddAnother={handleAddAnotherCourse}
+              onContinue={handleContinueToPayment}
+              onBack={() => setCurrentStep(5)}
+            />
+          )}
+
+          {/* Paso 7: Datos personales y pago */}
+          {currentStep === 7 && (
             <SimplifiedDataPayment
               studentData={studentData}
               onStudentDataChange={setStudentData}
               paymentMethod={paymentMethod}
               onPaymentMethodChange={setPaymentMethod}
+              completedEnrollments={completedEnrollments}
+              currentEnrollment={{
+                technique: technique?.name,
+                frequency,
+                durationMonths,
+                totalClasses: classDates.length,
+                schedules: selectedSchedules,
+                priceInfo: calculateFinalPrice()
+              }}
               onComplete={handleEnrollmentComplete}
-              onBack={() => setCurrentStep(5)}
+              onBack={() => setCurrentStep(6)}
             />
           )}
         </div>

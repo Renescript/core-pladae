@@ -274,27 +274,36 @@ export const getPaymentMethods = async () => {
 };
 
 /**
- * Crea una nueva inscripción
- * @param {Object} enrollmentData - Datos de la inscripción
- * @param {string} enrollmentData.name - Nombre completo del estudiante
- * @param {string} enrollmentData.email - Email del estudiante
- * @param {Array<number>} enrollmentData.section_ids - IDs de las secciones seleccionadas
- * @param {number} enrollmentData.payment_plan_id - ID del plan de pago
- * @param {number} enrollmentData.payment_method_id - ID del método de pago
- * @param {number} enrollmentData.enrollment_amount - Monto de matrícula
- * @param {number} enrollmentData.total_tuition_fee - Arancel total
- * @param {number} enrollmentData.instalments_number - Número de cuotas
+ * Crea una o múltiples inscripciones
+ * @param {Object} data - Datos de la inscripción(es)
+ * @param {Object|Array<Object>} data.enrollment o data.enrollments - Enrollment único o array de enrollments
  * @returns {Promise<Object>} Respuesta de la API
  */
-export const createEnrollment = async (enrollmentData) => {
+export const createEnrollment = async (data) => {
   try {
-    const requestBody = {
-      enrollment: enrollmentData
-    };
+    // Detectar si es formato antiguo (single enrollment) o nuevo (múltiple enrollments)
+    let requestBody;
+
+    if (data.enrollments && Array.isArray(data.enrollments)) {
+      // Formato nuevo: array de enrollments
+      requestBody = {
+        enrollments: data.enrollments
+      };
+    } else if (data.enrollment) {
+      // Formato antiguo: single enrollment
+      requestBody = {
+        enrollment: data.enrollment
+      };
+    } else {
+      // Asumir que data es el enrollment directamente (compatibilidad)
+      requestBody = {
+        enrollment: data
+      };
+    }
 
     console.log('🌐 ========== REQUEST AL BACKEND ==========');
     console.log('🌐 Endpoint: POST', `${API_BASE_URL}/enrollments`);
-    console.log('🌐 Body completo (con wrapper):');
+    console.log('🌐 Body completo:');
     console.log(JSON.stringify(requestBody, null, 2));
     console.log('🌐 =========================================');
 

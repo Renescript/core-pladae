@@ -8,6 +8,8 @@ const SimplifiedDataPayment = ({
   onStudentDataChange,
   paymentMethod,
   onPaymentMethodChange,
+  completedEnrollments = [],
+  currentEnrollment,
   onComplete,
   onBack
 }) => {
@@ -116,11 +118,87 @@ const SimplifiedDataPayment = ({
     }
   };
 
+  // Formatear horarios
+  const formatSchedules = (schedules) => {
+    if (!schedules || schedules.length === 0) return 'No especificado';
+    const dayNames = {
+      monday: 'Lun',
+      tuesday: 'Mar',
+      wednesday: 'Mié',
+      thursday: 'Jue',
+      friday: 'Vie',
+      saturday: 'Sáb',
+      sunday: 'Dom'
+    };
+    return schedules.map(s => `${dayNames[s.dayOfWeek]} ${s.timeSlot}`).join(', ');
+  };
+
+  // Calcular precio total de todos los cursos
+  const calculateTotalPrice = () => {
+    // Sumar precios de cursos completados
+    const completedTotal = completedEnrollments.reduce((sum, enrollment) => {
+      return sum + (enrollment._displayInfo?.priceInfo?.finalPrice || 0);
+    }, 0);
+
+    // Agregar precio del curso actual
+    const currentPrice = currentEnrollment?.priceInfo?.finalPrice || 0;
+
+    return completedTotal + currentPrice;
+  };
+
+  const totalCourses = completedEnrollments.length + 1;
+  const totalPrice = calculateTotalPrice();
+
   return (
     <div className="simplified-step">
-      <div className="step-progress">Paso 6 de 6</div>
+      <div className="step-progress">Paso 7 de 7</div>
 
       <h2 className="step-title">Datos personales y pago</h2>
+
+      {/* Resumen de cursos */}
+      {totalCourses > 1 && (
+        <div className="courses-summary">
+          <h3 className="summary-title">📚 Resumen de cursos ({totalCourses})</h3>
+          <div className="courses-list">
+            {completedEnrollments.map((enrollment, index) => (
+              <div key={index} className="course-summary-card">
+                <div className="course-number">Curso {index + 1}</div>
+                <div className="course-details">
+                  <h4>{enrollment._displayInfo?.technique}</h4>
+                  <p>{enrollment._displayInfo?.frequency}x por semana • {enrollment._displayInfo?.durationMonths} {enrollment._displayInfo?.durationMonths === 1 ? 'mes' : 'meses'}</p>
+                  <p className="course-schedule">{formatSchedules(enrollment._displayInfo?.schedules)}</p>
+                  <p className="course-price">
+                    ${enrollment._displayInfo?.priceInfo?.finalPrice?.toLocaleString('es-CL')}
+                    {enrollment._displayInfo?.priceInfo?.discountPercent > 0 && (
+                      <span className="discount-badge"> -{enrollment._displayInfo?.priceInfo?.discountPercent}%</span>
+                    )}
+                  </p>
+                </div>
+              </div>
+            ))}
+            <div className="course-summary-card current">
+              <div className="course-number">Curso {totalCourses}</div>
+              <div className="course-details">
+                <h4>{currentEnrollment?.technique}</h4>
+                <p>{currentEnrollment?.frequency}x por semana • {currentEnrollment?.durationMonths} {currentEnrollment?.durationMonths === 1 ? 'mes' : 'meses'}</p>
+                <p className="course-schedule">{formatSchedules(currentEnrollment?.schedules)}</p>
+                <p className="course-price">
+                  ${currentEnrollment?.priceInfo?.finalPrice?.toLocaleString('es-CL')}
+                  {currentEnrollment?.priceInfo?.discountPercent > 0 && (
+                    <span className="discount-badge"> -{currentEnrollment?.priceInfo?.discountPercent}%</span>
+                  )}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Total general */}
+          <div className="total-price-section">
+            <div className="total-label">Total a pagar:</div>
+            <div className="total-amount">${totalPrice.toLocaleString('es-CL')}</div>
+          </div>
+        </div>
+      )}
 
       <div className="data-payment-container">
         {/* Datos Personales */}

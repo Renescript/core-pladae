@@ -22,6 +22,42 @@ const EditableScheduleCalendar = ({
   const [editedDates, setEditedDates] = useState(classDates);
   const [isValid, setIsValid] = useState(true);
 
+  // Calcular fechas disponibles limitadas por el período contratado
+  const getLimitedAvailableDates = () => {
+    if (!classDates || classDates.length === 0 || !availableDates) {
+      return availableDates || [];
+    }
+
+    // Obtener la fecha de inicio (primera clase)
+    const sortedClassDates = [...classDates].sort();
+    const startDate = new Date(sortedClassDates[0] + 'T00:00:00');
+
+    // Calcular la fecha de fin según el período contratado
+    const endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + durationMonths);
+
+    console.log('📅 Limitando fechas disponibles:', {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+      durationMonths,
+      totalAvailable: availableDates.length
+    });
+
+    // Filtrar fechas que estén dentro del rango
+    const limitedDates = availableDates.filter(dateItem => {
+      const dateStr = dateItem.date || dateItem;
+      const date = new Date(dateStr + 'T00:00:00');
+      const isInRange = date >= startDate && date <= endDate;
+
+      return isInRange;
+    });
+
+    console.log('✅ Fechas limitadas:', limitedDates.length);
+    return limitedDates;
+  };
+
+  const limitedAvailableDates = getLimitedAvailableDates();
+
   // Sincronizar editedDates con classDates cuando cambian
   useEffect(() => {
     setEditedDates(classDates);
@@ -259,7 +295,7 @@ const EditableScheduleCalendar = ({
               <div className="editor-content">
                 <EditableClassList
                   classDates={editedDates}
-                  availableDates={availableDates}
+                  availableDates={limitedAvailableDates}
                   onClassDatesChange={handleClassDatesChange}
                   dayOfWeek={selectedSchedules[0]?.dayOfWeek}
                   onValidationChange={handleValidationChange}
