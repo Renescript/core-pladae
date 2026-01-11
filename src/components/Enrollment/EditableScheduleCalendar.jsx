@@ -6,6 +6,8 @@ import './EditableScheduleCalendar.css';
 const EditableScheduleCalendar = ({
   technique,
   frequency,
+  weeklyPlan, // Plan semanal completo con price y number_of_classes
+  paymentPeriods, // Períodos de pago con descuentos
   selectedSchedules,
   durationMonths,
   classDates,
@@ -19,6 +21,42 @@ const EditableScheduleCalendar = ({
   const [showEditor, setShowEditor] = useState(false);
   const [editedDates, setEditedDates] = useState(classDates);
   const [isValid, setIsValid] = useState(true);
+
+  // Calcular fechas disponibles limitadas por el período contratado
+  const getLimitedAvailableDates = () => {
+    if (!classDates || classDates.length === 0 || !availableDates) {
+      return availableDates || [];
+    }
+
+    // Obtener la fecha de inicio (primera clase)
+    const sortedClassDates = [...classDates].sort();
+    const startDate = new Date(sortedClassDates[0] + 'T00:00:00');
+
+    // Calcular la fecha de fin según el período contratado
+    const endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + durationMonths);
+
+    console.log('📅 Limitando fechas disponibles:', {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+      durationMonths,
+      totalAvailable: availableDates.length
+    });
+
+    // Filtrar fechas que estén dentro del rango
+    const limitedDates = availableDates.filter(dateItem => {
+      const dateStr = dateItem.date || dateItem;
+      const date = new Date(dateStr + 'T00:00:00');
+      const isInRange = date >= startDate && date <= endDate;
+
+      return isInRange;
+    });
+
+    console.log('✅ Fechas limitadas:', limitedDates.length);
+    return limitedDates;
+  };
+
+  const limitedAvailableDates = getLimitedAvailableDates();
 
   // Sincronizar editedDates con classDates cuando cambian
   useEffect(() => {
@@ -43,16 +81,25 @@ const EditableScheduleCalendar = ({
     setIsValid(valid);
   };
 
-  // Calcular precio
+  // Calcular precio usando weeklyPlan y paymentPeriods
   const calculatePrice = () => {
-    const pricePerClass = 15000;
-    const monthlyPrice = pricePerClass * frequency * 4;
+    // Usar el precio del weekly_plan seleccionado
+    const monthlyPrice = weeklyPlan?.price || 0;
     const subtotal = monthlyPrice * durationMonths;
 
-    const discounts = { 1: 0, 2: 10, 3: 15, 6: 20 };
-    const discountPercent = discounts[durationMonths] || 0;
+    // Buscar el descuento en los períodos de pago
+    const period = paymentPeriods?.find(p => p.months === durationMonths);
+    const discountPercent = period?.discount_percentage || 0;
     const discountAmount = Math.round(subtotal * (discountPercent / 100));
     const finalPrice = subtotal - discountAmount;
+
+    console.log('💰 EditableScheduleCalendar - Cálculo de precio:', {
+      monthlyPrice,
+      subtotal,
+      discountPercent,
+      discountAmount,
+      finalPrice
+    });
 
     return {
       monthlyPrice,
@@ -106,7 +153,11 @@ const EditableScheduleCalendar = ({
 
       <div className="summary-compact">
         <p className="summary-text">
-          {editedDates.length} clases de {technique?.name || 'técnica seleccionada'} - {frequency} {frequency === 1 ? 'vez' : 'veces'}/semana - {durationMonths} {durationMonths === 1 ? 'mes' : 'meses'}
+          {editedDates.length === 1 && weeklyPlan?.number_of_classes === 1 ? (
+            <>Clase de prueba de {technique?.name || 'técnica seleccionada'}</>
+          ) : (
+            <>{editedDates.length} {editedDates.length === 1 ? 'clase' : 'clases'} de {technique?.name || 'técnica seleccionada'} - {frequency} {frequency === 1 ? 'vez' : 'veces'}/semana - {durationMonths} {durationMonths === 1 ? 'mes' : 'meses'}</>
+          )}
         </p>
       </div>
 
@@ -171,20 +222,26 @@ const EditableScheduleCalendar = ({
             <div className="summary-item">
               <label>Duración:</label>
               <div className="summary-value">
-                <span>{durationMonths} {durationMonths === 1 ? 'mes' : 'meses'}</span>
-                <button
-                  className="edit-btn"
-                  onClick={() => onEditStep && onEditStep(4)}
-                >
-                  Editar
-                </button>
+                <span>
+                  {weeklyPlan?.number_of_classes === 1 && editedDates.length === 1
+                    ? 'Clase única'
+                    : `${durationMonths} ${durationMonths === 1 ? 'mes' : 'meses'}`}
+                </span>
+                {!(weeklyPlan?.number_of_classes === 1 && editedDates.length === 1) && (
+                  <button
+                    className="edit-btn"
+                    onClick={() => onEditStep && onEditStep(4)}
+                  >
+                    Editar
+                  </button>
+                )}
               </div>
             </div>
 
             <div className="summary-item">
               <label>Total de clases:</label>
               <div className="summary-value">
-                <span>{editedDates.length} clases</span>
+                <span>{editedDates.length} {editedDates.length === 1 ? 'clase' : 'clases'}</span>
               </div>
             </div>
 
@@ -238,7 +295,7 @@ const EditableScheduleCalendar = ({
               <div className="editor-content">
                 <EditableClassList
                   classDates={editedDates}
-                  availableDates={availableDates}
+                  availableDates={limitedAvailableDates}
                   onClassDatesChange={handleClassDatesChange}
                   dayOfWeek={selectedSchedules[0]?.dayOfWeek}
                   onValidationChange={handleValidationChange}

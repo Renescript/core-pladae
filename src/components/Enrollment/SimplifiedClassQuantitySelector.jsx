@@ -37,7 +37,7 @@ const SimplifiedClassQuantitySelector = ({
             description: '8 clases mensuales',
             number_of_classes: 8,
             price: 85000,
-            enrollment_amount: 15000
+            enrollment_amount: 7000
           },
           {
             id: 3,

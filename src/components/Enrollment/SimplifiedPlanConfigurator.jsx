@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getWeeklyPlans } from '../../services/api';
 import './SimplifiedTechniqueSelector.css';
 import './SimplifiedPlanConfigurator.css';
 
@@ -7,10 +8,15 @@ const SimplifiedPlanConfigurator = ({
   frequency,
   selectedDays,
   onFrequencyChange,
+  onPlanSelect, // Nueva prop para pasar el plan completo
   onDaysChange,
   onContinue,
   onBack
 }) => {
+  const [weeklyPlans, setWeeklyPlans] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const days = [
     { id: 'monday', name: 'Lunes' },
     { id: 'tuesday', name: 'Martes' },
@@ -19,6 +25,26 @@ const SimplifiedPlanConfigurator = ({
     { id: 'friday', name: 'Viernes' },
     { id: 'saturday', name: 'Sábado' }
   ];
+
+  // Cargar planes semanales al montar el componente
+  useEffect(() => {
+    const loadWeeklyPlans = async () => {
+      try {
+        setLoading(true);
+        const plans = await getWeeklyPlans();
+        console.log('Planes semanales recibidos:', plans);
+        setWeeklyPlans(plans);
+        setError(null);
+      } catch (err) {
+        console.error('Error al cargar planes semanales:', err);
+        setError('No se pudieron cargar los planes');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadWeeklyPlans();
+  }, []);
 
   const handleDayToggle = (dayId) => {
     const maxDays = frequency || 1;
@@ -44,73 +70,98 @@ const SimplifiedPlanConfigurator = ({
     onContinue && onContinue();
   };
 
+  // Separar clase de prueba de planes regulares
+  const trialClass = weeklyPlans.find(plan =>
+    plan.weekly_classes === 1 && plan.number_of_classes === 1
+  );
+
+  const regularPlans = weeklyPlans.filter(plan =>
+    !(plan.weekly_classes === 1 && plan.number_of_classes === 1)
+  );
+
+  // Estado para saber si está seleccionada la clase de prueba
+  const [isTrialSelected, setIsTrialSelected] = useState(false);
+
+  const handleTrialClick = () => {
+    if (trialClass) {
+      console.log('🎨 Click en clase de prueba:', trialClass);
+      onFrequencyChange(trialClass.weekly_classes);
+      if (onPlanSelect) {
+        console.log('📤 Enviando plan de prueba al padre:', trialClass);
+        onPlanSelect(trialClass);
+      }
+      onDaysChange([]);
+      setIsTrialSelected(true);
+    }
+  };
+
+  const handleRegularPlanClick = (plan) => {
+    console.log('📊 Click en plan regular:', plan);
+    onFrequencyChange(plan.weekly_classes);
+    if (onPlanSelect) {
+      console.log('📤 Enviando plan regular al padre:', plan);
+      onPlanSelect(plan);
+    }
+    // Limpiar días seleccionados si cambia la frecuencia
+    if (selectedDays.length > plan.weekly_classes) {
+      onDaysChange([]);
+    }
+    setIsTrialSelected(false);
+  };
+
   return (
     <div className="simplified-step">
       <div className="step-progress">Paso 2 de 6</div>
 
       <h2 className="step-title">¿Cuántas veces a la semana quieres venir?</h2>
 
-      {/* Frecuencia */}
-      <div className="config-section">
-        <h3 className="config-title">Frecuencia</h3>
-        <div className="frequency-options">
-          <div
-            className={`frequency-card ${frequency === 1 ? 'selected' : ''}`}
-            onClick={() => {
-              onFrequencyChange(1);
-              // Limpiar días seleccionados si cambia la frecuencia
-              if (selectedDays.length > 1) {
-                onDaysChange([]);
-              }
-            }}
-          >
-            <div className="frequency-number">1</div>
-            <div className="frequency-label">vez / semana</div>
-          </div>
-
-          <div
-            className={`frequency-card ${frequency === 2 ? 'selected' : ''}`}
-            onClick={() => {
-              onFrequencyChange(2);
-              // Limpiar días seleccionados si cambia la frecuencia
-              if (selectedDays.length > 2) {
-                onDaysChange([]);
-              }
-            }}
-          >
-            <div className="frequency-number">2</div>
-            <div className="frequency-label">veces / semana</div>
-          </div>
-
-          <div
-            className={`frequency-card ${frequency === 3 ? 'selected' : ''}`}
-            onClick={() => {
-              onFrequencyChange(3);
-              // Limpiar días seleccionados si cambia la frecuencia
-              if (selectedDays.length > 3) {
-                onDaysChange([]);
-              }
-            }}
-          >
-            <div className="frequency-number">3</div>
-            <div className="frequency-label">veces / semana</div>
-          </div>
-
-          <div
-            className={`frequency-card ${frequency === 4 ? 'selected' : ''}`}
-            onClick={() => {
-              onFrequencyChange(4);
-              // Limpiar días seleccionados si cambia la frecuencia
-              if (selectedDays.length > 4) {
-                onDaysChange([]);
-              }
-            }}
-          >
-            <div className="frequency-number">4</div>
-            <div className="frequency-label">veces / semana</div>
-          </div>
+      {/* Loading state */}
+      {loading && (
+        <div className="loading-message">
+          <p>Cargando planes disponibles...</p>
         </div>
-      </div>
+      )}
+
+      {/* Error state */}
+      {error && (
+        <div className="error-message">
+          <p>{error}</p>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
+          {/* Clase de prueba */}
+          {trialClass && (
+            <div className="trial-class-section">
+              <button
+                className={`trial-class-button ${isTrialSelected ? 'selected' : ''}`}
+                onClick={handleTrialClick}
+              >
+                <span className="trial-icon">🎨</span>
+                <span className="trial-text">Quiero tomar una clase de prueba</span>
+              </button>
+            </div>
+          )}
+
+          {/* Frecuencia regular */}
+          <div className="config-section">
+            <h3 className="config-title">Frecuencia</h3>
+            <div className="frequency-options">
+              {regularPlans.map((plan) => (
+                <div
+                  key={plan.id}
+                  className={`frequency-card ${!isTrialSelected && frequency === plan.weekly_classes ? 'selected' : ''}`}
+                  onClick={() => handleRegularPlanClick(plan)}
+                >
+                  <div className="frequency-number">{plan.weekly_classes}</div>
+                  <div className="frequency-label">{plan.weekly_classes === 1 ? 'vez / semana' : 'veces / semana'}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Información */}
       {frequency && (

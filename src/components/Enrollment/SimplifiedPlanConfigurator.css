@@ -1,3 +1,50 @@
+.trial-class-section {
+  margin-bottom: 2rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.trial-class-button {
+  width: 100%;
+  background: linear-gradient(135deg, #f0f9fb 0%, #ffffff 100%);
+  border: 3px solid #47a1bf;
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #47a1bf;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(71, 161, 191, 0.15);
+}
+
+.trial-class-button:hover {
+  background: linear-gradient(135deg, #47a1bf 0%, #5ca1a9 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(71, 161, 191, 0.3);
+  transform: translateY(-2px);
+}
+
+.trial-class-button.selected {
+  background: linear-gradient(135deg, #47a1bf 0%, #5ca1a9 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(71, 161, 191, 0.3);
+}
+
+.trial-icon {
+  font-size: 1.75rem;
+}
+
+.trial-text {
+  font-size: 1.25rem;
+}
+
 .config-section {
   margin-bottom: 3rem;
   max-width: 700px;
@@ -150,6 +197,25 @@
   border-left: 4px solid #47a1bf;
 }
 
+.loading-message,
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  margin: 2rem 0;
+  border-radius: 12px;
+}
+
+.loading-message {
+  background: #f0f9fb;
+  color: #47a1bf;
+}
+
+.error-message {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 2px solid #fecaca;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .frequency-options {
@@ -189,5 +255,18 @@
   .day-card {
     min-height: 50px;
     font-size: 0.9rem;
+  }
+
+  .trial-class-button {
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+  }
+
+  .trial-icon {
+    font-size: 1.5rem;
+  }
+
+  .trial-text {
+    font-size: 1.1rem;
   }
 }

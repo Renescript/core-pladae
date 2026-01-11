@@ -109,7 +109,7 @@ export const getDummyPlans = () => {
       sessions_per_month: 8,
       price: 85000,
       number_of_classes: 8,
-      enrollment_amount: 15000
+      enrollment_amount: 7000
     },
     {
       id: 3,
@@ -274,35 +274,55 @@ export const getPaymentMethods = async () => {
 };
 
 /**
- * Crea una nueva inscripción
- * @param {Object} enrollmentData - Datos de la inscripción
- * @param {string} enrollmentData.name - Nombre completo del estudiante
- * @param {string} enrollmentData.email - Email del estudiante
- * @param {Array<number>} enrollmentData.section_ids - IDs de las secciones seleccionadas
- * @param {number} enrollmentData.payment_plan_id - ID del plan de pago
- * @param {number} enrollmentData.payment_method_id - ID del método de pago
- * @param {number} enrollmentData.enrollment_amount - Monto de matrícula
- * @param {number} enrollmentData.total_tuition_fee - Arancel total
- * @param {number} enrollmentData.instalments_number - Número de cuotas
+ * Crea una o múltiples inscripciones
+ * @param {Object} data - Datos de la inscripción(es)
+ * @param {Object|Array<Object>} data.enrollment o data.enrollments - Enrollment único o array de enrollments
  * @returns {Promise<Object>} Respuesta de la API
  */
-export const createEnrollment = async (enrollmentData) => {
+export const createEnrollment = async (data) => {
   try {
+    // Detectar si es formato antiguo (single enrollment) o nuevo (múltiple enrollments)
+    let requestBody;
+
+    if (data.enrollments && Array.isArray(data.enrollments)) {
+      // Formato nuevo: array de enrollments
+      requestBody = {
+        enrollments: data.enrollments
+      };
+    } else if (data.enrollment) {
+      // Formato antiguo: single enrollment
+      requestBody = {
+        enrollment: data.enrollment
+      };
+    } else {
+      // Asumir que data es el enrollment directamente (compatibilidad)
+      requestBody = {
+        enrollment: data
+      };
+    }
+
+    console.log('🌐 ========== REQUEST AL BACKEND ==========');
+    console.log('🌐 Endpoint: POST', `${API_BASE_URL}/enrollments`);
+    console.log('🌐 Body completo:');
+    console.log(JSON.stringify(requestBody, null, 2));
+    console.log('🌐 =========================================');
+
     const response = await fetchWithTimeout(`${API_BASE_URL}/enrollments`, {
       method: 'POST',
       headers: NO_CACHE_HEADERS,
-      body: JSON.stringify({
-        enrollment: enrollmentData
-      }),
+      body: JSON.stringify(requestBody),
     });
 
+    console.log('🌐 Response status:', response.status, response.ok);
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('🌐 Error response:', errorText);
       throw new Error(`Error HTTP: ${response.status}`);
     }
 
-    console.log('enrollmentData enviado:', enrollmentData);
-
     const result = await response.json();
+    console.log('🌐 Response del backend:', result);
 
     if (result.success) {
       return result;
@@ -667,7 +687,7 @@ export const getCoursesSchedulesGrid = async () => {
             name: course.title,
             color: courseColor,
             category: course.category || 'General',
-            price_per_class: course.price_per_class || course.price || 15000, // Precio por técnica
+            price_per_class: course.price_per_class || course.price || 7000, // Precio por técnica
             schedules: course.sections.flatMap(section => {
               // Cada sección puede tener múltiples horarios en su schedule array
               return section.schedule.map(scheduleItem => {
@@ -681,7 +701,7 @@ export const getCoursesSchedulesGrid = async () => {
                   teacherId: section.teacher_id,
                   places: section.places,
                   available: section.available_places !== null ? section.available_places : section.places,
-                  pricePerSession: section.price_per_session || section.price || course.price_per_class || course.price || 15000, // Precio por sesión con fallback
+                  pricePerSession: section.price_per_session || section.price || course.price_per_class || course.price || 7000, // Precio por sesión con fallback
                   section: {
                     id: section.id,
                     startDate: section.start_date || new Date().toISOString().split('T')[0],
@@ -712,6 +732,68 @@ export const getCoursesSchedulesGrid = async () => {
     console.warn('⚠️ Usando datos dummy como fallback');
     // Fallback a datos dummy si falla la API
     return getDummyGridCalendarData();
+  }
+};
+
+/**
+ * Obtiene los planes semanales desde la API
+ * @returns {Promise<Array>} Lista de planes semanales con frecuencia
+ */
+export const getWeeklyPlans = async () => {
+  try {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/weekly_plans`, {
+      method: 'GET',
+      headers: CACHEABLE_HEADERS
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // La API devuelve { success: true, data: [...] }
+    if (result.success) {
+      return result.data;
+    } else {
+      throw new Error('La respuesta de la API no fue exitosa');
+    }
+  } catch (error) {
+    console.error('Error al obtener los planes semanales:', error);
+    throw error;
+  }
+};
+
+/**
+ * Obtiene los períodos de pago (meses con descuentos) desde la API
+ * @returns {Promise<Array>} Lista de períodos de pago
+ */
+export const getPaymentPeriods = async () => {
+  try {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/payment_periods`, {
+      method: 'GET',
+      headers: CACHEABLE_HEADERS
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // La API devuelve { success: true, data: [...] }
+    if (result.success) {
+      // Convertir discount_percentage de string a número
+      return result.data.map(period => ({
+        ...period,
+        discount_percentage: parseFloat(period.discount_percentage) || 0
+      }));
+    } else {
+      throw new Error('La respuesta de la API no fue exitosa');
+    }
+  } catch (error) {
+    console.error('Error al obtener los períodos de pago:', error);
+    throw error;
   }
 };
 

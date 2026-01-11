@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { createEnrollment, getDurationPlans } from '../../services/api';
+import { createEnrollment, getPaymentPeriods } from '../../services/api';
 import SimplifiedTechniqueSelector from './SimplifiedTechniqueSelector';
 import SimplifiedPlanConfigurator from './SimplifiedPlanConfigurator';
 import MultiDayScheduleSelector from './MultiDayScheduleSelector';
 import DurationSelector from './DurationSelector';
 import EditableScheduleCalendar from './EditableScheduleCalendar';
+import AddAnotherCoursePrompt from './AddAnotherCoursePrompt';
 import SimplifiedDataPayment from './SimplifiedDataPayment';
 import './ProfessionalEnrollment.css';
 import './ProfessionalEnrollmentOverrides.css';
@@ -17,6 +18,7 @@ const saveDraft = (data) => {
       currentStep: data.currentStep,
       technique: data.technique,
       frequency: data.frequency,
+      weeklyPlan: data.weeklyPlan, // Guardar el plan semanal completo
       selectedSchedules: data.selectedSchedules,
       durationMonths: data.durationMonths,
       classDates: data.classDates,
@@ -68,12 +70,13 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
   const [currentStep, setCurrentStep] = useState(savedDraft?.currentStep || 1);
   const [technique, setTechnique] = useState(savedDraft?.technique || null);
   const [frequency, setFrequency] = useState(savedDraft?.frequency || null);
+  const [weeklyPlan, setWeeklyPlan] = useState(savedDraft?.weeklyPlan || null); // Guardar el plan semanal completo
   const [selectedSchedules, setSelectedSchedules] = useState(savedDraft?.selectedSchedules || []);
   const [durationMonths, setDurationMonths] = useState(savedDraft?.durationMonths || null);
   const [classDates, setClassDates] = useState(savedDraft?.classDates || []);
   const [availableDates, setAvailableDates] = useState([]);
   const [isCalendarValid, setIsCalendarValid] = useState(true);
-  const [durationPlans, setDurationPlans] = useState([]);
+  const [paymentPeriods, setPaymentPeriods] = useState([]);
   const [studentData, setStudentData] = useState(savedDraft?.studentData || {
     firstName: '',
     lastName: '',
@@ -82,50 +85,49 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
   });
   const [paymentMethod, setPaymentMethod] = useState(savedDraft?.paymentMethod || null);
 
-  // Cargar planes de duración al montar el componente
+  // Estado para manejar múltiples enrollments
+  const [completedEnrollments, setCompletedEnrollments] = useState([]);
+
+  // Cargar períodos de pago al montar el componente
   useEffect(() => {
-    const loadPlans = async () => {
+    const loadPaymentPeriods = async () => {
       try {
-        const plans = await getDurationPlans();
-        setDurationPlans(plans);
+        const periods = await getPaymentPeriods();
+        setPaymentPeriods(periods);
       } catch (error) {
-        console.error('Error al cargar planes de duración:', error);
+        console.error('Error al cargar períodos de pago:', error);
       }
     };
-    loadPlans();
+    loadPaymentPeriods();
   }, []);
 
   // Funciones de cálculo de precios
   const calculateMonthlyPrice = () => {
-    // Obtener el precio desde la técnica o desde el horario más bajo seleccionado
-    let pricePerClass = 15000; // Fallback
+    console.log('💰 calculateMonthlyPrice - weeklyPlan:', weeklyPlan);
+    console.log('💰 calculateMonthlyPrice - weeklyPlan?.price:', weeklyPlan?.price);
 
-    if (technique?.price_per_class) {
-      pricePerClass = technique.price_per_class;
-    } else if (selectedSchedules.length > 0) {
-      // Si hay horarios seleccionados, usar el precio promedio
-      const prices = selectedSchedules
-        .map(schedule => {
-          const scheduleData = technique?.schedules?.find(s =>
-            s.timeSlot === schedule.timeSlot && s.dayOfWeek === schedule.dayOfWeek
-          );
-          return scheduleData?.pricePerSession;
-        })
-        .filter(price => price != null);
-
-      if (prices.length > 0) {
-        pricePerClass = Math.round(prices.reduce((sum, p) => sum + p, 0) / prices.length);
-      }
+    // El precio mensual viene directamente del weekly_plan seleccionado en el paso 2
+    if (weeklyPlan?.price) {
+      console.log('✅ Usando precio de weeklyPlan:', weeklyPlan.price);
+      return weeklyPlan.price;
     }
 
+    // Fallback: calcular desde técnica si no hay weekly_plan
+    console.warn('⚠️ weeklyPlan no disponible, usando fallback');
+    let pricePerClass = 7000;
+    if (technique?.price_per_class) {
+      pricePerClass = technique.price_per_class;
+    }
     const classesPerMonth = frequency * 4;
-    return pricePerClass * classesPerMonth;
+    const fallbackPrice = pricePerClass * classesPerMonth;
+    console.log('⚠️ Precio calculado con fallback:', fallbackPrice);
+    return fallbackPrice;
   };
 
   const getDiscountPercentage = (months) => {
-    // Buscar el descuento en los planes cargados desde la API
-    const plan = durationPlans.find(p => p.months === months);
-    return plan ? plan.discount_percentage : 0;
+    // Buscar el descuento en los períodos de pago cargados desde la API
+    const period = paymentPeriods.find(p => p.months === months);
+    return period ? period.discount_percentage : 0;
   };
 
   const calculateFinalPrice = () => {
@@ -141,18 +143,41 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
   };
 
   const calculateTotalClasses = () => {
-    if (!frequency || !durationMonths) return 0;
+    if (!durationMonths) return 0;
+
+    // Si es clase de prueba, usar number_of_classes del plan
+    if (weeklyPlan?.number_of_classes && weeklyPlan.weekly_classes === 1 && weeklyPlan.number_of_classes === 1) {
+      console.log('🎨 Clase de prueba detectada, total: 1 clase');
+      return 1;
+    }
+
+    // Para planes regulares, usar number_of_classes * durationMonths
+    if (weeklyPlan?.number_of_classes) {
+      const total = weeklyPlan.number_of_classes * durationMonths;
+      console.log(`📊 Plan regular: ${weeklyPlan.number_of_classes} clases/mes × ${durationMonths} meses = ${total} clases`);
+      return total;
+    }
+
+    // Fallback
+    if (!frequency) return 0;
     return frequency * 4 * durationMonths;
   };
 
   // Función para generar fechas de clases
   const generateClassDates = () => {
-    if (!selectedSchedules || selectedSchedules.length === 0 || !durationMonths || !frequency) {
+    if (!selectedSchedules || selectedSchedules.length === 0 || !durationMonths) {
       console.error('Faltan datos para generar fechas de clases');
       return;
     }
 
-    const totalClassesPerDay = Math.ceil((frequency * 4 * durationMonths) / frequency);
+    // Calcular total de clases usando el plan semanal
+    const totalClasses = calculateTotalClasses();
+    console.log(`📅 Generando ${totalClasses} fechas de clase`);
+
+    // Calcular cuántas clases por día (distribuir equitativamente entre los días seleccionados)
+    const totalClassesPerDay = Math.ceil(totalClasses / selectedSchedules.length);
+    console.log(`📅 ${totalClassesPerDay} clases por día de la semana`);
+
     const allDates = [];
 
     const dayMap = {
@@ -206,6 +231,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
         currentStep,
         technique,
         frequency,
+        weeklyPlan,
         selectedSchedules,
         durationMonths,
         classDates,
@@ -213,7 +239,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
         paymentMethod
       });
     }
-  }, [currentStep, technique, frequency, selectedSchedules, durationMonths, classDates, studentData, paymentMethod]);
+  }, [currentStep, technique, frequency, weeklyPlan, selectedSchedules, durationMonths, classDates, studentData, paymentMethod]);
 
   const handleClose = () => {
     clearDraft();
@@ -226,6 +252,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
       setCurrentStep(1);
       setTechnique(null);
       setFrequency(null);
+      setWeeklyPlan(null);
       setSelectedSchedules([]);
       setDurationMonths(null);
       setClassDates([]);
@@ -248,6 +275,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
 
       // Resetear todos los estados de pasos posteriores
       setFrequency(null);
+      setWeeklyPlan(null); // También resetear el plan semanal
       setSelectedSchedules([]);
       setDurationMonths(null);
       setClassDates([]);
@@ -269,6 +297,8 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
     if (frequency && frequency !== newFrequency) {
       console.log('🔄 Frecuencia cambió, reseteando horarios...');
 
+      // NO resetear weeklyPlan aquí porque handlePlanSelect llama a esta función
+      // y no queremos perder el plan que acabamos de setear
       setSelectedSchedules([]);
       setDurationMonths(null);
       setClassDates([]);
@@ -280,6 +310,18 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
       }
     }
     setFrequency(newFrequency);
+  };
+
+  // Manejar selección de plan semanal completo
+  const handlePlanSelect = (plan) => {
+    console.log('📋 ========== handlePlanSelect llamado ==========');
+    console.log('📋 Plan completo recibido:', JSON.stringify(plan, null, 2));
+    console.log('📋 Plan.price:', plan?.price);
+    console.log('📋 Plan.weekly_classes:', plan?.weekly_classes);
+    setWeeklyPlan(plan);
+    console.log('✅ weeklyPlan actualizado');
+    // También actualizar la frecuencia para mantener compatibilidad
+    handleFrequencyChange(plan.weekly_classes);
   };
 
   // Manejar cambio de horarios con reseteo de duración
@@ -301,37 +343,177 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
     setSelectedSchedules(newSchedules);
   };
 
-  const handleEnrollmentComplete = async () => {
-    const priceInfo = calculateFinalPrice();
+  // Crear el objeto de enrollment del curso actual
+  const buildCurrentEnrollment = () => {
+    // Extraer section_ids únicos de los horarios seleccionados
+    const sectionIds = selectedSchedules
+      .map(s => s.sectionId)
+      .filter(id => id != null);
 
-    // Extraer días y horarios de selectedSchedules
-    const days = selectedSchedules.map(s => s.dayOfWeek);
-    const timeSlots = selectedSchedules.map(s => s.timeSlot);
-    const sectionIds = selectedSchedules.map(s => s.sectionId).filter(id => id);
+    // Agrupar fechas por section_id
+    const sectionDates = {};
 
-    const enrollmentPayload = {
+    selectedSchedules.forEach(schedule => {
+      const sectionId = schedule.sectionId;
+      if (!sectionId) return;
+
+      // Filtrar fechas que corresponden a este día de la semana
+      const dayMap = {
+        'sunday': 0, 'monday': 1, 'tuesday': 2, 'wednesday': 3,
+        'thursday': 4, 'friday': 5, 'saturday': 6
+      };
+      const targetDay = dayMap[schedule.dayOfWeek];
+
+      const datesForThisSection = classDates.filter(dateStr => {
+        const date = new Date(dateStr + 'T00:00:00');
+        return date.getDay() === targetDay;
+      });
+
+      sectionDates[sectionId] = datesForThisSection;
+    });
+
+    // Obtener la primera fecha de inicio
+    const startDate = classDates.length > 0 ? classDates[0] : null;
+
+    // Buscar el payment_period_id según durationMonths
+    const paymentPeriod = paymentPeriods.find(p => p.months === durationMonths);
+
+    return {
       name: `${studentData.firstName} ${studentData.lastName}`,
       email: studentData.email,
       phone: studentData.phone,
-      technique: technique?.id,
-      frequency: frequency,
-      days: days,
-      schedules: selectedSchedules,
+      weekly_plan_id: weeklyPlan?.id,
+      payment_method_id: paymentMethod,
+      payment_period_id: paymentPeriod?.id || null,
+      start_date: startDate,
       section_ids: sectionIds,
-      instalments_number: durationMonths,
-      duration_months: durationMonths,
-      total_tuition_fee: priceInfo.finalPrice,
-      monthly_price: priceInfo.monthlyPrice,
-      discount_percent: priceInfo.discountPercent,
-      class_dates: classDates,
-      total_classes: classDates.length,
-      payment_method: paymentMethod,
-      total_price: priceInfo.finalPrice
+      section_dates: sectionDates
+    };
+  };
+
+  // Manejar cuando el usuario quiere agregar otro curso
+  const handleAddAnotherCourse = () => {
+    // Extraer section_ids únicos de los horarios seleccionados
+    const sectionIds = selectedSchedules
+      .map(s => s.sectionId)
+      .filter(id => id != null);
+
+    // Agrupar fechas por section_id
+    const sectionDates = {};
+
+    selectedSchedules.forEach(schedule => {
+      const sectionId = schedule.sectionId;
+      if (!sectionId) return;
+
+      // Filtrar fechas que corresponden a este día de la semana
+      const dayMap = {
+        'sunday': 0, 'monday': 1, 'tuesday': 2, 'wednesday': 3,
+        'thursday': 4, 'friday': 5, 'saturday': 6
+      };
+      const targetDay = dayMap[schedule.dayOfWeek];
+
+      const datesForThisSection = classDates.filter(dateStr => {
+        const date = new Date(dateStr + 'T00:00:00');
+        return date.getDay() === targetDay;
+      });
+
+      sectionDates[sectionId] = datesForThisSection;
+    });
+
+    // Obtener la primera fecha de inicio
+    const startDate = classDates.length > 0 ? classDates[0] : null;
+
+    // Buscar el payment_period_id según durationMonths
+    const paymentPeriod = paymentPeriods.find(p => p.months === durationMonths);
+
+    // Calcular el precio de este curso
+    const priceInfo = calculateFinalPrice();
+
+    // Guardar solo los datos del curso (sin name, email, phone, payment_method_id)
+    // Esos se agregarán al final cuando se complete el formulario
+    const enrollmentWithDetails = {
+      weekly_plan_id: weeklyPlan?.id,
+      payment_period_id: paymentPeriod?.id || null,
+      start_date: startDate,
+      section_ids: sectionIds,
+      section_dates: sectionDates,
+      _displayInfo: {
+        technique: technique?.name,
+        frequency,
+        durationMonths,
+        totalClasses: classDates.length,
+        schedules: selectedSchedules,
+        priceInfo: {
+          monthlyPrice: priceInfo.monthlyPrice,
+          subtotal: priceInfo.subtotal,
+          discountPercent: priceInfo.discountPercent,
+          discountAmount: priceInfo.discountAmount,
+          finalPrice: priceInfo.finalPrice
+        }
+      }
+    };
+
+    setCompletedEnrollments([...completedEnrollments, enrollmentWithDetails]);
+
+    // Reset del flujo para agregar otro curso
+    setTechnique(null);
+    setFrequency(null);
+    setWeeklyPlan(null);
+    setSelectedSchedules([]);
+    setDurationMonths(null);
+    setClassDates([]);
+    setAvailableDates([]);
+    setIsCalendarValid(true);
+
+    // Volver al paso 1
+    setCurrentStep(1);
+  };
+
+  // Manejar cuando el usuario continúa sin agregar más cursos
+  const handleContinueToPayment = () => {
+    setCurrentStep(7); // Ir al paso de datos y pago
+  };
+
+  // Enviar todos los enrollments al backend
+  const handleEnrollmentComplete = async () => {
+    // Construir el enrollment actual
+    const currentEnrollment = buildCurrentEnrollment();
+
+    // Datos comunes para todos los enrollments (nombre, email, teléfono, método de pago)
+    const commonData = {
+      name: `${studentData.firstName} ${studentData.lastName}`,
+      email: studentData.email,
+      phone: studentData.phone,
+      payment_method_id: paymentMethod
+    };
+
+    // Completar todos los enrollments con los datos comunes
+    const allEnrollments = [
+      // Enrollments completados anteriormente
+      ...completedEnrollments.map(enrollment => ({
+        ...commonData,
+        weekly_plan_id: enrollment.weekly_plan_id,
+        payment_period_id: enrollment.payment_period_id,
+        start_date: enrollment.start_date,
+        section_ids: enrollment.section_ids,
+        section_dates: enrollment.section_dates
+      })),
+      // Enrollment actual (ya tiene todos los datos)
+      currentEnrollment
+    ];
+
+    const payload = {
+      enrollments: allEnrollments
     };
 
     try {
-      console.log('📤 Enviando inscripción:', enrollmentPayload);
-      const result = await createEnrollment(enrollmentPayload);
+      console.log('📤 ========== PAYLOAD COMPLETO ==========');
+      console.log('📤 Enviando enrollments:', payload);
+      console.log('📤 JSON stringificado:');
+      console.log(JSON.stringify(payload, null, 2));
+      console.log('📤 ======================================');
+
+      const result = await createEnrollment(payload);
 
       if (result.transbank_payment && result.transbank_payment.full_url) {
         clearDraft();
@@ -340,14 +522,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
       }
 
       const successData = {
-        technique,
-        frequency,
-        selectedSchedules,
-        durationMonths,
-        classDates,
-        priceInfo,
-        student: studentData,
-        paymentMethod,
+        enrollments: allEnrollments,
         enrollmentResponse: result
       };
 
@@ -385,6 +560,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
               frequency={frequency}
               selectedDays={[]}
               onFrequencyChange={handleFrequencyChange}
+              onPlanSelect={handlePlanSelect}
               onDaysChange={() => {}}
               onContinue={() => setCurrentStep(3)}
               onBack={() => setCurrentStep(1)}
@@ -411,6 +587,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
               onDurationChange={setDurationMonths}
               frequency={frequency}
               monthlyPrice={calculateMonthlyPrice()}
+              weeklyPlan={weeklyPlan}
               onContinue={() => {
                 generateClassDates();
                 setCurrentStep(5);
@@ -424,27 +601,60 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
             <EditableScheduleCalendar
               technique={technique}
               frequency={frequency}
+              weeklyPlan={weeklyPlan}
+              paymentPeriods={paymentPeriods}
               selectedSchedules={selectedSchedules}
               durationMonths={durationMonths}
               classDates={classDates}
               availableDates={availableDates}
               onClassDatesChange={setClassDates}
               onValidationChange={setIsCalendarValid}
-              onContinue={() => setCurrentStep(6)}
+              onContinue={() => {
+                // Si ya hay 1 curso completado (segundo curso), ir directo al pago
+                if (completedEnrollments.length >= 1) {
+                  setCurrentStep(7);
+                } else {
+                  setCurrentStep(6);
+                }
+              }}
               onBack={() => setCurrentStep(4)}
               onEditStep={handleEditStep}
             />
           )}
 
-          {/* Paso 6: Datos personales y pago */}
+          {/* Paso 6: ¿Agregar otro curso? */}
           {currentStep === 6 && (
+            <AddAnotherCoursePrompt
+              completedEnrollments={completedEnrollments}
+              currentCourse={{
+                technique: technique?.name,
+                frequency,
+                durationMonths
+              }}
+              onAddAnother={handleAddAnotherCourse}
+              onContinue={handleContinueToPayment}
+              onBack={() => setCurrentStep(5)}
+            />
+          )}
+
+          {/* Paso 7: Datos personales y pago */}
+          {currentStep === 7 && (
             <SimplifiedDataPayment
               studentData={studentData}
               onStudentDataChange={setStudentData}
               paymentMethod={paymentMethod}
               onPaymentMethodChange={setPaymentMethod}
+              completedEnrollments={completedEnrollments}
+              currentEnrollment={{
+                technique: technique?.name,
+                frequency,
+                durationMonths,
+                totalClasses: classDates.length,
+                schedules: selectedSchedules,
+                priceInfo: calculateFinalPrice()
+              }}
               onComplete={handleEnrollmentComplete}
-              onBack={() => setCurrentStep(5)}
+              onBack={() => setCurrentStep(6)}
             />
           )}
         </div>
