@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import EnrollmentFlowSelector from '../components/Enrollment/EnrollmentFlowSelector';
+import ProfessionalEnrollmentForm from '../components/Enrollment/ProfessionalEnrollmentForm';
 import SuccessMessage from '../components/Enrollment/SuccessMessage';
 
 const TestEnrollmentPage = () => {
@@ -23,7 +23,7 @@ const TestEnrollmentPage = () => {
   return (
     <div className="enrollment-page">
       {!enrollmentData ? (
-        <EnrollmentFlowSelector
+        <ProfessionalEnrollmentForm
           onClose={handleCloseEnrollment}
           onSuccess={handleEnrollmentSuccess}
         />

@@ -46,10 +46,6 @@ const Hero = ({ onInscripcionClick }) => {
             <button className="cta-button primary" onClick={onInscripcionClick}>
               Inscríbete Ahora
             </button>
-            <button className="cta-button secondary" onClick={onInscripcionClick}>
-              <span className="new-badge">NUEVO</span>
-              Prueba el Flujo Mejorado ✨
-            </button>
           </div>
         </div>
 
