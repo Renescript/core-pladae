@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getCoursesSchedulesGrid } from '../../services/api';
-import './SimplifiedTechniqueSelector.css';
+import './TechniqueSelector.css';
 
 // Componente para el calendario de horarios
 const CalendarGrid = ({ techniques, showCalendar, setShowCalendar }) => {
@@ -135,7 +135,7 @@ const CalendarGrid = ({ techniques, showCalendar, setShowCalendar }) => {
   );
 };
 
-const SimplifiedTechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue }) => {
+const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue }) => {
   const [techniques, setTechniques] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -230,4 +230,4 @@ const SimplifiedTechniqueSelector = ({ selectedTechnique, onSelectTechnique, onC
   );
 };
 
-export default SimplifiedTechniqueSelector;
+export default TechniqueSelector;

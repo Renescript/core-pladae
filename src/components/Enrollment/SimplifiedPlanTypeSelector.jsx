@@ -1,4 +1,4 @@
-import './SimplifiedTechniqueSelector.css';
+import './TechniqueSelector.css';
 import './SimplifiedPlanTypeSelector.css';
 
 const SimplifiedPlanTypeSelector = ({ selectedPlanType, onSelectPlanType, onContinue, onBack }) => {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getPaymentMethods } from '../../services/api';
-import './SimplifiedTechniqueSelector.css';
+import './TechniqueSelector.css';
 import './SimplifiedDataPayment.css';
 
 const SimplifiedDataPayment = ({

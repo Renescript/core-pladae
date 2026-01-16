@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getSectionCalendar } from '../../services/api';
-import './SimplifiedTechniqueSelector.css';
+import './TechniqueSelector.css';
 import './SimplifiedDateTimeSelector.css';
 import './StartDateSelector.css';
 import './MultiDayScheduleSelector.css';
