@@ -1,9 +1,8 @@
 /* Simplified Enrollment Styles */
 .simplified-step {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
-  transition: max-width 0.3s ease;
 }
 
 .simplified-step.calendar-expanded {
@@ -170,6 +169,10 @@
   padding-top: 2rem;
 }
 
+.calendar-section.always-visible .calendar-content {
+  margin-top: 0;
+}
+
 .calendar-toggle {
   width: 100%;
   background: white;
@@ -227,16 +230,10 @@
 }
 
 .calendar-note {
-  font-size: 0.85rem;
-  color: #475569;
-  margin: 0 0 1.2rem 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin: 0 0 1rem 0;
   text-align: center;
-  padding: 0.75rem 1rem;
-  background: white;
-  border-radius: 8px;
-  border-left: 4px solid #47a1bf;
-  font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .calendar-grid {
@@ -333,6 +330,24 @@
 .slot-cell.multi-course.two-courses {
   grid-template-columns: 1fr;
   grid-template-rows: repeat(2, 1fr);
+}
+
+.slot-cell.multi-course.three-plus-courses {
+  grid-template-columns: 1fr;
+  grid-auto-rows: auto;
+  gap: 0.2rem;
+  padding: 0.2rem;
+}
+
+.slot-cell.multi-course.three-plus-courses .course-item {
+  min-height: auto;
+  max-height: none;
+  padding: 0.25rem 0.3rem;
+}
+
+.slot-cell.multi-course.three-plus-courses .slot-course-name {
+  font-size: 0.65rem;
+  -webkit-line-clamp: 1;
 }
 
 .course-item {
