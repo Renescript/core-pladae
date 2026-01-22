@@ -3,7 +3,7 @@ import { getCoursesSchedulesGrid } from '../../services/api';
 import './TechniqueSelector.css';
 
 // Componente para el calendario de horarios
-const CalendarGrid = ({ techniques, showCalendar, setShowCalendar }) => {
+const CalendarGrid = ({ techniques }) => {
   const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
   const dayLabels = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
@@ -36,18 +36,8 @@ const CalendarGrid = ({ techniques, showCalendar, setShowCalendar }) => {
   };
 
   return (
-    <div className="calendar-section">
-      <button
-        className="calendar-toggle"
-        onClick={() => setShowCalendar(!showCalendar)}
-        type="button"
-      >
-        <span>📅 Ver horarios disponibles por técnica</span>
-        <span className={`toggle-icon ${showCalendar ? 'open' : ''}`}>▼</span>
-      </button>
-
-      {showCalendar && (
-        <div className="calendar-content">
+    <div className="calendar-section always-visible">
+      <div className="calendar-content">
           <p className="calendar-note">
             Visualiza todos los cursos disponibles organizados por día y horario
           </p>
@@ -78,7 +68,7 @@ const CalendarGrid = ({ techniques, showCalendar, setShowCalendar }) => {
 
                   const courseCountClass =
                     courses.length === 1 ? 'one-course' :
-                    courses.length === 2 ? 'two-courses' : '';
+                    courses.length === 2 ? 'two-courses' : 'three-plus-courses';
 
                   return (
                     <div
@@ -130,7 +120,6 @@ const CalendarGrid = ({ techniques, showCalendar, setShowCalendar }) => {
             ))}
           </div>
         </div>
-      )}
     </div>
   );
 };
@@ -138,8 +127,7 @@ const CalendarGrid = ({ techniques, showCalendar, setShowCalendar }) => {
 const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue }) => {
   const [techniques, setTechniques] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showCalendar, setShowCalendar] = useState(false);
-
+  
   useEffect(() => {
     const loadTechniques = async () => {
       try {
@@ -184,7 +172,7 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
   }
 
   return (
-    <div className={`simplified-step ${showCalendar ? 'calendar-expanded' : ''}`}>
+    <div className="simplified-step">
       <div className="step-progress">Paso 1 de 5</div>
 
       <h2 className="step-title">¿Qué técnica te gustaría aprender?</h2>
@@ -215,7 +203,7 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
       <p className="hint-text">💡 Puedes combinar técnicas más adelante</p>
 
       {/* Calendario informativo colapsible */}
-      <CalendarGrid techniques={techniques} showCalendar={showCalendar} setShowCalendar={setShowCalendar} />
+      <CalendarGrid techniques={techniques} />
 
       <div className="step-actions-center">
         <button
