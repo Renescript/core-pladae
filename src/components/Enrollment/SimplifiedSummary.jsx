@@ -1,4 +1,4 @@
-import './SimplifiedTechniqueSelector.css';
+import './TechniqueSelector.css';
 import './SimplifiedSummary.css';
 
 const SimplifiedSummary = ({

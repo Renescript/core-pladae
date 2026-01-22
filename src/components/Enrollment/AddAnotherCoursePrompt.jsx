@@ -1,4 +1,4 @@
-import './SimplifiedTechniqueSelector.css';
+import './TechniqueSelector.css';
 import './AddAnotherCoursePrompt.css';
 
 const AddAnotherCoursePrompt = ({ completedEnrollments = [], currentCourse, onAddAnother, onContinue, onBack }) => {

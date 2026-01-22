@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createEnrollment, getPaymentPeriods } from '../../services/api';
-import SimplifiedTechniqueSelector from './SimplifiedTechniqueSelector';
+import TechniqueSelector from './TechniqueSelector';
 import SimplifiedPlanConfigurator from './SimplifiedPlanConfigurator';
 import MultiDayScheduleSelector from './MultiDayScheduleSelector';
 import DurationSelector from './DurationSelector';
@@ -547,7 +547,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
         <div className="prof-enrollment-content">
           {/* Paso 1: Selección de técnica */}
           {currentStep === 1 && (
-            <SimplifiedTechniqueSelector
+            <TechniqueSelector
               selectedTechnique={technique}
               onSelectTechnique={handleTechniqueChange}
               onContinue={() => setCurrentStep(2)}

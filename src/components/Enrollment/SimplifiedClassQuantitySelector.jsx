@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getPlans } from '../../services/api';
-import './SimplifiedTechniqueSelector.css';
+import './TechniqueSelector.css';
 import './SimplifiedClassQuantitySelector.css';
 
 const SimplifiedClassQuantitySelector = ({

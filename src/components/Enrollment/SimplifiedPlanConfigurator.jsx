@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getWeeklyPlans } from '../../services/api';
-import './SimplifiedTechniqueSelector.css';
+import './TechniqueSelector.css';
 import './SimplifiedPlanConfigurator.css';
 
 const SimplifiedPlanConfigurator = ({
