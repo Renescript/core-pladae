@@ -1,69 +1,68 @@
-/* Professional Enrollment - Minimal & Clean Design */
-
-/* Variables */
-:root {
-  --prof-primary: #2563eb;
-  --prof-primary-dark: #1d4ed8;
-  --prof-gray-50: #f9fafb;
-  --prof-gray-100: #f3f4f6;
-  --prof-gray-200: #e5e7eb;
-  --prof-gray-300: #d1d5db;
-  --prof-gray-400: #9ca3af;
-  --prof-gray-500: #6b7280;
-  --prof-gray-600: #4b5563;
-  --prof-gray-700: #374151;
-  --prof-gray-800: #1f2937;
-  --prof-gray-900: #111827;
-}
+/* ===========================================
+   Professional Enrollment - Atelier Design
+   =========================================== */
 
 /* Container */
+.prof-enrollment-wrapper {
+  min-height: 100vh;
+  background-color: var(--color-paper);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
 .prof-enrollment-container {
   min-height: 100vh;
-  background: #ffffff;
   padding: 0;
 }
 
 .prof-enrollment-content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 3rem 2rem;
+  padding: 4rem 2rem 3rem;
 }
 
 /* Step Layout */
 .prof-step {
-  animation: profFadeIn 0.3s ease;
+  animation: profFadeIn 0.4s ease;
 }
 
 @keyframes profFadeIn {
   from {
     opacity: 0;
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
 .prof-step-header {
   margin-bottom: 3rem;
+  text-align: center;
 }
 
 .prof-step-number {
   display: block;
-  font-size: 0.875rem;
-  color: var(--prof-gray-500);
-  font-weight: 500;
-  margin-bottom: 0.75rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-family: var(--font-hand);
+  font-size: 1.5rem;
+  color: var(--color-accent);
+  margin-bottom: 0.5rem;
 }
 
 .prof-step-title {
-  font-size: 2rem;
+  font-family: var(--font-display);
+  font-size: 2.5rem;
   font-weight: 600;
-  color: var(--prof-gray-900);
+  color: var(--color-charcoal);
   margin: 0;
   line-height: 1.2;
   letter-spacing: -0.02em;
+}
+
+@media (min-width: 768px) {
+  .prof-step-title {
+    font-size: 3rem;
+  }
 }
 
 /* Technique Cards */
@@ -75,47 +74,52 @@
 }
 
 .prof-technique-card {
-  background: #ffffff;
-  border: 2px solid var(--prof-gray-200);
-  border-radius: 8px;
+  background: white;
+  border: 2px solid rgba(31, 41, 51, 0.1);
+  border-radius: var(--radius-lg);
   padding: 2rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   position: relative;
 }
 
 .prof-technique-card:hover {
-  border-color: var(--prof-primary);
+  border-color: var(--color-primary);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
 }
 
 .prof-technique-card.selected {
-  border-color: var(--prof-primary);
+  border-color: var(--color-primary);
   border-width: 3px;
-  background: #eff6ff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+  background: linear-gradient(135deg, rgba(71, 161, 191, 0.05) 0%, white 100%);
+  box-shadow: var(--shadow-primary);
 }
 
 .prof-card-title {
-  font-size: 1.25rem;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
   font-weight: 600;
-  color: var(--prof-gray-900);
-  margin: 0 0 0.5rem 0;
+  color: var(--color-charcoal);
+  margin: 0 0 0.75rem 0;
 }
 
 .prof-card-description {
-  font-size: 0.9375rem;
-  color: var(--prof-gray-600);
-  line-height: 1.5;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: rgba(31, 41, 51, 0.7);
+  line-height: 1.6;
   margin: 0;
+  font-weight: 300;
 }
 
 .prof-selected-indicator {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  width: 24px;
-  height: 24px;
-  background: var(--prof-primary);
+  width: 28px;
+  height: 28px;
+  background: var(--color-primary);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -123,45 +127,53 @@
   color: white;
   font-weight: 700;
   font-size: 0.875rem;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 2px 8px rgba(71, 161, 191, 0.3);
+  animation: checkmarkPop 0.3s ease;
 }
 
 .prof-selected-indicator::after {
   content: '✓';
 }
 
+@keyframes checkmarkPop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
 /* Calendar Section */
 .prof-calendar-section {
   margin-bottom: 3rem;
-  border-top: 1px solid var(--prof-gray-200);
+  border-top: 1px dashed rgba(31, 41, 51, 0.1);
   padding-top: 2rem;
 }
 
 .prof-calendar-toggle {
   width: 100%;
-  background: #ffffff;
-  border: 1px solid var(--prof-gray-300);
-  border-radius: 8px;
+  background: white;
+  border: 2px solid rgba(31, 41, 51, 0.1);
+  border-radius: var(--radius-lg);
   padding: 1rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  font-size: 0.9375rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
   font-weight: 500;
-  color: var(--prof-gray-700);
-  transition: all 0.2s ease;
+  color: var(--color-charcoal);
+  transition: all 0.3s ease;
 }
 
 .prof-calendar-toggle:hover {
-  border-color: var(--prof-gray-400);
-  background: var(--prof-gray-50);
+  border-color: var(--color-primary);
+  background: rgba(71, 161, 191, 0.03);
 }
 
 .toggle-icon {
   font-size: 0.75rem;
-  color: var(--prof-gray-500);
-  transition: transform 0.2s ease;
+  color: rgba(31, 41, 51, 0.5);
+  transition: transform 0.3s ease;
 }
 
 .toggle-icon.open {
@@ -171,13 +183,14 @@
 .prof-calendar-content {
   margin-top: 1.5rem;
   padding: 1.5rem;
-  background: var(--prof-gray-50);
-  border-radius: 8px;
+  background: var(--color-paper-dark);
+  border-radius: var(--radius-lg);
 }
 
 .prof-calendar-note {
-  font-size: 0.875rem;
-  color: var(--prof-gray-600);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: rgba(31, 41, 51, 0.7);
   margin: 0 0 1.5rem 0;
   font-style: italic;
 }
@@ -198,9 +211,10 @@
 }
 
 .prof-day-header {
-  font-size: 0.8125rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
   font-weight: 600;
-  color: var(--prof-gray-700);
+  color: var(--color-charcoal);
   text-align: center;
   padding: 0.5rem;
 }
@@ -213,36 +227,38 @@
 }
 
 .prof-time-cell {
-  font-size: 0.8125rem;
-  color: var(--prof-gray-600);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: rgba(31, 41, 51, 0.7);
   padding: 0.75rem 0.5rem;
   font-weight: 500;
 }
 
 .prof-slot-cell {
-  background: #ffffff;
-  border: 1px solid var(--prof-gray-200);
-  border-radius: 4px;
+  background: white;
+  border: 1px solid rgba(31, 41, 51, 0.1);
+  border-radius: var(--radius-sm);
   padding: 0.75rem 0.5rem;
+  font-family: var(--font-body);
   font-size: 0.75rem;
   text-align: center;
-  color: var(--prof-gray-600);
+  color: rgba(31, 41, 51, 0.6);
 }
 
 .prof-slot-cell.available {
-  background: #ffffff;
-  border-color: var(--prof-gray-300);
+  background: white;
+  border-color: rgba(31, 41, 51, 0.15);
 }
 
 .prof-slot-cell.limited {
-  background: #fef3c7;
-  border-color: #fbbf24;
+  background: rgba(244, 162, 97, 0.1);
+  border-color: var(--color-ochre);
   color: #92400e;
 }
 
 .prof-slot-cell.unavailable {
-  background: var(--prof-gray-100);
-  color: var(--prof-gray-400);
+  background: var(--color-paper-dark);
+  color: rgba(31, 41, 51, 0.4);
 }
 
 /* Buttons */
@@ -252,44 +268,52 @@
   justify-content: flex-end;
   margin-top: 3rem;
   padding-top: 2rem;
-  border-top: 1px solid var(--prof-gray-200);
+  border-top: 1px dashed rgba(31, 41, 51, 0.1);
 }
 
 .prof-btn {
-  padding: 0.875rem 2rem;
-  border-radius: 8px;
-  font-size: 0.9375rem;
-  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: var(--radius-brush);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   border: none;
-  font-family: inherit;
 }
 
 .prof-btn-primary {
-  background: var(--prof-primary);
-  color: #ffffff;
+  background: var(--color-accent);
+  color: white;
+  box-shadow: var(--shadow-accent);
 }
 
 .prof-btn-primary:hover:not(:disabled) {
-  background: var(--prof-primary-dark);
+  background: #d06a4f;
+  transform: scale(1.02) rotate(-1deg);
+  box-shadow: 0 10px 20px -5px rgba(224, 122, 95, 0.3);
 }
 
 .prof-btn-primary:disabled {
-  background: var(--prof-gray-300);
-  color: var(--prof-gray-500);
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .prof-btn-secondary {
-  background: #ffffff;
-  color: var(--prof-gray-700);
-  border: 1px solid var(--prof-gray-300);
+  background: white;
+  color: var(--color-charcoal);
+  border: 2px solid rgba(31, 41, 51, 0.2);
+  box-shadow: var(--shadow-sm);
 }
 
 .prof-btn-secondary:hover {
-  background: var(--prof-gray-50);
-  border-color: var(--prof-gray-400);
+  background: rgba(71, 161, 191, 0.08);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: scale(1.02) rotate(-1deg);
+  box-shadow: var(--shadow-md);
 }
 
 /* Header Controls */
@@ -303,33 +327,36 @@
 }
 
 .prof-header-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  border: 1px solid var(--prof-gray-300);
-  background: #ffffff;
-  color: var(--prof-gray-600);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  border: 2px solid rgba(31, 41, 51, 0.1);
+  background: white;
+  color: var(--color-charcoal);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.25rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .prof-header-btn:hover {
-  background: var(--prof-gray-50);
-  border-color: var(--prof-gray-400);
+  background: var(--color-paper);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: scale(1.05);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .prof-enrollment-content {
-    padding: 2rem 1rem;
+    padding: 3rem 1rem 2rem;
   }
 
   .prof-step-title {
-    font-size: 1.5rem;
+    font-size: 2rem;
   }
 
   .prof-techniques-grid {
@@ -347,5 +374,16 @@
 
   .prof-btn {
     width: 100%;
+  }
+
+  .prof-header-controls {
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .prof-header-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
   }
 }

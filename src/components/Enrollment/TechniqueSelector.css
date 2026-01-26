@@ -1,7 +1,6 @@
 /* ===========================================
-   TECHNIQUE SELECTOR
+   TECHNIQUE SELECTOR - Atelier Design
    Selector de técnicas/disciplinas
-   Estilos específicos del componente
    =========================================== */
 
 /* ===========================================
@@ -16,8 +15,8 @@
 }
 
 .technique-card-simple {
-  background: var(--bg-white);
-  border: 3px solid var(--border-light);
+  background: white;
+  border: 2px solid rgba(31, 41, 51, 0.1);
   border-radius: var(--radius-xl);
   padding: var(--space-8) var(--space-6);
   display: flex;
@@ -26,32 +25,34 @@
   justify-content: center;
   gap: var(--space-4);
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: all 0.3s ease;
   position: relative;
   min-height: 180px;
 }
 
 .technique-card-simple:hover {
-  border-color: var(--primary-400);
+  border-color: var(--color-primary);
   box-shadow: var(--shadow-lg);
   transform: translateY(-4px);
 }
 
 .technique-card-simple.selected {
-  border-color: var(--primary-400);
-  background: linear-gradient(135deg, var(--primary-50) 0%, var(--bg-white) 100%);
-  box-shadow: var(--shadow-primary-lg);
+  border-color: var(--color-primary);
+  border-width: 3px;
+  background: linear-gradient(135deg, rgba(71, 161, 191, 0.05) 0%, white 100%);
+  box-shadow: var(--shadow-primary);
 }
 
 .technique-icon-large {
-  font-size: var(--font-size-5xl);
+  font-size: 3rem;
   line-height: 1;
 }
 
 .technique-name-large {
-  font-size: var(--font-size-lg);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
   font-weight: 600;
-  color: var(--text-dark);
+  color: var(--color-charcoal);
   margin: 0;
   text-align: center;
 }
@@ -62,7 +63,7 @@
 
 .calendar-section {
   margin: var(--space-8) 0;
-  border-top: 1px solid var(--border-light);
+  border-top: 1px dashed rgba(31, 41, 51, 0.1);
   padding-top: var(--space-8);
 }
 
@@ -72,32 +73,33 @@
 
 .calendar-toggle {
   width: 100%;
-  background: var(--bg-white);
-  border: 2px solid var(--border-default);
+  background: white;
+  border: 2px solid rgba(31, 41, 51, 0.1);
   border-radius: var(--radius-lg);
   padding: var(--space-4) var(--space-6);
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  font-size: var(--font-size-base);
+  font-family: var(--font-body);
+  font-size: 1rem;
   font-weight: 600;
-  color: var(--text-dark);
-  transition: all var(--transition-fast);
+  color: var(--color-charcoal);
+  transition: all 0.3s ease;
   box-shadow: var(--shadow-sm);
 }
 
 .calendar-toggle:hover {
-  border-color: var(--primary-400);
-  background: var(--bg-light);
+  border-color: var(--color-primary);
+  background: rgba(71, 161, 191, 0.03);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
 
 .toggle-icon {
-  font-size: var(--font-size-xs);
-  color: var(--text-light);
-  transition: transform var(--transition-base);
+  font-size: 0.75rem;
+  color: rgba(31, 41, 51, 0.5);
+  transition: transform 0.3s ease;
 }
 
 .toggle-icon.open {
@@ -107,19 +109,21 @@
 .calendar-content {
   margin-top: var(--space-6);
   padding: var(--space-6);
-  background: var(--bg-light);
+  background: var(--color-paper-dark);
   border-radius: var(--radius-lg);
-  border: 2px solid var(--border-default);
+  border: 2px solid rgba(31, 41, 51, 0.05);
   animation: slideDown 0.3s ease;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
 }
 
 .calendar-note {
-  font-size: var(--font-size-sm);
-  color: var(--text-light);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: rgba(31, 41, 51, 0.6);
   margin: 0 0 var(--space-4) 0;
   text-align: center;
+  font-weight: 300;
 }
 
 /* ===========================================
@@ -132,7 +136,7 @@
   grid-template-columns: minmax(80px, 120px) repeat(6, minmax(0, 1fr));
   gap: 1px;
   grid-auto-flow: dense;
-  background: var(--border-default);
+  background: rgba(31, 41, 51, 0.1);
   padding: 1px;
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -147,26 +151,28 @@
 }
 
 .day-header {
-  font-size: var(--font-size-xs);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
   font-weight: 700;
   color: white;
   text-align: center;
   padding: var(--space-2);
-  background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
+  background: var(--color-primary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border: none;
 }
 
 .time-cell {
-  font-size: var(--font-size-xs);
-  color: var(--text-dark);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-charcoal);
   padding: var(--space-2);
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-muted);
+  background: var(--color-paper-dark);
   border: none;
 }
 
@@ -175,12 +181,13 @@
    =========================================== */
 
 .slot-cell {
-  background: var(--bg-white);
+  background: white;
   border: none;
   padding: var(--space-1);
-  font-size: var(--font-size-xs);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
   text-align: center;
-  color: var(--text-light);
+  color: rgba(31, 41, 51, 0.6);
   font-weight: 500;
   min-height: 110px;
   display: flex;
@@ -193,17 +200,17 @@
 }
 
 .slot-cell.empty {
-  background: var(--bg-light);
-  color: var(--border-default);
+  background: var(--color-paper);
+  color: rgba(31, 41, 51, 0.3);
   cursor: default;
   align-items: center;
   justify-content: center;
-  font-size: var(--font-size-xs);
+  font-size: 0.75rem;
   font-weight: 600;
 }
 
 .slot-cell.multi-course {
-  background: var(--bg-white);
+  background: white;
   padding: var(--space-1);
   gap: var(--space-1);
   display: grid;
@@ -259,8 +266,8 @@
   overflow: hidden;
   cursor: default;
   pointer-events: none;
-  transition: transform var(--transition-fast);
-  box-shadow: var(--shadow-xs);
+  transition: transform 0.2s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .course-item.unavailable {
@@ -269,7 +276,8 @@
 }
 
 .slot-course-name {
-  font-size: var(--font-size-xs);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 1.2;
   text-align: center;
@@ -290,7 +298,7 @@
 
 @media (max-width: 640px) {
   .step-title {
-    font-size: var(--font-size-xl);
+    font-size: 1.5rem;
     margin-bottom: var(--space-8);
   }
 
@@ -305,11 +313,11 @@
   }
 
   .technique-icon-large {
-    font-size: var(--font-size-4xl);
+    font-size: 2.5rem;
   }
 
   .technique-name-large {
-    font-size: var(--font-size-base);
+    font-size: 1rem;
   }
 
   .calendar-section {

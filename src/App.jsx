@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 import LandingPage from './pages/LandingPage';
 import EnrollmentPage from './pages/EnrollmentPage';
 import CopyEnrollmentPage from './pages/CopyEnrollmentPage';
@@ -11,6 +12,7 @@ import './App.css';
 function AppHeader() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleEnrollClick = () => {
     navigate('/inscripcion');
@@ -27,22 +29,43 @@ function AppHeader() {
   }
 
   return (
-    <header className="app-header">
-      <div className="header-container">
-        <div className="logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
-          <img src='/logo-gustarte-bla.png' alt="GUSTARTE" />
+    <nav className="nav-main">
+      <div className="nav-container">
+        <div className="nav-logo" onClick={handleLogoClick}>
+          <img src="/logo-gustarte-bla.png" alt="Gustarte" className="nav-logo-img" />
         </div>
-        <nav className="nav-center">
-          <a href="#courses">Cursos</a>
-          <a href="#about">Nosotros</a>
-        </nav>
-        <div className="nav-right">
-          <button className="enroll-button" onClick={handleEnrollClick}>
-            Inscríbete
-          </button>
+
+        <div className="nav-links">
+          <a href="#courses" className="nav-link">
+            Cursos
+            <span className="nav-link-underline"></span>
+          </a>
+          <a href="#about" className="nav-link">
+            Nosotros
+            <span className="nav-link-underline"></span>
+          </a>
+          <a href="#gallery" className="nav-link">
+            Galería
+            <span className="nav-link-underline"></span>
+          </a>
         </div>
+
+        <button className="nav-cta btn-brush" onClick={handleEnrollClick}>
+          Inscríbete
+        </button>
+
+        <button
+          className="nav-mobile-toggle"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
       </div>
-    </header>
+    </nav>
   );
 }
 
@@ -57,11 +80,13 @@ function AppFooter() {
 
   return (
     <footer className="app-footer">
-      <div className="container">
+      <div className="footer-container">
         <div className="footer-content">
-          <div className="footer-section">
-            <h3>GUSTARTE</h3>
-            <p>Centro Artístico</p>
+          <div className="footer-section footer-brand">
+            <img src="/logo-gustarte-bla.png" alt="Gustarte" className="footer-logo-img" />
+            <p className="footer-description">
+              Arte para todos.
+            </p>
           </div>
           <div className="footer-section">
             <h4>Contacto</h4>
@@ -72,6 +97,13 @@ function AppFooter() {
             <h4>Horarios</h4>
             <p>Lun - Vie: 9:00 - 21:00</p>
             <p>Sáb: 9:00 - 14:00</p>
+          </div>
+          <div className="footer-section">
+            <h4>Síguenos</h4>
+            <div className="social-links">
+              <a href="#" className="social-link">Instagram</a>
+              <a href="#" className="social-link">Facebook</a>
+            </div>
           </div>
         </div>
         <div className="footer-bottom">

@@ -1,17 +1,86 @@
 /* ===========================================
    ENROLLMENT GLOBAL STYLES
-   Sistema de diseño base para el flujo de inscripción
+   Sistema de diseño Atelier para inscripciones
    =========================================== */
 
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap');
+
 /* ===========================================
-   CONTENEDORES BASE
+   VARIABLES ATELIER
    =========================================== */
+
+:root {
+  /* Colores Atelier */
+  --color-primary: #47a1bf;
+  --color-accent: #e07a5f;
+  --color-ochre: #f4a261;
+  --color-charcoal: #1f2933;
+  --color-paper: #f7f3ee;
+  --color-paper-dark: #f0ebe5;
+
+  /* Tipografía Atelier */
+  --font-display: 'Cormorant Garamond', serif;
+  --font-hand: 'Caveat', cursive;
+  --font-body: 'Outfit', sans-serif;
+
+  /* Estados */
+  --success-color: #10b981;
+  --success-light: #d1fae5;
+  --warning-color: #f59e0b;
+  --warning-light: #fef3c7;
+  --error-color: #ef4444;
+  --error-light: #fee2e2;
+
+  /* Espaciado */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* Bordes */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  --radius-brush: 255px 15px 225px 15px / 15px 225px 15px 255px;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -1px rgb(0 0 0 / 0.04);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -2px rgb(0 0 0 / 0.04);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.03);
+  --shadow-primary: 0 4px 14px 0 rgb(71 161 191 / 0.25);
+  --shadow-accent: 0 4px 14px 0 rgb(224 122 95 / 0.25);
+
+  /* Transiciones */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 350ms ease;
+}
+
+/* ===========================================
+   CONTENEDOR PRINCIPAL
+   =========================================== */
+
+.enrollment-page {
+  min-height: 100vh;
+  background-color: var(--color-paper);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+}
 
 .enrollment-step,
 .simplified-step {
   max-width: 1200px;
   margin: 0 auto;
   padding: var(--space-8) var(--space-4);
+  font-family: var(--font-body);
 }
 
 .simplified-step.calendar-expanded {
@@ -19,7 +88,7 @@
 }
 
 /* ===========================================
-   BOTONES
+   BOTONES ATELIER
    =========================================== */
 
 .enrollment-step .btn-primary,
@@ -28,9 +97,9 @@
 .simplified-step .btn-secondary {
   padding: var(--space-4) var(--space-8);
   border: none;
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-base);
   min-width: 140px;
@@ -39,24 +108,27 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
+  border-radius: var(--radius-brush);
+  position: relative;
 }
 
 .enrollment-step .btn-primary,
 .simplified-step .btn-primary {
-  background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
+  background-color: var(--color-accent);
   color: white;
-  box-shadow: var(--shadow-primary);
+  box-shadow: var(--shadow-accent);
 }
 
 .enrollment-step .btn-primary:hover:not(:disabled),
 .simplified-step .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-primary-lg);
+  transform: scale(1.02) rotate(-1deg);
+  box-shadow: 0 10px 20px -5px rgba(224, 122, 95, 0.3);
+  background-color: #d06a4f;
 }
 
 .enrollment-step .btn-primary:active:not(:disabled),
 .simplified-step .btn-primary:active:not(:disabled) {
-  transform: translateY(0);
+  transform: scale(1) rotate(0);
 }
 
 .enrollment-step .btn-primary:disabled,
@@ -69,43 +141,45 @@
 
 .enrollment-step .btn-secondary,
 .simplified-step .btn-secondary {
-  background: var(--bg-white);
-  color: var(--primary-500);
-  border: 2px solid var(--primary-200);
+  background: white;
+  color: var(--color-charcoal);
+  border: 2px solid rgba(31, 41, 51, 0.2);
   box-shadow: var(--shadow-sm);
 }
 
 .enrollment-step .btn-secondary:hover,
 .simplified-step .btn-secondary:hover {
-  background: var(--primary-50);
-  border-color: var(--primary-400);
-  transform: translateY(-2px);
+  background: rgba(71, 161, 191, 0.08);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: scale(1.02) rotate(-1deg);
   box-shadow: var(--shadow-md);
 }
 
 .enrollment-step .btn-secondary:active,
 .simplified-step .btn-secondary:active {
-  transform: translateY(0);
+  transform: scale(1) rotate(0);
 }
 
 /* Botones grandes */
 .btn-primary-large {
   padding: var(--space-4) var(--space-10);
-  background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
+  background-color: var(--color-accent);
   color: white;
   border: none;
-  border-radius: var(--radius-lg);
-  font-size: var(--font-size-lg);
-  font-weight: 600;
+  border-radius: var(--radius-brush);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-base);
-  box-shadow: var(--shadow-primary);
+  box-shadow: var(--shadow-accent);
   min-width: 200px;
 }
 
 .btn-primary-large:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-primary-lg);
+  transform: scale(1.02) rotate(-1deg);
+  box-shadow: 0 10px 20px -5px rgba(224, 122, 95, 0.3);
 }
 
 .btn-primary-large:disabled {
@@ -115,20 +189,25 @@
 
 .btn-secondary-large {
   padding: var(--space-4) var(--space-10);
-  background: var(--bg-white);
-  color: var(--primary-500);
-  border: 2px solid var(--primary-400);
-  border-radius: var(--radius-lg);
-  font-size: var(--font-size-lg);
-  font-weight: 600;
+  background: white;
+  color: var(--color-charcoal);
+  border: 2px solid rgba(31, 41, 51, 0.2);
+  border-radius: var(--radius-brush);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-base);
   min-width: 200px;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary-large:hover {
-  background: var(--primary-50);
-  transform: translateY(-2px);
+  background: rgba(71, 161, 191, 0.08);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: scale(1.02) rotate(-1deg);
+  box-shadow: var(--shadow-md);
 }
 
 /* ===========================================
@@ -143,18 +222,19 @@
   padding: var(--space-8);
   margin: var(--space-6) 0;
   border-radius: var(--radius-lg);
+  font-family: var(--font-body);
 }
 
 .enrollment-step .loading-message,
 .simplified-step .loading-message {
-  background: var(--primary-50);
-  color: var(--primary-600);
-  border: 1px solid var(--primary-100);
+  background: rgba(71, 161, 191, 0.1);
+  color: var(--color-primary);
+  border: 1px solid rgba(71, 161, 191, 0.2);
 }
 
 .enrollment-step .loading-message p,
 .simplified-step .loading-message p {
-  font-size: var(--font-size-base);
+  font-size: 1rem;
   font-weight: 500;
   margin-top: var(--space-4);
 }
@@ -174,8 +254,8 @@
 .simplified-step .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid var(--primary-100);
-  border-top-color: var(--primary-400);
+  border: 3px solid rgba(71, 161, 191, 0.2);
+  border-top-color: var(--color-primary);
   border-radius: var(--radius-full);
   animation: enrollment-spin 0.8s linear infinite;
   margin: 0 auto;
@@ -195,29 +275,32 @@
 }
 
 /* ===========================================
-   CARDS BASE
+   CARDS ATELIER
    =========================================== */
 
 .enrollment-step .card,
 .simplified-step .card {
-  background: var(--bg-white);
-  border: 2px solid var(--border-light);
+  background: white;
+  border: 2px solid rgba(31, 41, 51, 0.1);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
   transition: all var(--transition-base);
   cursor: pointer;
+  position: relative;
 }
 
 .enrollment-step .card:hover,
 .simplified-step .card:hover {
-  border-color: var(--primary-300);
+  border-color: var(--color-primary);
   box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .enrollment-step .card.selected,
 .simplified-step .card.selected {
-  border-color: var(--primary-400);
-  background: linear-gradient(135deg, var(--primary-50) 0%, var(--bg-white) 100%);
+  border-color: var(--color-primary);
+  border-width: 3px;
+  background: linear-gradient(135deg, rgba(71, 161, 191, 0.05) 0%, white 100%);
   box-shadow: var(--shadow-primary);
 }
 
@@ -232,15 +315,16 @@
   right: var(--space-3);
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
+  background: var(--color-primary);
   color: white;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--font-size-lg);
+  font-size: 1rem;
   font-weight: 700;
   animation: checkmarkPop 0.3s ease;
+  box-shadow: 0 2px 8px rgba(71, 161, 191, 0.3);
 }
 
 @keyframes checkmarkPop {
@@ -256,41 +340,43 @@
 }
 
 /* ===========================================
-   TÍTULOS Y TEXTO
+   TÍTULOS Y TEXTO ATELIER
    =========================================== */
 
 .enrollment-step h2,
 .simplified-step .step-title {
-  font-size: var(--font-size-2xl);
-  font-weight: 700;
-  color: var(--text-dark);
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--color-charcoal);
   margin: 0 0 var(--space-2) 0;
   letter-spacing: -0.02em;
 }
 
 .enrollment-step .step-description,
 .simplified-step .step-description {
-  font-size: var(--font-size-base);
-  color: var(--text-light);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  color: rgba(31, 41, 51, 0.7);
   margin: 0 0 var(--space-8) 0;
+  font-weight: 300;
 }
 
 .step-progress {
   text-align: center;
-  font-size: var(--font-size-sm);
-  color: var(--text-light);
-  font-weight: 600;
+  font-family: var(--font-hand);
+  font-size: 1.5rem;
+  color: var(--color-accent);
   margin-bottom: var(--space-6);
-  text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
 .hint-text {
   text-align: center;
-  color: var(--text-light);
-  font-size: var(--font-size-base);
+  color: rgba(31, 41, 51, 0.6);
+  font-family: var(--font-body);
+  font-size: 1rem;
   margin: var(--space-4) 0 var(--space-8) 0;
-  font-style: italic;
+  font-weight: 300;
 }
 
 /* ===========================================
@@ -305,9 +391,10 @@
 }
 
 .config-title {
-  font-size: var(--font-size-lg);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
   font-weight: 600;
-  color: var(--text-dark);
+  color: var(--color-charcoal);
   margin: 0 0 var(--space-5) 0;
   text-align: left;
   display: flex;
@@ -326,7 +413,7 @@
   gap: var(--space-4);
   margin-top: var(--space-8);
   padding-top: var(--space-6);
-  border-top: 1px solid var(--border-light);
+  border-top: 1px dashed rgba(31, 41, 51, 0.1);
 }
 
 .step-actions-center {
@@ -348,9 +435,10 @@
 .enrollment-step .form-label,
 .simplified-step .form-label {
   display: block;
-  font-size: var(--font-size-sm);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-dark);
+  color: var(--color-charcoal);
   margin-bottom: var(--space-2);
 }
 
@@ -358,24 +446,25 @@
 .simplified-step .form-input {
   width: 100%;
   padding: var(--space-3) var(--space-4);
-  border: 2px solid var(--border-light);
+  border: 2px solid rgba(31, 41, 51, 0.15);
   border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
+  font-family: var(--font-body);
+  font-size: 1rem;
   transition: all var(--transition-fast);
-  background: var(--bg-white);
-  color: var(--text-dark);
+  background: white;
+  color: var(--color-charcoal);
 }
 
 .enrollment-step .form-input:focus,
 .simplified-step .form-input:focus {
   outline: none;
-  border-color: var(--primary-400);
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(71, 161, 191, 0.1);
 }
 
 .enrollment-step .form-input::placeholder,
 .simplified-step .form-input::placeholder {
-  color: var(--text-muted);
+  color: rgba(31, 41, 51, 0.4);
 }
 
 /* ===========================================
@@ -384,12 +473,13 @@
 
 .enrollment-step .info-note,
 .simplified-step .info-note {
-  background: var(--primary-50);
-  border-left: 4px solid var(--primary-400);
+  background: rgba(71, 161, 191, 0.1);
+  border-left: 4px solid var(--color-primary);
   padding: var(--space-4);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
-  font-size: var(--font-size-sm);
-  color: var(--primary-700);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--color-charcoal);
 }
 
 /* ===========================================
@@ -405,36 +495,35 @@
 }
 
 .availability-dot {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: var(--radius-full);
   flex-shrink: 0;
 }
 
 .availability-dot.available {
   background: var(--success-color);
-  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
 }
 
 .availability-dot.limited {
-  background: var(--warning-color);
-  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.3);
+  background: var(--color-ochre);
+  box-shadow: 0 0 0 2px rgba(244, 162, 97, 0.2);
 }
 
 .availability-dot.unavailable {
-  background: var(--text-muted);
-  box-shadow: 0 0 0 1px rgba(156, 163, 175, 0.3);
+  background: rgba(31, 41, 51, 0.3);
 }
 
 .availability-text {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  color: var(--text-light);
+  color: rgba(31, 41, 51, 0.6);
   white-space: nowrap;
 }
 
 /* ===========================================
-   BADGES
+   BADGES ATELIER
    =========================================== */
 
 .badge {
@@ -443,30 +532,30 @@
   right: 20px;
   padding: var(--space-1) var(--space-4);
   border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .badge-popular {
-  background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
+  background: var(--color-primary);
   color: white;
 }
 
 .badge-best-value {
-  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-  color: var(--text-dark);
+  background: var(--color-ochre);
+  color: var(--color-charcoal);
 }
 
 .days-counter {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  color: var(--primary-500);
-  background: var(--primary-50);
+  font-family: var(--font-hand);
+  font-size: 1.125rem;
+  color: var(--color-primary);
+  background: rgba(71, 161, 191, 0.1);
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-full);
-  border: 1px solid var(--primary-100);
 }
 
 /* ===========================================
@@ -547,7 +636,7 @@
 
   .enrollment-step h2,
   .simplified-step .step-title {
-    font-size: var(--font-size-xl);
+    font-size: 2rem;
   }
 
   .config-section {
