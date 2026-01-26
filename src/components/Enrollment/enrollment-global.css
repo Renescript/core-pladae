@@ -1,0 +1,562 @@
+/* ===========================================
+   ENROLLMENT GLOBAL STYLES
+   Sistema de diseño base para el flujo de inscripción
+   =========================================== */
+
+/* ===========================================
+   CONTENEDORES BASE
+   =========================================== */
+
+.enrollment-step,
+.simplified-step {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+}
+
+.simplified-step.calendar-expanded {
+  max-width: 1400px;
+}
+
+/* ===========================================
+   BOTONES
+   =========================================== */
+
+.enrollment-step .btn-primary,
+.enrollment-step .btn-secondary,
+.simplified-step .btn-primary,
+.simplified-step .btn-secondary {
+  padding: var(--space-4) var(--space-8);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  min-width: 140px;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.enrollment-step .btn-primary,
+.simplified-step .btn-primary {
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
+  color: white;
+  box-shadow: var(--shadow-primary);
+}
+
+.enrollment-step .btn-primary:hover:not(:disabled),
+.simplified-step .btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary-lg);
+}
+
+.enrollment-step .btn-primary:active:not(:disabled),
+.simplified-step .btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.enrollment-step .btn-primary:disabled,
+.simplified-step .btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.enrollment-step .btn-secondary,
+.simplified-step .btn-secondary {
+  background: var(--bg-white);
+  color: var(--primary-500);
+  border: 2px solid var(--primary-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.enrollment-step .btn-secondary:hover,
+.simplified-step .btn-secondary:hover {
+  background: var(--primary-50);
+  border-color: var(--primary-400);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.enrollment-step .btn-secondary:active,
+.simplified-step .btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* Botones grandes */
+.btn-primary-large {
+  padding: var(--space-4) var(--space-10);
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-primary);
+  min-width: 200px;
+}
+
+.btn-primary-large:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary-lg);
+}
+
+.btn-primary-large:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary-large {
+  padding: var(--space-4) var(--space-10);
+  background: var(--bg-white);
+  color: var(--primary-500);
+  border: 2px solid var(--primary-400);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  min-width: 200px;
+}
+
+.btn-secondary-large:hover {
+  background: var(--primary-50);
+  transform: translateY(-2px);
+}
+
+/* ===========================================
+   MENSAJES DE ESTADO
+   =========================================== */
+
+.enrollment-step .loading-message,
+.enrollment-step .error-message,
+.simplified-step .loading-message,
+.simplified-step .error-message {
+  text-align: center;
+  padding: var(--space-8);
+  margin: var(--space-6) 0;
+  border-radius: var(--radius-lg);
+}
+
+.enrollment-step .loading-message,
+.simplified-step .loading-message {
+  background: var(--primary-50);
+  color: var(--primary-600);
+  border: 1px solid var(--primary-100);
+}
+
+.enrollment-step .loading-message p,
+.simplified-step .loading-message p {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  margin-top: var(--space-4);
+}
+
+.enrollment-step .error-message,
+.simplified-step .error-message {
+  background: var(--error-light);
+  color: var(--error-color);
+  border: 1px solid #fca5a5;
+}
+
+/* ===========================================
+   SPINNER
+   =========================================== */
+
+.enrollment-step .spinner,
+.simplified-step .spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--primary-100);
+  border-top-color: var(--primary-400);
+  border-radius: var(--radius-full);
+  animation: enrollment-spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+
+.enrollment-step .spinner-large,
+.simplified-step .spinner-large {
+  width: 48px;
+  height: 48px;
+  border-width: 4px;
+}
+
+@keyframes enrollment-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===========================================
+   CARDS BASE
+   =========================================== */
+
+.enrollment-step .card,
+.simplified-step .card {
+  background: var(--bg-white);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.enrollment-step .card:hover,
+.simplified-step .card:hover {
+  border-color: var(--primary-300);
+  box-shadow: var(--shadow-md);
+}
+
+.enrollment-step .card.selected,
+.simplified-step .card.selected {
+  border-color: var(--primary-400);
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--bg-white) 100%);
+  box-shadow: var(--shadow-primary);
+}
+
+/* ===========================================
+   CHECKMARKS DE SELECCIÓN
+   =========================================== */
+
+.selected-checkmark,
+.selection-checkmark {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
+  color: white;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  animation: checkmarkPop 0.3s ease;
+}
+
+@keyframes checkmarkPop {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ===========================================
+   TÍTULOS Y TEXTO
+   =========================================== */
+
+.enrollment-step h2,
+.simplified-step .step-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0 0 var(--space-2) 0;
+  letter-spacing: -0.02em;
+}
+
+.enrollment-step .step-description,
+.simplified-step .step-description {
+  font-size: var(--font-size-base);
+  color: var(--text-light);
+  margin: 0 0 var(--space-8) 0;
+}
+
+.step-progress {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
+  font-weight: 600;
+  margin-bottom: var(--space-6);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.hint-text {
+  text-align: center;
+  color: var(--text-light);
+  font-size: var(--font-size-base);
+  margin: var(--space-4) 0 var(--space-8) 0;
+  font-style: italic;
+}
+
+/* ===========================================
+   SECCIONES DE CONFIGURACIÓN
+   =========================================== */
+
+.config-section {
+  margin-bottom: var(--space-10);
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.config-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-dark);
+  margin: 0 0 var(--space-5) 0;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* ===========================================
+   ACCIONES DE PASO
+   =========================================== */
+
+.enrollment-step .step-actions,
+.simplified-step .step-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-light);
+}
+
+.step-actions-center {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+}
+
+/* ===========================================
+   FORMULARIOS
+   =========================================== */
+
+.enrollment-step .form-group,
+.simplified-step .form-group {
+  margin-bottom: var(--space-5);
+}
+
+.enrollment-step .form-label,
+.simplified-step .form-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: var(--space-2);
+}
+
+.enrollment-step .form-input,
+.simplified-step .form-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-fast);
+  background: var(--bg-white);
+  color: var(--text-dark);
+}
+
+.enrollment-step .form-input:focus,
+.simplified-step .form-input:focus {
+  outline: none;
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 3px rgba(71, 161, 191, 0.1);
+}
+
+.enrollment-step .form-input::placeholder,
+.simplified-step .form-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ===========================================
+   NOTAS E INFO
+   =========================================== */
+
+.enrollment-step .info-note,
+.simplified-step .info-note {
+  background: var(--primary-50);
+  border-left: 4px solid var(--primary-400);
+  padding: var(--space-4);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-size: var(--font-size-sm);
+  color: var(--primary-700);
+}
+
+/* ===========================================
+   INDICADORES DE DISPONIBILIDAD
+   =========================================== */
+
+.availability-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.availability-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.availability-dot.available {
+  background: var(--success-color);
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.3);
+}
+
+.availability-dot.limited {
+  background: var(--warning-color);
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.3);
+}
+
+.availability-dot.unavailable {
+  background: var(--text-muted);
+  box-shadow: 0 0 0 1px rgba(156, 163, 175, 0.3);
+}
+
+.availability-text {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text-light);
+  white-space: nowrap;
+}
+
+/* ===========================================
+   BADGES
+   =========================================== */
+
+.badge {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  padding: var(--space-1) var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-popular {
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
+  color: white;
+}
+
+.badge-best-value {
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  color: var(--text-dark);
+}
+
+.days-counter {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--primary-500);
+  background: var(--primary-50);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--primary-100);
+}
+
+/* ===========================================
+   ANIMACIONES COMUNES
+   =========================================== */
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+
+@media (max-width: 640px) {
+  .enrollment-step,
+  .simplified-step {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .simplified-step.calendar-expanded {
+    max-width: 100%;
+    padding: var(--space-6) var(--space-2);
+  }
+
+  .enrollment-step .btn-primary,
+  .enrollment-step .btn-secondary,
+  .simplified-step .btn-primary,
+  .simplified-step .btn-secondary {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .btn-primary-large,
+  .btn-secondary-large {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .enrollment-step .step-actions,
+  .simplified-step .step-actions {
+    flex-direction: column-reverse;
+  }
+
+  .step-actions-center {
+    flex-direction: column;
+  }
+
+  .enrollment-step h2,
+  .simplified-step .step-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .config-section {
+    max-width: 100%;
+  }
+
+  .config-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+}

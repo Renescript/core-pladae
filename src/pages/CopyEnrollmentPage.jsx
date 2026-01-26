@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CopyEnrollmentForm from '../components/Enrollment/CopyEnrollmentForm';
 import SuccessMessage from '../components/Enrollment/SuccessMessage';
+import '../components/Enrollment/enrollment-global.css';
 
 const CopyEnrollmentPage = () => {
   const navigate = useNavigate();

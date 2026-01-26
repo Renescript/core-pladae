@@ -1,21 +1,90 @@
 /* Variables y reset */
 :root {
+  /* Colores primarios - Azul Cian */
+  --primary-50: #f0f9fb;
+  --primary-100: #d9f2f7;
+  --primary-200: #b3e5ef;
+  --primary-300: #7dd3e1;
+  --primary-400: #47a1bf;
+  --primary-500: #3b8da8;
+  --primary-600: #2f7189;
+  --primary-700: #285d70;
+  --primary-800: #264d5c;
+  --primary-900: #24414e;
+
+  /* Alias para compatibilidad */
   --primary-color: #47a1bf;
-  --primary-dark: #5ca1a9;
+  --primary-dark: #3b8da8;
+  --primary-light: #7dd3e1;
   --secondary-color: #92ced5;
-  --accent-color: #a7dce3;
+  --accent-color: #d9f2f7;
+
+  /* Estados */
   --success-color: #10b981;
+  --success-light: #d1fae5;
   --warning-color: #f59e0b;
+  --warning-light: #fef3c7;
   --error-color: #ef4444;
-  --text-dark: #1f2937;
-  --text-light: #6b7280;
-  --bg-light: #f9fafb;
+  --error-light: #fee2e2;
+
+  /* Texto */
+  --text-dark: #1a2b3c;
+  --text-medium: #4a5568;
+  --text-light: #718096;
+  --text-muted: #a0aec0;
+
+  /* Fondos */
   --bg-white: #ffffff;
-  --border-color: #e5e7eb;
+  --bg-light: #f7fafc;
+  --bg-subtle: #edf2f7;
+  --bg-muted: #e2e8f0;
+
+  /* Bordes */
+  --border-light: #e2e8f0;
+  --border-color: #cbd5e0;
+  --border-dark: #a0aec0;
+
+  /* Sombras */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -1px rgb(0 0 0 / 0.04);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -2px rgb(0 0 0 / 0.04);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.03);
+  --shadow-primary: 0 4px 14px 0 rgb(71 161 191 / 0.25);
+  --shadow-primary-lg: 0 10px 25px -3px rgb(71 161 191 / 0.3);
+
+  /* Radios */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Tipografía */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+  --font-size-4xl: 2.5rem;
+
+  /* Espaciado */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* Transiciones */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 350ms ease;
 }
 
 body {
@@ -52,7 +121,7 @@ main {
 
 /* Header */
 .app-header {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.6);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
@@ -62,9 +131,12 @@ main {
   backdrop-filter: blur(15px);
 }
 
-.app-header .container {
-  display: flex;
-  justify-content: space-between;
+.header-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
 }
 
@@ -74,29 +146,78 @@ main {
   color: var(--primary-color);
   display: flex;
   align-items: center;
+  justify-self: start;
 }
 
 .logo img {
-  height: 70px;
+  height: 60px;
   width: auto;
   object-fit: contain;
 }
 
-nav {
+.nav-center {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 2rem;
 }
 
-nav a {
+.nav-center a {
   text-decoration: none;
   color: var(--text-dark);
-  font-weight: 500;
+  font-weight: 400;
   transition: color 0.3s;
 }
 
-nav a:hover {
+.nav-center a:hover {
   color: var(--primary-color);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Header Responsive */
+@media (max-width: 768px) {
+  .header-container {
+    grid-template-columns: auto 1fr auto;
+    padding: 0 1rem;
+    gap: 1rem;
+  }
+
+  .logo img {
+    height: 50px;
+  }
+
+  .nav-center {
+    gap: 1rem;
+  }
+
+  .nav-center a {
+    font-size: 0.9rem;
+  }
+
+  .enroll-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-container {
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+  }
+
+  .nav-center {
+    display: none;
+  }
+
+  .logo img {
+    height: 45px;
+  }
 }
 
 .enroll-button {
@@ -389,27 +510,6 @@ nav a:hover {
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
 }
 
-.new-badge {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
-  font-size: 0.65rem;
-  font-weight: 800;
-  padding: 0.3rem 0.6rem;
-  border-radius: 6px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
 
 /* Courses Showcase */
 .courses-showcase {
@@ -558,23 +658,6 @@ nav a:hover {
   margin-bottom: 0;
 }
 
-.about-features {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
-  text-align: center;
-}
-
-.feature h3 {
-  font-size: 3rem;
-  color: var(--primary-color);
-  margin-bottom: 0.5rem;
-}
-
-.feature p {
-  color: var(--text-light);
-  font-weight: 500;
-}
 
 /* Footer */
 .app-footer {
@@ -612,9 +695,11 @@ nav a:hover {
 /* Enrollment Page */
 .enrollment-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: var(--bg-light);
+  background-image:
+    linear-gradient(135deg, var(--primary-50) 0%, var(--bg-light) 50%, var(--primary-50) 100%);
   background-attachment: fixed;
-  padding: 3rem 1.5rem;
+  padding: var(--space-8) var(--space-6);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -622,6 +707,7 @@ nav a:hover {
   overflow-x: hidden;
 }
 
+/* Patrón geométrico sutil */
 .enrollment-page::before {
   content: '';
   position: absolute;
@@ -629,47 +715,46 @@ nav a:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background:
-    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(102, 126, 234, 0.2) 0%, transparent 50%);
+  background-image:
+    radial-gradient(circle at 25% 25%, var(--primary-100) 2px, transparent 2px),
+    radial-gradient(circle at 75% 75%, var(--primary-100) 2px, transparent 2px),
+    radial-gradient(circle at 50% 50%, var(--primary-50) 1px, transparent 1px);
+  background-size: 60px 60px, 60px 60px, 30px 30px;
+  background-position: 0 0, 30px 30px, 15px 15px;
+  opacity: 0.6;
   pointer-events: none;
 }
 
-/* Enrollment Modal (Legacy - mantener para compatibilidad) */
-.enrollment-modal {
-  position: fixed;
+/* Decoración superior con gradiente */
+.enrollment-page::after {
+  content: '';
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-  overflow-y: auto;
+  height: 300px;
+  background: linear-gradient(180deg, var(--primary-100) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .enrollment-container {
   background: var(--bg-white);
-  border-radius: 24px;
+  border-radius: var(--radius-xl);
   max-width: 1000px;
   width: 100%;
   margin: 0 auto;
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  box-shadow: var(--shadow-xl);
   position: relative;
   overflow: hidden;
-  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid var(--border-light);
 }
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(40px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -679,13 +764,14 @@ nav a:hover {
 
 /* Cuando está dentro de enrollment-page, ajustar el contenedor */
 .enrollment-page .enrollment-container {
-  max-width: 1600px;
+  max-width: 1200px;
   width: 100%;
   margin: 0;
   position: relative;
   z-index: 1;
 }
 
+/* Barra decorativa superior */
 .enrollment-container::before {
   content: '';
   position: absolute;
@@ -693,9 +779,15 @@ nav a:hover {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+  background: linear-gradient(90deg,
+    var(--primary-300) 0%,
+    var(--primary-400) 25%,
+    var(--primary-500) 50%,
+    var(--primary-400) 75%,
+    var(--primary-300) 100%
+  );
   background-size: 200% 100%;
-  animation: shimmerGradient 3s ease-in-out infinite;
+  animation: shimmerGradient 4s ease-in-out infinite;
 }
 
 @keyframes shimmerGradient {
@@ -705,29 +797,6 @@ nav a:hover {
   50% {
     background-position: 100% 0%;
   }
-}
-
-.enrollment-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 2rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.enrollment-header h1 {
-  font-size: 1.75rem;
-  color: var(--text-dark);
-}
-
-/* Header buttons container */
-.enrollment-header-buttons {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  display: flex;
-  gap: 0.5rem;
-  z-index: 10;
 }
 
 .close-button {
@@ -751,37 +820,15 @@ nav a:hover {
   background: var(--bg-light);
 }
 
-.reset-button {
-  background: none;
-  border: none;
-  font-size: 1.25rem;
-  cursor: pointer;
-  color: var(--text-light);
-  line-height: 1;
-  transition: all 0.3s;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
-
-.reset-button:hover {
-  color: var(--warning-color);
-  background: #fef3c7;
-  transform: rotate(180deg);
-}
-
 /* Progress Steps */
 .enrollment-progress {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2.5rem 2rem 2rem;
-  background: linear-gradient(180deg, #fafbff 0%, #f5f7fa 100%);
+  padding: var(--space-8) var(--space-6) var(--space-6);
+  background: linear-gradient(180deg, var(--bg-white) 0%, var(--bg-light) 100%);
   position: relative;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .enrollment-progress::after {
@@ -790,106 +837,100 @@ nav a:hover {
   bottom: -1px;
   left: 0;
   right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, #667eea 50%, transparent 100%);
-  opacity: 0.5;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--primary-300) 50%, transparent 100%);
+  opacity: 0.6;
 }
 
 .progress-step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-3);
   position: relative;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--transition-base);
 }
 
 .step-number {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: #e5e7eb;
-  color: #9ca3af;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: var(--bg-muted);
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  font-size: 1.125rem;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-weight: 700;
+  font-size: var(--font-size-lg);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
   position: relative;
   z-index: 2;
-  border: 3px solid white;
+  border: 3px solid var(--bg-white);
 }
 
 .step-label {
-  font-size: 0.875rem;
-  color: #6b7280;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
   font-weight: 600;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  letter-spacing: 0.3px;
+  transition: all var(--transition-base);
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .progress-step.active .step-number {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
   color: white;
-  transform: scale(1.15);
-  box-shadow:
-    0 4px 16px rgba(102, 126, 234, 0.4),
-    0 0 0 4px rgba(102, 126, 234, 0.1);
-  animation: pulse 2s ease-in-out infinite;
+  transform: scale(1.1);
+  box-shadow: var(--shadow-primary);
+  animation: stepPulse 2s ease-in-out infinite;
 }
 
-@keyframes pulse {
+@keyframes stepPulse {
   0%, 100% {
-    box-shadow:
-      0 4px 16px rgba(102, 126, 234, 0.4),
-      0 0 0 4px rgba(102, 126, 234, 0.1);
+    box-shadow: var(--shadow-primary), 0 0 0 4px rgba(71, 161, 191, 0.1);
   }
   50% {
-    box-shadow:
-      0 4px 20px rgba(102, 126, 234, 0.5),
-      0 0 0 6px rgba(102, 126, 234, 0.15);
+    box-shadow: var(--shadow-primary-lg), 0 0 0 6px rgba(71, 161, 191, 0.15);
   }
 }
 
 .progress-step.active .step-label {
-  color: #667eea;
+  color: var(--primary-500);
   font-weight: 700;
 }
 
 .progress-step.completed .step-number {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
   color: white;
-  box-shadow: 0 2px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.25);
 }
 
 .progress-step.completed .step-number::after {
   content: '✓';
   position: absolute;
-  font-size: 1.25rem;
-  font-weight: 900;
+  font-size: var(--font-size-lg);
+  font-weight: 800;
 }
 
 .progress-step.completed .step-label {
-  color: #10b981;
+  color: var(--success-color);
 }
 
 .progress-line {
   height: 3px;
-  width: 60px;
-  background: #e5e7eb;
-  margin: 0 0.75rem;
+  width: 50px;
+  background: var(--bg-muted);
+  margin: 0 var(--space-3);
   position: relative;
-  border-radius: 10px;
+  border-radius: var(--radius-full);
   overflow: hidden;
-  transition: all 0.4s ease;
+  transition: all var(--transition-base);
 }
 
 .progress-step.completed + .progress-line {
-  background: linear-gradient(90deg, #10b981 0%, #667eea 100%);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  background: linear-gradient(90deg, var(--success-color) 0%, var(--primary-400) 100%);
+  box-shadow: 0 1px 6px rgba(16, 185, 129, 0.25);
 }
 
 /* Enrollment Content */
@@ -902,30 +943,6 @@ nav a:hover {
 @media (min-width: 1400px) {
   .enrollment-content {
     padding: 3.5rem 4rem;
-  }
-}
-
-/* Layout con resumen lateral */
-.enrollment-layout-with-summary {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 32px;
-  align-items: start;
-}
-
-.enrollment-summary-sidebar {
-  width: 100%;
-}
-
-.enrollment-main-content {
-  width: 100%;
-  min-width: 0;
-}
-
-@media (max-width: 1024px) {
-  .enrollment-layout-with-summary {
-    grid-template-columns: 1fr;
-    gap: 24px;
   }
 }
 
@@ -1238,33 +1255,12 @@ nav a:hover {
   border-bottom-color: #e0e7ff;
 }
 
-/* Pricing section */
-.plan-pricing {
-  padding: 2rem 1.5rem;
-  text-align: center;
-  background: white;
-}
-
-.plan-option.selected .plan-pricing {
-  background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
-}
-
 .price-display {
   display: flex;
   align-items: baseline;
   justify-content: center;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
-}
-
-.price-currency {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #475569;
-}
-
-.plan-option.selected .price-currency {
-  color: #667eea;
 }
 
 .price-amount {
@@ -1284,59 +1280,6 @@ nav a:hover {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
-
-.price-period {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #64748b;
-}
-
-/* Highlight section (número de clases) */
-.plan-highlight {
-  padding: 2rem 1.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  text-align: center;
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.plan-highlight::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-  animation: shimmer 3s ease-in-out infinite;
-}
-
-@keyframes shimmer {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(10%, 10%); }
-}
-
-.highlight-number {
-  font-size: 3.5rem;
-  font-weight: 900;
-  color: white;
-  line-height: 1;
-  margin-bottom: 0.5rem;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  position: relative;
-  z-index: 1;
-}
-
-.highlight-label {
-  font-size: 0.9375rem;
-  color: rgba(255, 255, 255, 0.95);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 700;
-  position: relative;
-  z-index: 1;
 }
 
 /* Features section */
@@ -1388,61 +1331,6 @@ nav a:hover {
   border-radius: 50%;
   font-size: 12px;
   font-weight: 900;
-}
-
-/* CTA Button */
-.plan-cta-button {
-  margin: 0 1.5rem 1.5rem;
-  padding: 0.875rem 1.5rem;
-  background: #111827;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: calc(100% - 3rem);
-}
-
-.plan-cta-button:hover:not(:disabled) {
-  background: #1f2937;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.plan-cta-button.selected {
-  background: #6366f1;
-}
-
-.plan-cta-button.selected:hover {
-  background: #4f46e5;
-}
-
-.plan-cta-button:disabled {
-  background: #e5e7eb;
-  color: #9ca3af;
-  cursor: not-allowed;
-}
-
-/* Plan selection - nuevos estilos para compatibilidad */
-.selection-summary {
-  background: #f0f9ff;
-  border-left: 4px solid var(--primary-color);
-  padding: 1rem 1.5rem;
-  margin-bottom: 2rem;
-  border-radius: 0.5rem;
-}
-
-.selection-summary p {
-  margin: 0;
-  color: var(--text-dark);
-  font-size: 0.95rem;
-}
-
-.selection-summary strong {
-  color: var(--primary-color);
-  font-weight: 600;
 }
 
 .plan-option.incompatible {
@@ -1593,36 +1481,6 @@ nav a:hover {
   margin-bottom: 2rem;
 }
 
-.schedules-selection {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.schedule-option {
-  padding: 1.5rem;
-  border: 2px solid var(--border-color);
-  border-radius: 0.75rem;
-  cursor: pointer;
-  text-align: center;
-  transition: all 0.3s;
-}
-
-.schedule-option:hover:not(.disabled) {
-  border-color: var(--primary-color);
-  box-shadow: var(--shadow-md);
-}
-
-.schedule-option.selected {
-  border-color: var(--primary-color);
-  background: rgba(99, 102, 241, 0.05);
-}
-
-.schedule-option.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .schedule-day {
   font-weight: 700;
   color: var(--text-dark);
@@ -1633,12 +1491,6 @@ nav a:hover {
 .schedule-time {
   color: var(--text-light);
   margin-bottom: 0.75rem;
-}
-
-.schedule-availability {
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--border-color);
-  font-size: 0.875rem;
 }
 
 .slots-full {
@@ -2022,24 +1874,6 @@ nav a:hover {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.summary-detail {
-  color: var(--text-light);
-  font-size: 0.875rem;
-  font-weight: 400;
-}
-
-.section-summary {
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  background: var(--bg-white);
-  border-radius: 0.5rem;
-  border-left: 3px solid var(--primary-color);
-}
-
-.section-summary:last-of-type {
-  margin-bottom: 0;
-}
-
 .section-title {
   font-weight: 600;
   color: var(--text-dark);
@@ -2124,35 +1958,14 @@ nav a:hover {
   margin-bottom: 0.25rem;
 }
 
-.payment-method-description {
-  font-size: 0.875rem;
-  color: var(--text-light);
-}
-
 .payment-container {
   max-width: 500px;
   margin: 2rem auto 0;
 }
 
-.webpay-container {
-  max-width: 500px;
-  margin: 0 auto;
-}
-
 .webpay-logo {
   text-align: center;
   margin-bottom: 2rem;
-}
-
-.webpay-text {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--primary-color);
-  margin-bottom: 0.5rem;
-}
-
-.webpay-subtitle {
-  color: var(--text-light);
 }
 
 .payment-info {
@@ -2213,56 +2026,6 @@ nav a:hover {
   }
   50% {
     opacity: 1;
-  }
-}
-
-.payment-confirmation {
-  text-align: center;
-  padding: 3rem 0;
-}
-
-.confirmation-icon {
-  width: 80px;
-  height: 80px;
-  background: var(--success-color);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-  margin: 0 auto 1.5rem;
-}
-
-.loading-dots {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.loading-dots span {
-  width: 10px;
-  height: 10px;
-  background: var(--primary-color);
-  border-radius: 50%;
-  animation: bounce 1.4s infinite ease-in-out both;
-}
-
-.loading-dots span:nth-child(1) {
-  animation-delay: -0.32s;
-}
-
-.loading-dots span:nth-child(2) {
-  animation-delay: -0.16s;
-}
-
-@keyframes bounce {
-  0%, 80%, 100% {
-    transform: scale(0);
-  }
-  40% {
-    transform: scale(1);
   }
 }
 
@@ -2364,34 +2127,35 @@ nav a:hover {
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2.5rem;
-  padding-top: 2rem;
-  border-top: 1px solid #f3f4f6;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-light);
 }
 
 .btn-primary,
 .btn-secondary {
-  padding: 1rem 2.5rem;
+  padding: var(--space-4) var(--space-8);
   border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 700;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--transition-base);
   position: relative;
   overflow: hidden;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
   color: white;
-  box-shadow:
-    0 4px 15px rgba(102, 126, 234, 0.4),
-    0 2px 8px rgba(118, 75, 162, 0.2);
+  box-shadow: var(--shadow-primary);
 }
 
 .btn-primary::before {
@@ -2401,7 +2165,7 @@ nav a:hover {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
   transition: left 0.5s ease;
 }
 
@@ -2410,14 +2174,12 @@ nav a:hover {
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow:
-    0 8px 25px rgba(102, 126, 234, 0.5),
-    0 4px 12px rgba(118, 75, 162, 0.3);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary-lg);
 }
 
 .btn-primary:active:not(:disabled) {
-  transform: translateY(-1px) scale(0.98);
+  transform: translateY(0);
 }
 
 .btn-primary:disabled {
@@ -2425,29 +2187,52 @@ nav a:hover {
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+  background: var(--bg-muted);
+  color: var(--text-muted);
 }
 
 .btn-secondary {
-  background: white;
-  color: #374151;
-  border: 2px solid #e5e7eb;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background: var(--bg-white);
+  color: var(--primary-500);
+  border: 2px solid var(--primary-200);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary:hover {
-  background: #f9fafb;
-  border-color: #667eea;
-  color: #667eea;
+  background: var(--primary-50);
+  border-color: var(--primary-400);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-secondary:active {
   transform: translateY(0);
 }
 
-.btn-webpay {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  border-color: var(--border-light);
+  color: var(--text-muted);
+}
+
+/* Botón terciario/ghost */
+.btn-ghost {
+  padding: var(--space-3) var(--space-6);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background: transparent;
+  color: var(--primary-500);
+}
+
+.btn-ghost:hover {
+  background: var(--primary-50);
+  color: var(--primary-600);
 }
 
 /* Change dates checkbox */
@@ -2614,10 +2399,6 @@ nav a:hover {
   }
 
   .plans-selection {
-    grid-template-columns: 1fr;
-  }
-
-  .schedules-selection {
     grid-template-columns: 1fr;
   }
 

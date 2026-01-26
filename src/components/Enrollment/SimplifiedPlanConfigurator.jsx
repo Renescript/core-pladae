@@ -70,14 +70,12 @@ const SimplifiedPlanConfigurator = ({
     onContinue && onContinue();
   };
 
-  // Separar clase de prueba de planes regulares
-  const trialClass = weeklyPlans.find(plan =>
-    plan.weekly_classes === 1 && plan.number_of_classes === 1
-  );
+  // Separar clase de prueba, eventos especiales y planes regulares usando event_type
+  const trialClass = weeklyPlans.find(plan => plan.event_type === 'trial');
+  const specialEventClass = weeklyPlans.find(plan => plan.event_type === 'special_event');
 
-  const regularPlans = weeklyPlans.filter(plan =>
-    !(plan.weekly_classes === 1 && plan.number_of_classes === 1)
-  );
+  // Planes regulares son los que tienen event_type null
+  const regularPlans = weeklyPlans.filter(plan => plan.event_type === null);
 
   // Estado para saber si está seleccionada la clase de prueba
   const [isTrialSelected, setIsTrialSelected] = useState(false);

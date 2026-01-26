@@ -1,83 +1,105 @@
+/* ===========================================
+   START DATE SELECTOR
+   Calendario de selección de fecha de inicio
+   Estilos específicos del componente
+   =========================================== */
+
+/* ===========================================
+   CONTENEDOR PRINCIPAL
+   =========================================== */
+
 .start-date-selector {
-  margin: 2rem 0;
+  margin: var(--space-8) 0;
   padding: 0;
 }
 
 .calendar-header {
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-8);
   text-align: center;
 }
 
 .calendar-header h3 {
-  margin: 0 0 0.75rem 0;
-  font-size: 1.5rem;
-  color: #1f2937;
+  margin: 0 0 var(--space-3) 0;
+  font-size: var(--font-size-xl);
+  color: var(--text-dark);
   font-weight: 700;
 }
 
 .calendar-description {
-  color: #6b7280;
-  font-size: 0.9375rem;
+  color: var(--text-light);
+  font-size: var(--font-size-base);
   line-height: 1.5;
   margin: 0;
 }
 
 .calendar-description strong {
-  color: #47a1bf;
+  color: var(--primary-500);
   font-weight: 600;
 }
+
+/* ===========================================
+   CONTENEDOR DEL CALENDARIO
+   =========================================== */
 
 .calendar-container {
   max-width: 1200px;
   margin: 0 auto;
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 1.75rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e5e7eb;
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-7);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
 }
+
+/* ===========================================
+   NAVEGACIÓN
+   =========================================== */
 
 .calendar-nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .current-month {
   margin: 0;
-  font-size: 1.375rem;
+  font-size: var(--font-size-xl);
   font-weight: 700;
-  color: #111827;
+  color: var(--text-dark);
   text-transform: capitalize;
   text-align: center;
 }
 
 .nav-button {
-  background: #f9fafb;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  background: var(--bg-light);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
   font-weight: 600;
-  color: #374151;
+  color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
 .nav-button:hover {
-  background: #ffffff;
-  border-color: #47a1bf;
-  color: #47a1bf;
+  background: var(--bg-white);
+  border-color: var(--primary-400);
+  color: var(--primary-500);
 }
+
+/* ===========================================
+   GRID DEL CALENDARIO
+   =========================================== */
 
 .date-calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px 8px;
-  margin-bottom: 1rem;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
 }
 
 .date-calendar-weekdays {
@@ -87,9 +109,9 @@
 .date-calendar-weekdays div {
   text-align: center;
   font-weight: 600;
-  font-size: 0.75rem;
-  color: #6b7280;
-  padding: 8px 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-light);
+  padding: var(--space-2) 0;
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.025em;
@@ -101,14 +123,18 @@
   display: contents;
 }
 
+/* ===========================================
+   CELDAS DE DÍAS
+   =========================================== */
+
 .date-calendar-day {
-  background: #f9fafb;
-  border-radius: 8px;
-  font-size: 1rem;
+  background: var(--bg-light);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
   font-weight: 600;
-  color: #d1d5db;
+  color: var(--border-default);
   cursor: not-allowed;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -118,78 +144,78 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1;
-  box-shadow: inset 0 0 0 2px #e5e7eb;
+  box-shadow: inset 0 0 0 2px var(--border-light);
   border: none;
 }
 
 .date-calendar-day.other-month {
   opacity: 0.3;
-  background: #fafbfc;
-  color: #e5e7eb;
-  box-shadow: inset 0 0 0 2px #f3f4f6;
+  background: var(--bg-light);
+  color: var(--border-light);
+  box-shadow: inset 0 0 0 2px var(--bg-muted);
 }
 
 .date-calendar-day.available {
-  background: #ffffff;
-  color: #111827;
+  background: var(--bg-white);
+  color: var(--text-dark);
   cursor: pointer;
   font-weight: 700;
-  box-shadow: inset 0 0 0 2px #47a1bf;
+  box-shadow: inset 0 0 0 2px var(--primary-400);
 }
 
 .date-calendar-day.available:hover {
-  background: #eff6ff;
+  background: var(--primary-50);
 }
 
 .date-calendar-day.selected {
-  background: #47a1bf;
-  color: #ffffff;
+  background: var(--primary-400);
+  color: white;
   font-weight: 700;
-  box-shadow: inset 0 0 0 2px #47a1bf;
+  box-shadow: inset 0 0 0 2px var(--primary-400);
 }
 
 .date-calendar-day.selected:hover {
-  background: #3b8ca8;
+  background: var(--primary-500);
 }
 
 .date-calendar-day.past {
   opacity: 0.3;
   cursor: not-allowed;
-  background: #fafbfc;
-  color: #e5e7eb;
-  box-shadow: inset 0 0 0 2px #f3f4f6;
+  background: var(--bg-light);
+  color: var(--border-light);
+  box-shadow: inset 0 0 0 2px var(--bg-muted);
 }
 
 .date-calendar-day.class-date {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
   color: white;
   cursor: default;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.25rem;
+  gap: var(--space-1);
   font-weight: 600;
-  box-shadow: inset 0 0 0 2px #10b981;
+  box-shadow: inset 0 0 0 2px var(--success-color);
 }
 
 .date-calendar-day.start-date {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
   color: white;
   font-weight: 700;
-  box-shadow: inset 0 0 0 2px #f59e0b, 0 4px 12px rgba(245, 158, 11, 0.4);
+  box-shadow: inset 0 0 0 2px var(--warning-color), 0 4px 12px rgba(245, 158, 11, 0.4);
 }
 
 .date-calendar-day .day-number {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
 }
 
 .date-calendar-day .class-badge {
   font-size: 0.65rem;
   font-weight: 600;
   background: rgba(255, 255, 255, 0.3);
-  padding: 0.1rem 0.3rem;
-  border-radius: 4px;
+  padding: var(--space-px) var(--space-1);
+  border-radius: var(--radius-xs);
   white-space: nowrap;
 }
 
@@ -197,58 +223,61 @@
   cursor: not-allowed;
 }
 
+/* ===========================================
+   INFO DE FECHA SELECCIONADA
+   =========================================== */
+
 .selected-date-info {
-  margin-top: 1.25rem;
-  padding: 1rem 1.25rem;
-  background: #eff6ff;
-  border-radius: 8px;
-  border: 1px solid #47a1bf;
+  margin-top: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  background: var(--primary-50);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--primary-400);
   text-align: center;
-  color: #111827;
-  font-size: 0.9375rem;
+  color: var(--text-dark);
+  font-size: var(--font-size-base);
   font-weight: 600;
 }
 
 .selected-date-info strong {
-  color: #47a1bf;
+  color: var(--primary-500);
   text-transform: capitalize;
   font-weight: 700;
 }
+
+/* ===========================================
+   ESTADOS DE CARGA Y ERROR
+   =========================================== */
 
 .loading-dates,
 .error-dates,
 .no-dates-message {
   text-align: center;
-  padding: 2.5rem 2rem;
-  color: #6b7280;
+  padding: var(--space-10) var(--space-8);
+  color: var(--text-light);
 }
 
 .loading-dates .spinner {
-  border: 3px solid #f3f4f6;
-  border-top: 3px solid #47a1bf;
-  border-radius: 50%;
+  border: 3px solid var(--bg-muted);
+  border-top: 3px solid var(--primary-400);
+  border-radius: var(--radius-full);
   width: 40px;
   height: 40px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 1rem;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  animation: enrollment-spin 1s linear infinite;
+  margin: 0 auto var(--space-4);
 }
 
 .loading-dates p {
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
-  color: #374151;
+  color: var(--text-muted);
 }
 
 .error-dates {
-  color: #dc2626;
-  background: #fee2e2;
-  border-radius: 8px;
-  padding: 1.5rem;
+  color: var(--error-color);
+  background: var(--error-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
   border: 1px solid #ef4444;
   font-weight: 600;
 }
@@ -256,45 +285,49 @@
 .no-dates-message {
   background: #fef3c7;
   color: #92400e;
-  border-radius: 8px;
-  padding: 1.5rem;
-  border: 1px solid #fbbf24;
-  margin-top: 1rem;
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  border: 1px solid var(--warning-color);
+  margin-top: var(--space-4);
   font-weight: 600;
 }
 
+/* ===========================================
+   LEYENDA
+   =========================================== */
+
 .calendar-legend {
   display: flex;
-  gap: 1.5rem;
+  gap: var(--space-6);
   justify-content: center;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 2px solid #e9ecef;
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 2px solid var(--border-light);
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  color: #495057;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
 }
 
 .legend-color {
   width: 20px;
   height: 20px;
-  border-radius: 4px;
-  border: 2px solid #dee2e6;
+  border-radius: var(--radius-xs);
+  border: 2px solid var(--border-light);
 }
 
 .legend-color.start-date-color {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  border-color: #f59e0b;
+  background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+  border-color: var(--warning-color);
 }
 
 .legend-color.class-date-color {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  border-color: #10b981;
+  background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+  border-color: var(--success-color);
 }
 
 .legend-text {
@@ -303,9 +336,9 @@
 
 .info-message {
   text-align: center;
-  color: #6b7280;
-  font-size: 0.9375rem;
-  margin: 1rem 0;
+  color: var(--text-light);
+  font-size: var(--font-size-base);
+  margin: var(--space-4) 0;
   font-weight: 500;
 }
 
@@ -313,64 +346,67 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 3rem;
-  background: #f9fafb;
-  border-radius: 12px;
-  border: 2px dashed #d1d5db;
-  margin: 2rem 0;
+  padding: var(--space-10);
+  background: var(--bg-light);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--border-default);
+  margin: var(--space-8) 0;
 }
 
-/* Responsive */
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+
 @media (max-width: 768px) {
   .start-date-selector {
     padding: 0;
   }
 
   .calendar-container {
-    padding: 1.25rem;
+    padding: var(--space-5);
     max-width: 100%;
   }
 
   .calendar-nav {
     flex-direction: column;
-    gap: 0.75rem;
-    margin-bottom: 1.25rem;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
   }
 
   .current-month {
-    font-size: 1.25rem;
+    font-size: var(--font-size-lg);
   }
 
   .nav-button {
     width: 100%;
-    padding: 0.625rem 1rem;
+    padding: var(--space-3) var(--space-4);
   }
 
   .date-calendar-grid {
-    gap: 6px 6px;
+    gap: var(--space-2);
   }
 
   .date-calendar-weekdays div {
     font-size: 0.6875rem;
-    padding: 6px 0;
+    padding: var(--space-2) 0;
     margin: 0;
   }
 
   .date-calendar-day {
-    font-size: 0.875rem;
-    border-radius: 6px;
+    font-size: var(--font-size-sm);
+    border-radius: var(--radius-sm);
   }
 
   .calendar-header h3 {
-    font-size: 1.25rem;
+    font-size: var(--font-size-lg);
   }
 
   .calendar-description {
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
   }
 
   .selected-date-info {
-    font-size: 0.875rem;
-    padding: 0.875rem 1rem;
+    font-size: var(--font-size-sm);
+    padding: var(--space-3) var(--space-4);
   }
 }

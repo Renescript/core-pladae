@@ -1,6 +1,16 @@
+/* ===========================================
+   SIMPLIFIED PLAN CONFIGURATOR
+   Selector de frecuencia y días de clase
+   Estilos específicos del componente
+   =========================================== */
+
+/* ===========================================
+   CLASE DE PRUEBA
+   =========================================== */
+
 .trial-class-section {
-  margin-bottom: 2rem;
-  max-width: 1200px;
+  margin-bottom: var(--space-8);
+  max-width: 900px;
   margin-left: auto;
   margin-right: auto;
   text-align: center;
@@ -8,167 +18,151 @@
 
 .trial-class-button {
   width: 100%;
-  background: linear-gradient(135deg, #f0f9fb 0%, #ffffff 100%);
-  border: 3px solid #47a1bf;
-  border-radius: 16px;
-  padding: 1.5rem 2rem;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #47a1bf;
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--bg-white) 100%);
+  border: 2px solid var(--primary-300);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-6);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--primary-500);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-base);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  box-shadow: 0 2px 8px rgba(71, 161, 191, 0.15);
+  gap: var(--space-3);
+  box-shadow: var(--shadow-sm);
 }
 
 .trial-class-button:hover {
-  background: linear-gradient(135deg, #47a1bf 0%, #5ca1a9 100%);
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
+  border-color: var(--primary-400);
   color: white;
-  box-shadow: 0 4px 16px rgba(71, 161, 191, 0.3);
+  box-shadow: var(--shadow-primary);
   transform: translateY(-2px);
 }
 
 .trial-class-button.selected {
-  background: linear-gradient(135deg, #47a1bf 0%, #5ca1a9 100%);
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
+  border-color: var(--primary-400);
   color: white;
-  box-shadow: 0 4px 16px rgba(71, 161, 191, 0.3);
+  box-shadow: var(--shadow-primary);
 }
 
 .trial-icon {
-  font-size: 1.75rem;
+  font-size: var(--font-size-2xl);
 }
 
 .trial-text {
-  font-size: 1.25rem;
+  font-size: var(--font-size-lg);
 }
 
-.config-section {
-  margin-bottom: 3rem;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.config-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 1.5rem 0;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.days-counter {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #47a1bf;
-  background: #f0f9fb;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-}
+/* ===========================================
+   CARDS DE FRECUENCIA
+   =========================================== */
 
 .frequency-options {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
+  gap: var(--space-4);
 }
 
 .frequency-card {
-  background: white;
-  border: 3px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 2rem;
+  background: var(--bg-white);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: var(--space-2);
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-height: 140px;
+  transition: all var(--transition-base);
+  min-height: 120px;
 }
 
 .frequency-card:hover {
-  border-color: #47a1bf;
-  box-shadow: 0 4px 12px rgba(71, 161, 191, 0.1);
+  border-color: var(--primary-300);
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
 .frequency-card.selected {
-  border-color: #47a1bf;
-  background: linear-gradient(135deg, #f0f9fb 0%, #ffffff 100%);
-  box-shadow: 0 4px 16px rgba(71, 161, 191, 0.2);
+  border-color: var(--primary-400);
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--bg-white) 100%);
+  box-shadow: var(--shadow-primary);
 }
 
 .frequency-number {
-  font-size: 3rem;
+  font-size: var(--font-size-4xl);
   font-weight: 800;
-  color: #1f2937;
+  color: var(--text-dark);
   line-height: 1;
 }
 
 .frequency-card.selected .frequency-number {
-  color: #47a1bf;
+  color: var(--primary-500);
 }
 
 .frequency-label {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #6b7280;
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--text-light);
   text-align: center;
 }
 
 .frequency-card.selected .frequency-label {
-  color: #47a1bf;
+  color: var(--primary-500);
+  font-weight: 600;
 }
+
+/* ===========================================
+   CARDS DE DÍAS
+   =========================================== */
 
 .days-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 
 .day-card {
-  background: white;
-  border: 3px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 1rem;
+  background: var(--bg-white);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
   text-align: center;
   font-weight: 600;
-  font-size: 1rem;
-  color: #1f2937;
+  font-size: var(--font-size-base);
+  color: var(--text-dark);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-base);
   position: relative;
-  min-height: 60px;
+  min-height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .day-card:hover {
-  border-color: #47a1bf;
-  box-shadow: 0 2px 8px rgba(71, 161, 191, 0.1);
+  border-color: var(--primary-300);
+  box-shadow: var(--shadow-sm);
 }
 
 .day-card.selected {
-  border-color: #47a1bf;
-  background: linear-gradient(135deg, #47a1bf 0%, #5ca1a9 100%);
+  border-color: var(--primary-400);
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(71, 161, 191, 0.3);
+  box-shadow: var(--shadow-primary);
 }
 
 .day-checkmark {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  font-size: 1rem;
+  top: var(--space-2);
+  right: var(--space-2);
+  font-size: var(--font-size-sm);
   font-weight: 700;
   animation: checkPop 0.3s ease;
 }
@@ -185,38 +179,10 @@
   }
 }
 
-.info-note {
-  text-align: center;
-  color: #6b7280;
-  font-size: 0.95rem;
-  margin: 1.5rem 0 0 0;
-  font-style: italic;
-  background: #f9fafb;
-  padding: 0.75rem;
-  border-radius: 8px;
-  border-left: 4px solid #47a1bf;
-}
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
 
-.loading-message,
-.error-message {
-  text-align: center;
-  padding: 2rem;
-  margin: 2rem 0;
-  border-radius: 12px;
-}
-
-.loading-message {
-  background: #f0f9fb;
-  color: #47a1bf;
-}
-
-.error-message {
-  background: #fef2f2;
-  color: #dc2626;
-  border: 2px solid #fecaca;
-}
-
-/* Responsive */
 @media (max-width: 1024px) {
   .frequency-options {
     grid-template-columns: repeat(2, 1fr);
@@ -224,28 +190,18 @@
 }
 
 @media (max-width: 640px) {
-  .config-section {
-    max-width: 100%;
-  }
-
-  .config-title {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
   .frequency-options {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    gap: var(--space-3);
   }
 
   .frequency-card {
-    min-height: 120px;
-    padding: 1.5rem;
+    min-height: 100px;
+    padding: var(--space-4);
   }
 
   .frequency-number {
-    font-size: 2.5rem;
+    font-size: var(--font-size-3xl);
   }
 
   .days-grid {
@@ -253,20 +209,20 @@
   }
 
   .day-card {
-    min-height: 50px;
-    font-size: 0.9rem;
+    min-height: 48px;
+    font-size: var(--font-size-sm);
   }
 
   .trial-class-button {
-    padding: 1rem 1.5rem;
-    font-size: 1.1rem;
+    padding: var(--space-4) var(--space-5);
+    font-size: var(--font-size-base);
   }
 
   .trial-icon {
-    font-size: 1.5rem;
+    font-size: var(--font-size-xl);
   }
 
   .trial-text {
-    font-size: 1.1rem;
+    font-size: var(--font-size-base);
   }
 }

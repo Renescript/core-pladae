@@ -220,32 +220,6 @@
   border: none;
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-secondary {
-  background: white;
-  color: #4a5568;
-  border: 2px solid #e2e8f0;
-}
-
-.btn-secondary:hover {
-  background: #f7fafc;
-  border-color: #cbd5e0;
-}
-
 /* Responsive para tablets */
 @media (max-width: 1024px) {
   .schedule-content-layout {

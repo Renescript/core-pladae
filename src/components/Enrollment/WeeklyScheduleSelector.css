@@ -1,76 +1,88 @@
-/* Contenedor principal */
+/* ===========================================
+   WEEKLY SCHEDULE SELECTOR
+   Selector de horario semanal
+   Estilos específicos del componente
+   =========================================== */
+
+/* ===========================================
+   CONTENEDOR PRINCIPAL
+   =========================================== */
+
 .weekly-schedule-container {
   display: grid;
   grid-template-columns: 300px 1fr;
-  gap: 24px;
-  margin-top: 20px;
+  gap: var(--space-6);
+  margin-top: var(--space-5);
 }
 
-/* Sidebar de cursos */
+/* ===========================================
+   SIDEBAR DE CURSOS
+   =========================================== */
+
 .course-sidebar {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e8eaed;
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
   max-height: 700px;
   overflow-y: auto;
 }
 
 .course-sidebar h3 {
-  margin: 0 0 16px 0;
-  font-size: 1rem;
+  margin: 0 0 var(--space-4) 0;
+  font-size: var(--font-size-base);
   font-weight: 600;
-  color: #202124;
+  color: var(--text-dark);
 }
 
 .course-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .course-item {
-  padding: 12px;
+  padding: var(--space-3);
   border: 2px solid transparent;
-  border-radius: 10px;
-  background: #fafbfc;
+  border-radius: var(--radius-md);
+  background: var(--bg-light);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
 }
 
 .course-item:hover {
-  background: #f8f9fa;
-  border-color: #8ab4f8;
+  background: var(--bg-light);
+  border-color: var(--primary-300);
 }
 
 .course-item.selected {
-  background: #e8f0fe;
-  border-color: #8ab4f8;
+  background: var(--primary-50);
+  border-color: var(--primary-300);
 }
 
 .course-item-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 6px;
-  gap: 8px;
+  margin-bottom: var(--space-2);
+  gap: var(--space-2);
 }
 
 .course-item-header h4 {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
-  color: #202124;
+  color: var(--text-dark);
   flex: 1;
 }
 
 .course-badge {
-  background: #8ab4f8;
+  background: var(--primary-300);
   color: white;
-  padding: 2px 8px;
-  border-radius: 8px;
-  font-size: 0.7rem;
+  padding: var(--space-px) var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
   white-space: nowrap;
@@ -78,71 +90,81 @@
 
 .course-item-desc {
   margin: 0;
-  font-size: 0.8rem;
-  color: #5f6368;
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
   line-height: 1.4;
 }
 
-/* Calendario semanal */
+/* ===========================================
+   CALENDARIO SEMANAL
+   =========================================== */
+
 .weekly-calendar {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e8eaed;
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
   min-height: 600px;
 }
 
-/* Navegación de semanas */
+/* ===========================================
+   NAVEGACIÓN DE SEMANAS
+   =========================================== */
+
 .week-navigation {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #e8eaed;
+  margin-bottom: var(--space-5);
+  padding: var(--space-3);
+  background: var(--bg-light);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
 }
 
 .week-nav-btn {
-  background: white;
-  border: 1px solid #dadce0;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-size: 0.875rem;
+  background: var(--bg-white);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
   font-weight: 500;
-  color: #5f6368;
+  color: var(--text-light);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
 }
 
 .week-nav-btn:hover {
-  background: #f8f9fa;
-  border-color: #8ab4f8;
-  color: #1a73e8;
+  background: var(--bg-light);
+  border-color: var(--primary-300);
+  color: var(--primary-500);
 }
 
 .week-nav-btn:disabled {
-  background: #f5f5f5;
-  border-color: #e8eaed;
-  color: #c0c0c0;
+  background: var(--bg-muted);
+  border-color: var(--border-light);
+  color: var(--text-muted);
   cursor: not-allowed;
   opacity: 0.6;
 }
 
 .week-nav-btn:disabled:hover {
-  background: #f5f5f5;
-  border-color: #e8eaed;
-  color: #c0c0c0;
+  background: var(--bg-muted);
+  border-color: var(--border-light);
+  color: var(--text-muted);
 }
 
 .week-range {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
-  color: #202124;
+  color: var(--text-dark);
   text-transform: capitalize;
 }
+
+/* ===========================================
+   ESTADO VACÍO
+   =========================================== */
 
 .empty-state {
   display: flex;
@@ -150,20 +172,23 @@
   align-items: center;
   justify-content: center;
   height: 500px;
-  color: #5f6368;
+  color: var(--text-light);
 }
 
 .empty-state svg {
-  margin-bottom: 16px;
-  color: #bdc1c6;
+  margin-bottom: var(--space-4);
+  color: var(--text-muted);
 }
 
 .empty-state p {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   margin: 0;
 }
 
-/* Grid del horario */
+/* ===========================================
+   GRID DEL HORARIO
+   =========================================== */
+
 .schedule-grid {
   display: flex;
   flex-direction: column;
@@ -173,27 +198,27 @@
   display: grid;
   grid-template-columns: 80px repeat(6, 1fr);
   gap: 0;
-  background: #e8eaed;
-  border-radius: 8px 8px 0 0;
+  background: var(--border-light);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
   overflow: hidden;
-  border: 1px solid #e8eaed;
+  border: 1px solid var(--border-light);
 }
 
 .time-column-header {
-  background: #f8f9fa;
-  padding: 12px 8px;
+  background: var(--bg-light);
+  padding: var(--space-3) var(--space-2);
   font-weight: 600;
-  font-size: 0.875rem;
-  color: #5f6368;
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
   text-align: center;
-  border-right: 1px solid #e8eaed;
+  border-right: 1px solid var(--border-light);
 }
 
 .day-header {
-  background: #f8f9fa;
-  padding: 12px 8px;
+  background: var(--bg-light);
+  padding: var(--space-3) var(--space-2);
   text-align: center;
-  border-right: 1px solid #e8eaed;
+  border-right: 1px solid var(--border-light);
 }
 
 .day-header:last-child {
@@ -202,72 +227,76 @@
 
 .day-name {
   font-weight: 600;
-  font-size: 0.875rem;
-  color: #202124;
+  font-size: var(--font-size-sm);
+  color: var(--text-dark);
   text-transform: capitalize;
 }
 
 .day-date {
-  font-size: 0.75rem;
-  color: #5f6368;
-  margin-top: 4px;
+  font-size: var(--font-size-xs);
+  color: var(--text-light);
+  margin-top: var(--space-1);
 }
 
 .schedule-body {
   display: grid;
   grid-template-columns: 80px repeat(6, 1fr);
   grid-auto-rows: 60px;
-  border: 1px solid #e8eaed;
+  border: 1px solid var(--border-light);
   border-top: none;
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
   overflow: hidden;
-  background: white;
+  background: var(--bg-white);
 }
 
 .time-cell {
-  background: #fafbfc;
-  padding: 8px 4px;
-  font-size: 0.8rem;
-  color: #5f6368;
+  background: var(--bg-light);
+  padding: var(--space-2) var(--space-1);
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
   text-align: center;
-  border-right: 1px solid #e8eaed;
-  border-bottom: 1px solid #f1f3f4;
+  border-right: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--bg-muted);
   display: flex;
   align-items: flex-start;
   justify-content: center;
 }
 
 .schedule-cell {
-  background: white;
-  border-right: 1px solid #f1f3f4;
-  border-bottom: 1px solid #f1f3f4;
+  background: var(--bg-white);
+  border-right: 1px solid var(--bg-muted);
+  border-bottom: 1px solid var(--bg-muted);
   position: relative;
-  padding: 4px;
+  padding: var(--space-1);
 }
 
 .schedule-cell:nth-child(7n) {
   border-right: none;
 }
 
+/* ===========================================
+   BLOQUES DE HORARIO
+   =========================================== */
+
 .schedule-block {
-  background: #8ab4f8;
+  background: var(--primary-300);
   color: white;
-  border-radius: 6px;
-  padding: 8px;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  gap: var(--space-1);
+  box-shadow: var(--shadow-sm);
   position: relative;
   z-index: 1;
 }
 
 .schedule-block:hover:not(.disabled) {
-  background: #669df6;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  background: var(--primary-400);
+  box-shadow: var(--shadow-md);
   transform: scale(1.02);
   z-index: 10;
 }
@@ -277,79 +306,74 @@
 }
 
 .schedule-block.selected {
-  background: #81c995;
+  background: var(--success-color);
   border: 2px solid #5bb974;
 }
 
 .schedule-time {
   font-weight: 700;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
 }
 
 .schedule-teacher {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   font-weight: 500;
 }
 
 .schedule-places {
-  font-size: 0.7rem;
+  font-size: var(--font-size-xs);
   opacity: 0.9;
   margin-top: auto;
 }
 
-/* Información del horario seleccionado */
+/* ===========================================
+   INFO DE HORARIO SELECCIONADO
+   =========================================== */
+
 .selected-schedule-info {
-  margin-top: 24px;
-  padding: 20px;
+  margin-top: var(--space-6);
+  padding: var(--space-5);
   background: #e8f5e9;
-  border-radius: 12px;
-  border-left: 3px solid #81c995;
+  border-radius: var(--radius-lg);
+  border-left: 3px solid var(--success-color);
   animation: slideInUp 0.3s ease-out;
 }
 
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .selected-schedule-info h3 {
-  margin: 0 0 16px 0;
+  margin: 0 0 var(--space-4) 0;
   color: #2e7d32;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
 }
 
 .selected-info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .info-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .info-label {
-  font-size: 0.8rem;
-  color: #5f6368;
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
   font-weight: 500;
 }
 
 .info-value {
-  font-size: 0.95rem;
-  color: #202124;
+  font-size: var(--font-size-base);
+  color: var(--text-dark);
   font-weight: 600;
 }
 
-/* Responsive */
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+
 @media (max-width: 1024px) {
   .weekly-schedule-container {
     grid-template-columns: 1fr;
@@ -366,16 +390,16 @@
 
   .time-column-header,
   .time-cell {
-    font-size: 0.75rem;
-    padding: 8px 4px;
+    font-size: var(--font-size-xs);
+    padding: var(--space-2) var(--space-1);
   }
 
   .day-name {
-    font-size: 0.8rem;
+    font-size: var(--font-size-sm);
   }
 
   .day-date {
-    font-size: 0.7rem;
+    font-size: var(--font-size-xs);
   }
 }
 
@@ -386,8 +410,8 @@
   }
 
   .schedule-block {
-    padding: 6px;
-    font-size: 0.7rem;
+    padding: var(--space-2);
+    font-size: var(--font-size-xs);
   }
 
   .selected-info-grid {

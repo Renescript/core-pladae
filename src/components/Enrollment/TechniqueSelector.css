@@ -1,172 +1,69 @@
-/* Simplified Enrollment Styles */
-.simplified-step {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-}
+/* ===========================================
+   TECHNIQUE SELECTOR
+   Selector de técnicas/disciplinas
+   Estilos específicos del componente
+   =========================================== */
 
-.simplified-step.calendar-expanded {
-  max-width: 1400px;
-}
-
-.step-progress {
-  text-align: center;
-  font-size: 0.9rem;
-  color: #6b7280;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.step-title {
-  text-align: center;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 3rem 0;
-  line-height: 1.2;
-}
+/* ===========================================
+   GRID DE TÉCNICAS
+   =========================================== */
 
 .techniques-grid-simple {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
 }
 
 .technique-card-simple {
-  background: white;
-  border: 3px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 2rem 1.5rem;
+  background: var(--bg-white);
+  border: 3px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8) var(--space-6);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: var(--space-4);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-base);
   position: relative;
   min-height: 180px;
 }
 
 .technique-card-simple:hover {
-  border-color: #47a1bf;
-  box-shadow: 0 8px 20px rgba(71, 161, 191, 0.15);
+  border-color: var(--primary-400);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-4px);
 }
 
 .technique-card-simple.selected {
-  border-color: #47a1bf;
-  background: linear-gradient(135deg, #f0f9fb 0%, #ffffff 100%);
-  box-shadow: 0 8px 24px rgba(71, 161, 191, 0.25);
+  border-color: var(--primary-400);
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--bg-white) 100%);
+  box-shadow: var(--shadow-primary-lg);
 }
 
 .technique-icon-large {
-  font-size: 4rem;
+  font-size: var(--font-size-5xl);
   line-height: 1;
 }
 
 .technique-name-large {
-  font-size: 1.25rem;
+  font-size: var(--font-size-lg);
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-dark);
   margin: 0;
   text-align: center;
 }
 
-.selected-checkmark {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #47a1bf 0%, #5ca1a9 100%);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-  font-weight: 700;
-  animation: popIn 0.3s ease;
-}
+/* ===========================================
+   CALENDAR SECTION
+   =========================================== */
 
-@keyframes popIn {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.hint-text {
-  text-align: center;
-  color: #6b7280;
-  font-size: 0.95rem;
-  margin: 1rem 0 2rem 0;
-  font-style: italic;
-}
-
-.step-actions-center {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-.btn-primary-large {
-  padding: 1rem 3rem;
-  background: linear-gradient(135deg, #47a1bf 0%, #5ca1a9 100%);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(71, 161, 191, 0.3);
-  min-width: 200px;
-}
-
-.btn-primary-large:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(71, 161, 191, 0.4);
-}
-
-.btn-primary-large:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-secondary-large {
-  padding: 1rem 3rem;
-  background: white;
-  color: #47a1bf;
-  border: 2px solid #47a1bf;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 200px;
-}
-
-.btn-secondary-large:hover {
-  background: #f0f9fb;
-  transform: translateY(-2px);
-}
-
-/* Calendar Section */
 .calendar-section {
-  margin: 2rem 0;
-  border-top: 1px solid #e5e7eb;
-  padding-top: 2rem;
+  margin: var(--space-8) 0;
+  border-top: 1px solid var(--border-light);
+  padding-top: var(--space-8);
 }
 
 .calendar-section.always-visible .calendar-content {
@@ -175,32 +72,32 @@
 
 .calendar-toggle {
   width: 100%;
-  background: white;
-  border: 2px solid #cbd5e1;
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
+  background: var(--bg-white);
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-6);
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
-  color: #1f2937;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  color: var(--text-dark);
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
 }
 
 .calendar-toggle:hover {
-  border-color: #47a1bf;
-  background: #f8fafc;
-  box-shadow: 0 4px 12px rgba(71, 161, 191, 0.12);
+  border-color: var(--primary-400);
+  background: var(--bg-light);
+  box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
 
 .toggle-icon {
-  font-size: 0.75rem;
-  color: #6b7280;
-  transition: transform 0.3s ease;
+  font-size: var(--font-size-xs);
+  color: var(--text-light);
+  transition: transform var(--transition-base);
 }
 
 .toggle-icon.open {
@@ -208,33 +105,26 @@
 }
 
 .calendar-content {
-  margin-top: 1.5rem;
-  padding: 1.5rem;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 2px solid #cbd5e1;
+  margin-top: var(--space-6);
+  padding: var(--space-6);
+  background: var(--bg-light);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border-default);
   animation: slideDown 0.3s ease;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  box-shadow: var(--shadow-sm);
 }
 
 .calendar-note {
-  font-size: 0.9rem;
-  color: #6b7280;
-  margin: 0 0 1rem 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
+  margin: 0 0 var(--space-4) 0;
   text-align: center;
 }
+
+/* ===========================================
+   CALENDAR GRID
+   =========================================== */
 
 .calendar-grid {
   width: 100%;
@@ -242,9 +132,9 @@
   grid-template-columns: minmax(80px, 120px) repeat(6, minmax(0, 1fr));
   gap: 1px;
   grid-auto-flow: dense;
-  background: #cbd5e1;
+  background: var(--border-default);
   padding: 1px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 
@@ -252,70 +142,70 @@
   display: contents;
 }
 
-.time-column {
-  /* Empty space for time labels */
+.calendar-row {
+  display: contents;
 }
 
 .day-header {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   font-weight: 700;
   color: white;
   text-align: center;
-  padding: 0.6rem;
-  background: linear-gradient(135deg, #47a1bf 0%, #5ca1a9 100%);
+  padding: var(--space-2);
+  background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border: none;
 }
 
-.calendar-row {
-  display: contents;
-}
-
 .time-cell {
-  font-size: 0.75rem;
-  color: #1f2937;
-  padding: 0.6rem 0.5rem;
+  font-size: var(--font-size-xs);
+  color: var(--text-dark);
+  padding: var(--space-2);
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #e2e8f0;
+  background: var(--bg-muted);
   border: none;
 }
 
+/* ===========================================
+   SLOT CELLS
+   =========================================== */
+
 .slot-cell {
-  background: white;
+  background: var(--bg-white);
   border: none;
-  padding: 0.4rem;
-  font-size: 0.75rem;
+  padding: var(--space-1);
+  font-size: var(--font-size-xs);
   text-align: center;
-  color: #6b7280;
+  color: var(--text-light);
   font-weight: 500;
   min-height: 110px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  gap: 0.3rem;
+  gap: var(--space-1);
   position: relative;
   cursor: default;
 }
 
 .slot-cell.empty {
-  background: #f8fafc;
-  color: #cbd5e1;
+  background: var(--bg-light);
+  color: var(--border-default);
   cursor: default;
   align-items: center;
   justify-content: center;
-  font-size: 0.7rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
 }
 
 .slot-cell.multi-course {
-  background: white;
-  padding: 0.3rem;
-  gap: 0.3rem;
+  background: var(--bg-white);
+  padding: var(--space-1);
+  gap: var(--space-1);
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-auto-rows: minmax(auto, 1fr);
@@ -335,14 +225,14 @@
 .slot-cell.multi-course.three-plus-courses {
   grid-template-columns: 1fr;
   grid-auto-rows: auto;
-  gap: 0.2rem;
-  padding: 0.2rem;
+  gap: var(--space-1);
+  padding: var(--space-1);
 }
 
 .slot-cell.multi-course.three-plus-courses .course-item {
   min-height: auto;
   max-height: none;
-  padding: 0.25rem 0.3rem;
+  padding: var(--space-1);
 }
 
 .slot-cell.multi-course.three-plus-courses .slot-course-name {
@@ -350,14 +240,18 @@
   -webkit-line-clamp: 1;
 }
 
+/* ===========================================
+   COURSE ITEMS
+   =========================================== */
+
 .course-item {
-  padding: 0.5rem 0.3rem;
-  border-radius: 6px;
+  padding: var(--space-2) var(--space-1);
+  border-radius: var(--radius-sm);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.2rem;
+  gap: var(--space-1);
   border: 2px solid;
   text-align: center;
   min-height: 55px;
@@ -365,8 +259,8 @@
   overflow: hidden;
   cursor: default;
   pointer-events: none;
-  transition: transform 0.15s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: transform var(--transition-fast);
+  box-shadow: var(--shadow-xs);
 }
 
 .course-item.unavailable {
@@ -375,7 +269,7 @@
 }
 
 .slot-course-name {
-  font-size: 0.7rem;
+  font-size: var(--font-size-xs);
   font-weight: 700;
   line-height: 1.2;
   text-align: center;
@@ -390,146 +284,60 @@
   letter-spacing: 0.02em;
 }
 
-.availability-indicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  flex-shrink: 0;
-}
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
 
-.availability-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.availability-dot.available {
-  background: #10b981;
-  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.3);
-}
-
-.availability-dot.limited {
-  background: #f59e0b;
-  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.3);
-}
-
-.availability-dot.unavailable {
-  background: #9ca3af;
-  box-shadow: 0 0 0 1px rgba(156, 163, 175, 0.3);
-}
-
-.availability-text {
-  font-size: 0.65rem;
-  font-weight: 500;
-  color: #6b7280;
-  white-space: nowrap;
-}
-
-/* Responsive */
 @media (max-width: 640px) {
-  .simplified-step {
-    padding: 1.5rem 1rem;
-  }
-
-  .simplified-step.calendar-expanded {
-    max-width: 100%;
-    padding: 1.5rem 0.5rem;
-  }
-
   .step-title {
-    font-size: 1.5rem;
-    margin-bottom: 2rem;
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--space-8);
   }
 
   .techniques-grid-simple {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    gap: var(--space-4);
   }
 
   .technique-card-simple {
-    padding: 1.5rem 1rem;
+    padding: var(--space-6) var(--space-4);
     min-height: 150px;
   }
 
   .technique-icon-large {
-    font-size: 3rem;
+    font-size: var(--font-size-4xl);
   }
 
   .technique-name-large {
-    font-size: 1rem;
-  }
-
-  .btn-primary-large,
-  .btn-secondary-large {
-    width: 100%;
-    min-width: auto;
-  }
-
-  .step-actions-center {
-    flex-direction: column;
+    font-size: var(--font-size-base);
   }
 
   .calendar-section {
-    margin: 2rem 0;
-    padding-top: 2rem;
+    margin: var(--space-8) 0;
+    padding-top: var(--space-8);
   }
 
   .calendar-grid {
     grid-template-columns: minmax(80px, 100px) repeat(6, minmax(0, 1fr));
-    gap: 0.3rem;
+    gap: var(--space-1);
   }
 
   .calendar-content {
-    padding: 1rem;
-  }
-
-  .time-cell {
-    font-size: 0.75rem;
-  }
-
-  .day-header {
-    font-size: 0.7rem;
-    padding: 0.5rem 0.3rem;
+    padding: var(--space-4);
   }
 
   .slot-cell {
-    padding: 0.3rem;
+    padding: var(--space-1);
     min-height: 120px;
   }
 
-  .slot-cell.multi-course {
-    padding: 0.25rem;
-    gap: 0.25rem;
-  }
-
-  .slot-cell.multi-course.one-course {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr;
-  }
-
-  .slot-cell.multi-course.two-courses {
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(2, 1fr);
-  }
-
   .course-item {
-    padding: 0.4rem;
-    gap: 0.25rem;
+    padding: var(--space-1);
+    gap: var(--space-1);
     min-height: 50px;
   }
 
   .slot-course-name {
     font-size: 0.65rem;
-  }
-
-  .availability-text {
-    font-size: 0.6rem;
-  }
-
-  .availability-dot {
-    width: 6px;
-    height: 6px;
   }
 }

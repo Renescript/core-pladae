@@ -28,17 +28,19 @@ function AppHeader() {
 
   return (
     <header className="app-header">
-      <div className="container">
+      <div className="header-container">
         <div className="logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
           <img src='/logo-gustarte-bla.png' alt="GUSTARTE" />
         </div>
-        <nav>
+        <nav className="nav-center">
           <a href="#courses">Cursos</a>
           <a href="#about">Nosotros</a>
+        </nav>
+        <div className="nav-right">
           <button className="enroll-button" onClick={handleEnrollClick}>
             Inscríbete
           </button>
-        </nav>
+        </div>
       </div>
     </header>
   );

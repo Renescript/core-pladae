@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EnrollmentForm from '../components/Enrollment/EnrollmentForm';
 import SuccessMessage from '../components/Enrollment/SuccessMessage';
+import '../components/Enrollment/enrollment-global.css';
 
 const EnrollmentPage = () => {
   const navigate = useNavigate();
