@@ -19,7 +19,7 @@ const AddAnotherCoursePrompt = ({ completedEnrollments = [], currentCourse, onAd
         ))}
         <div className="course-item current">
           <span>Curso {totalCourses}: {currentCourse?.technique}</span>
-          <span>{currentCourse?.frequency}x/semana</span>
+          <span>{currentCourse?.frequency} vez por semana</span>
         </div>
       </div>
 

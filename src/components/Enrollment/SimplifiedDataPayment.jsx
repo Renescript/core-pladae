@@ -1,35 +1,14 @@
-import { useState, useEffect } from 'react';
-import { getPaymentMethods } from '../../services/api';
+import { useState } from 'react';
 
 const SimplifiedDataPayment = ({
   studentData,
   onStudentDataChange,
-  paymentMethod,
-  onPaymentMethodChange,
   completedEnrollments = [],
   currentEnrollment,
   onComplete,
   onBack
 }) => {
   const [errors, setErrors] = useState({});
-  const [paymentMethods, setPaymentMethods] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadPaymentMethods = async () => {
-      try {
-        setLoading(true);
-        const methods = await getPaymentMethods();
-        setPaymentMethods(methods);
-      } catch (error) {
-        console.error('Error al cargar métodos de pago:', error);
-        setPaymentMethods([{ id: 1, name: 'Webpay', description: 'Tarjeta de crédito/débito' }]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadPaymentMethods();
-  }, []);
 
   const handleInputChange = (field, value) => {
     onStudentDataChange({ ...studentData, [field]: value });
@@ -45,7 +24,6 @@ const SimplifiedDataPayment = ({
     if (!studentData.email?.trim()) newErrors.email = 'Requerido';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(studentData.email)) newErrors.email = 'Email inválido';
     if (!studentData.phone?.trim()) newErrors.phone = 'Requerido';
-    if (!paymentMethod) newErrors.paymentMethod = 'Selecciona un método de pago';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -65,9 +43,14 @@ const SimplifiedDataPayment = ({
     return total;
   };
 
-  if (loading) {
-    return <div className="step-container"><p>Cargando...</p></div>;
-  }
+  const isFormComplete = () => {
+    return (
+      studentData.firstName?.trim() &&
+      studentData.lastName?.trim() &&
+      studentData.email?.trim() &&
+      studentData.phone?.trim()
+    );
+  };
 
   return (
     <div className="step-container">
@@ -124,29 +107,20 @@ const SimplifiedDataPayment = ({
 
       <div className="form-section">
         <h3>Método de pago</h3>
-        <div className="payment-methods">
-          {paymentMethods.map(method => (
-            <button
-              key={method.id}
-              type="button"
-              className={`payment-btn ${paymentMethod === method.id ? 'selected' : ''}`}
-              onClick={() => onPaymentMethodChange(method.id)}
-            >
-              {method.name}
-            </button>
-          ))}
+        <div className="payment-method-single">
+          <img src="/webpay.png" alt="Webpay - Transbank" className="webpay-logo" />
+          {/* <p className="payment-description">Pago seguro con tarjeta de crédito o débito</p> */}
         </div>
-        {errors.paymentMethod && <span className="error-msg">{errors.paymentMethod}</span>}
       </div>
 
       <div className="total-section">
-        <span>Total a pagar:</span>
+        <h3>Total a pagar:</h3>
         <span className="total-amount">${calculateTotal().toLocaleString('es-CL')}</span>
       </div>
 
       <div className="step-actions">
         <button type="button" className="btn-secondary" onClick={onBack}>Volver</button>
-        <button type="button" className="btn-primary" onClick={handleSubmit}>
+        <button type="button" className="btn-primary" onClick={handleSubmit} disabled={!isFormComplete()}>
           Pagar
         </button>
       </div>

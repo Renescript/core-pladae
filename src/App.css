@@ -1190,29 +1190,6 @@ main {
   position: relative;
 }
 
-.summary-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.summary-card:hover {
-  border-color: #667eea;
-  box-shadow:
-    0 8px 20px rgba(102, 126, 234, 0.2),
-    0 4px 8px rgba(102, 126, 234, 0.1);
-  transform: translateY(-4px) scale(1.01);
-}
-
-.summary-card:hover::before {
-  opacity: 1;
-}
 
 .summary-card-header {
   background: #efefef;
@@ -1306,7 +1283,7 @@ main {
 
 .total-amount {
   font-size: 2.5rem;
-  color: white;
+  color: #000000;
   font-weight: 900;
   letter-spacing: -0.02em;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -1328,10 +1305,6 @@ main {
   color: var(--text-dark);
 }
 
-.total-amount {
-  color: #fff;
-  font-size: 2rem;
-}
 
 /* Payment Methods Selection */
 .payment-method-selection {
@@ -1403,7 +1376,6 @@ main {
 
 .webpay-logo {
   text-align: center;
-  margin-bottom: 2rem;
 }
 
 .payment-info {

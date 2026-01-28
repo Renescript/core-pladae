@@ -88,7 +88,6 @@ const DurationSelector = ({
                 )}
                 <span className="total-classes">{priceInfo.totalClasses} clases</span>
                 <span className="price">${priceInfo.finalPrice.toLocaleString('es-CL')}</span>
-                {isSelected && <span className="check">✓</span>}
               </button>
             );
           })}
