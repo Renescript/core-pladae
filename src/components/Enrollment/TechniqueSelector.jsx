@@ -1,116 +1,171 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { getCoursesSchedulesGrid } from '../../services/api';
 import './TechniqueSelector.css';
 
-// Componente para el calendario de horarios
-const CalendarGrid = ({ techniques }) => {
-  const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-  const dayLabels = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue }) => {
+  const [techniques, setTechniques] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeDay, setActiveDay] = useState('monday');
+  const scheduleRef = useRef(null);
 
-  // Extraer todos los horarios únicos
-  const allTimeSlots = new Set();
-  techniques.forEach(technique => {
-    technique.schedules?.forEach(schedule => {
-      allTimeSlots.add(schedule.timeSlot);
+  useEffect(() => {
+    const loadTechniques = async () => {
+      try {
+        setLoading(true);
+        const coursesData = await getCoursesSchedulesGrid();
+        setTechniques(coursesData);
+      } catch (error) {
+        console.error('Error al cargar técnicas:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTechniques();
+  }, []);
+
+  // Días de la semana para la grilla
+  const weekDays = [
+    { key: 'monday', label: 'Lunes' },
+    { key: 'tuesday', label: 'Martes' },
+    { key: 'wednesday', label: 'Miércoles' },
+    { key: 'thursday', label: 'Jueves' },
+    { key: 'friday', label: 'Viernes' },
+    { key: 'saturday', label: 'Sábado' }
+  ];
+
+  // Franjas horarias únicas ordenadas
+  const timeSlots = useMemo(() => {
+    const slots = new Set();
+    techniques.forEach(technique => {
+      technique.schedules?.forEach(schedule => {
+        slots.add(schedule.timeSlot);
+      });
     });
-  });
-  const timeSlots = Array.from(allTimeSlots).sort();
+    return Array.from(slots).sort((a, b) => {
+      const timeA = a.split('-')[0];
+      const timeB = b.split('-')[0];
+      return timeA.localeCompare(timeB);
+    });
+  }, [techniques]);
 
-  // Organizar cursos por día y horario
-  const getCoursesForSlot = (day, timeSlot) => {
-    const courses = [];
+  // Obtener clases para un día y horario específico
+  const getClassesAt = (day, timeSlot) => {
+    const classes = [];
     techniques.forEach(technique => {
       technique.schedules?.forEach(schedule => {
         if (schedule.day === day && schedule.timeSlot === timeSlot) {
-          courses.push({
-            name: technique.name,
-            color: technique.color,
-            teacher: schedule.teacher,
-            available: schedule.available,
-            places: schedule.places
+          classes.push({
+            ...schedule,
+            techniqueName: technique.name,
+            techniqueId: technique.id,
+            color: technique.color
           });
         }
       });
     });
-    return courses;
+    return classes;
   };
 
+  const handleSelectTechnique = (technique) => {
+    onSelectTechnique(technique);
+    // Scroll hacia el calendario después de seleccionar
+    setTimeout(() => {
+      scheduleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
+  const handleContinue = () => {
+    if (!selectedTechnique) {
+      alert('Por favor selecciona una técnica para continuar.');
+      return;
+    }
+    onContinue && onContinue();
+  };
+
+  if (loading) {
+    return (
+      <div className="step-container">
+        <p>Cargando técnicas...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="calendar-section always-visible">
-      <div className="calendar-content">
-          <p className="calendar-note">
-            Visualiza todos los cursos disponibles organizados por día y horario
-          </p>
+    <div className="step-container">
+      <div className="step-header">
+        <span className="step-indicator">Paso 1 de 5</span>
+        <h2>¿Qué técnica te gustaría aprender?</h2>
+      </div>
 
-          <div className="calendar-grid">
-            {/* Header con días de la semana */}
-            <div className="calendar-header">
-              <div className="time-column"></div>
-              {dayLabels.map((label, index) => (
-                <div key={index} className="day-header">{label}</div>
-              ))}
-            </div>
+      {/* Grilla de técnicas */}
+      <div className="techniques-grid">
+        {techniques.map(technique => (
+          <button
+            key={technique.id}
+            type="button"
+            className={`technique-card ${selectedTechnique?.id === technique.id ? 'selected' : ''}`}
+            onClick={() => handleSelectTechnique(technique)}
+            style={{
+              '--technique-color': technique.color
+            }}
+          >
+            <span className="technique-name">
+              {technique.name}
+              <svg
+                className="technique-underline"
+                viewBox="0 0 100 10"
+                preserveAspectRatio="none"
+                style={{ color: technique.color }}
+              >
+                <path d="M0 5 Q 25 0, 50 5 T 100 5" stroke="currentColor" strokeWidth="3" fill="none" />
+              </svg>
+            </span>
+          </button>
+        ))}
+      </div>
 
-            {/* Filas de horarios */}
-            {timeSlots.map((timeSlot, rowIndex) => (
-              <div key={rowIndex} className="calendar-row">
-                <div className="time-cell">{timeSlot}</div>
-                {days.map((day, dayIndex) => {
-                  const courses = getCoursesForSlot(day, timeSlot);
+      {/* Calendario semanal - Desktop */}
+      <div ref={scheduleRef} className="weekly-grid-container weekly-grid-desktop">
+        <h3 className="weekly-grid-title">Horarios disponibles</h3>
+        <div className="weekly-grid">
+          {/* Header con días */}
+          <div className="weekly-grid-header">
+            <div className="weekly-grid-corner"></div>
+            {weekDays.map(day => (
+              <div key={day.key} className="weekly-grid-day-header">
+                {day.label}
+              </div>
+            ))}
+          </div>
 
-                  if (courses.length === 0) {
-                    return (
-                      <div key={dayIndex} className="slot-cell empty">
-                        -
-                      </div>
-                    );
-                  }
-
-                  const courseCountClass =
-                    courses.length === 1 ? 'one-course' :
-                    courses.length === 2 ? 'two-courses' : 'three-plus-courses';
-
+          {/* Filas de horarios */}
+          <div className="weekly-grid-body">
+            {timeSlots.map(timeSlot => (
+              <div key={timeSlot} className="weekly-grid-row">
+                <div className="weekly-grid-time">{timeSlot}</div>
+                {weekDays.map(day => {
+                  const classes = getClassesAt(day.key, timeSlot);
                   return (
-                    <div
-                      key={dayIndex}
-                      className={`slot-cell multi-course ${courseCountClass}`}
-                    >
-                      {courses.map((course, idx) => {
-                        const availability = course.available / course.places;
-                        const statusClass =
-                          availability === 0 ? 'unavailable' :
-                          availability < 0.3 ? 'limited' :
-                          'available';
-
-                        const displayName = course.name.includes('-')
-                          ? course.name.split('-')[0].trim()
-                          : course.name;
-
-                        // Convertir el color hex a rgba con opacidad
-                        const hexToRgba = (hex, alpha) => {
-                          const r = parseInt(hex.slice(1, 3), 16);
-                          const g = parseInt(hex.slice(3, 5), 16);
-                          const b = parseInt(hex.slice(5, 7), 16);
-                          return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-                        };
-
-                        const courseColor = course.color || '#6b7280';
-                        const bgColor = hexToRgba(courseColor, 0.15);
-                        const borderColor = hexToRgba(courseColor, 0.3);
-
+                    <div key={`${day.key}-${timeSlot}`} className="weekly-grid-cell">
+                      {classes.map((cls, idx) => {
+                        const isSelected = selectedTechnique?.id === cls.techniqueId;
                         return (
-                          <div
+                          <button
                             key={idx}
-                            className={`course-item ${statusClass}`}
+                            type="button"
+                            className={`weekly-grid-class ${isSelected ? 'selected' : ''}`}
                             style={{
-                              backgroundColor: bgColor,
-                              borderColor: borderColor
+                              backgroundColor: cls.color,
+                              opacity: selectedTechnique && !isSelected ? 0.4 : 1
                             }}
+                            onClick={() => onSelectTechnique(
+                              techniques.find(t => t.id === cls.techniqueId)
+                            )}
+                            title={cls.techniqueName}
                           >
-                            <div className="slot-course-name" style={{ color: courseColor }}>
-                              {displayName}
-                            </div>
-                          </div>
+                            <span className="class-name">{cls.techniqueName}</span>
+                          </button>
                         );
                       })}
                     </div>
@@ -120,94 +175,78 @@ const CalendarGrid = ({ techniques }) => {
             ))}
           </div>
         </div>
-    </div>
-  );
-};
+      </div>
 
-const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue }) => {
-  const [techniques, setTechniques] = useState([]);
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    const loadTechniques = async () => {
-      try {
-        setLoading(true);
-        const coursesData = await getCoursesSchedulesGrid();
-        console.log('🎨 Técnicas cargadas:', coursesData);
-        setTechniques(coursesData);
-      } catch (error) {
-        console.error('Error al cargar técnicas:', error);
-        alert('Hubo un error al cargar las técnicas disponibles.');
-      } finally {
-        setLoading(false);
-      }
-    };
+      {/* Calendario semanal - Móvil (tabs por día) */}
+      <div className="weekly-grid-container weekly-grid-mobile">
+        <h3 className="weekly-grid-title">Horarios disponibles</h3>
 
-    loadTechniques();
-  }, []);
+        {/* Tabs de días */}
+        <div className="weekly-tabs">
+          {weekDays.map(day => (
+            <button
+              key={day.key}
+              type="button"
+              className={`weekly-tab ${activeDay === day.key ? 'active' : ''}`}
+              onClick={() => setActiveDay(day.key)}
+            >
+              {day.label.slice(0, 3)}
+            </button>
+          ))}
+        </div>
 
-  const handleTechniqueClick = (technique) => {
-    onSelectTechnique(technique);
-  };
+        {/* Contenido del día activo */}
+        <div className="weekly-tab-content">
+          {(() => {
+            const dayClasses = [];
+            timeSlots.forEach(timeSlot => {
+              const classes = getClassesAt(activeDay, timeSlot);
+              classes.forEach(cls => {
+                dayClasses.push({ ...cls, timeSlot });
+              });
+            });
 
-  const handleContinue = () => {
-    if (!selectedTechnique) {
-      alert('⚠️ Por favor selecciona una técnica para continuar.');
-      return;
-    }
-    onContinue && onContinue();
-  };
+            if (dayClasses.length === 0) {
+              return (
+                <div className="weekly-tab-empty">
+                  No hay clases este día
+                </div>
+              );
+            }
 
-  if (loading) {
-    return (
-      <div className="simplified-step">
-        <div className="step-progress">Paso 1 de 5</div>
-        <h2 className="step-title">¿Qué técnica te gustaría aprender?</h2>
-        <div className="loading-message">
-          <div className="spinner"></div>
-          <p>Cargando técnicas disponibles...</p>
+            return dayClasses.map((cls, idx) => {
+              const isSelected = selectedTechnique?.id === cls.techniqueId;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  className={`weekly-tab-class ${isSelected ? 'selected' : ''}`}
+                  style={{
+                    borderLeftColor: cls.color,
+                    opacity: selectedTechnique && !isSelected ? 0.5 : 1
+                  }}
+                  onClick={() => onSelectTechnique(
+                    techniques.find(t => t.id === cls.techniqueId)
+                  )}
+                >
+                  <span className="tab-class-time">{cls.timeSlot}</span>
+                  <span
+                    className="tab-class-name"
+                    style={{ color: cls.color }}
+                  >
+                    {cls.techniqueName}
+                  </span>
+                </button>
+              );
+            });
+          })()}
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div className="simplified-step">
-      <div className="step-progress">Paso 1 de 5</div>
-
-      <h2 className="step-title">¿Qué técnica te gustaría aprender?</h2>
-
-      <div className="techniques-grid-simple">
-        {techniques.map(technique => (
-          <div
-            key={technique.id}
-            className={`technique-card-simple ${selectedTechnique?.id === technique.id ? 'selected' : ''}`}
-            onClick={() => handleTechniqueClick(technique)}
-          >
-            <div className="technique-icon-large" style={{ color: technique.color }}>
-              {/* Mapeo de técnicas a emojis */}
-              {technique.name.toLowerCase().includes('óleo') && '🎨'}
-              {technique.name.toLowerCase().includes('acuarela') && '💧'}
-              {technique.name.toLowerCase().includes('dibujo') && '✏️'}
-              {technique.name.toLowerCase().includes('escultura') && '🗿'}
-              {!technique.name.toLowerCase().match(/óleo|acuarela|dibujo|escultura/) && '🎨'}
-            </div>
-            <h3 className="technique-name-large">{technique.name}</h3>
-            {selectedTechnique?.id === technique.id && (
-              <div className="selected-checkmark">✓</div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      <p className="hint-text">💡 Puedes combinar técnicas más adelante</p>
-
-      {/* Calendario informativo colapsible */}
-      <CalendarGrid techniques={techniques} />
-
-      <div className="step-actions-center">
+      <div className="step-actions">
         <button
-          className="btn-primary-large"
+          type="button"
+          className="btn-primary"
           onClick={handleContinue}
           disabled={!selectedTechnique}
         >

@@ -1,9 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { getSectionCalendar } from '../../services/api';
-import './TechniqueSelector.css';
-import './SimplifiedDateTimeSelector.css';
-import './StartDateSelector.css';
-import './MultiDayScheduleSelector.css';
 
 const MultiDayScheduleSelector = ({
   technique,
@@ -18,50 +14,31 @@ const MultiDayScheduleSelector = ({
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-
-  // Estado temporal para el día actual
   const [tempSelectedDate, setTempSelectedDate] = useState(null);
   const [tempSelectedTimeSlot, setTempSelectedTimeSlot] = useState(null);
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
 
-  // Cargar fechas de TODAS las secciones de la técnica
   useEffect(() => {
     const loadAllDates = async () => {
       if (!technique?.schedules || technique.schedules.length === 0) return;
 
       try {
         setLoading(true);
-        console.log('📅 Cargando fechas de todas las secciones de:', technique.name);
-
         const allDatesPromises = technique.schedules.map(schedule =>
           getSectionCalendar(schedule.section.id)
-            .then(dates => ({
-              sectionId: schedule.section.id,
-              day: schedule.day,
-              dates: dates
-            }))
-            .catch(err => {
-              console.error(`Error al cargar fechas de sección ${schedule.section.id}:`, err);
-              return { sectionId: schedule.section.id, day: schedule.day, dates: [] };
-            })
+            .then(dates => ({ sectionId: schedule.section.id, day: schedule.day, dates }))
+            .catch(() => ({ sectionId: schedule.section.id, day: schedule.day, dates: [] }))
         );
 
         const allSectionDates = await Promise.all(allDatesPromises);
-
         const uniqueDates = new Set();
         allSectionDates.forEach(section => {
-          section.dates.forEach(dateObj => {
-            uniqueDates.add(dateObj.date);
-          });
+          section.dates.forEach(dateObj => uniqueDates.add(dateObj.date));
         });
 
         const datesList = Array.from(uniqueDates).map(date => ({ date }));
-        console.log('📅 Fechas únicas disponibles:', datesList);
         setAllAvailableDates(datesList);
-
-        if (onAvailableDatesChange) {
-          onAvailableDatesChange(datesList);
-        }
+        onAvailableDatesChange && onAvailableDatesChange(datesList);
       } catch (err) {
         console.error('Error al cargar fechas:', err);
       } finally {
@@ -70,9 +47,8 @@ const MultiDayScheduleSelector = ({
     };
 
     loadAllDates();
-  }, [technique, onAvailableDatesChange]);
+  }, [technique]);
 
-  // Cargar estado del día actual desde selectedSchedules
   useEffect(() => {
     if (selectedSchedules[currentDayIndex]) {
       const schedule = selectedSchedules[currentDayIndex];
@@ -84,7 +60,6 @@ const MultiDayScheduleSelector = ({
     }
   }, [currentDayIndex, selectedSchedules]);
 
-  // Cuando se selecciona una fecha, filtrar horarios por día de la semana
   useEffect(() => {
     if (!tempSelectedDate || !technique?.schedules) {
       setAvailableTimeSlots([]);
@@ -92,15 +67,10 @@ const MultiDayScheduleSelector = ({
     }
 
     const selectedDate = new Date(tempSelectedDate + 'T00:00:00');
-    const dayOfWeek = selectedDate.getDay();
-
     const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const dayName = dayNames[dayOfWeek];
-
-    console.log('📅 Fecha seleccionada:', tempSelectedDate, 'Día:', dayName);
+    const dayName = dayNames[selectedDate.getDay()];
 
     const matchingSchedules = technique.schedules.filter(schedule => schedule.day === dayName);
-
     const slots = matchingSchedules.map(schedule => ({
       id: schedule.timeSlot,
       display: schedule.timeSlot.replace('-', ' – '),
@@ -114,31 +84,50 @@ const MultiDayScheduleSelector = ({
     setAvailableTimeSlots(slots);
   }, [tempSelectedDate, technique]);
 
-  const handleTimeSlotClick = (slot) => {
-    setTempSelectedTimeSlot(slot.id);
-  };
+  const availableDatesSet = useMemo(() => {
+    return new Set(allAvailableDates.map(d => d.date));
+  }, [allAvailableDates]);
 
-  const handleSaveCurrentDay = () => {
-    if (!tempSelectedDate) {
-      alert('⚠️ Por favor selecciona una fecha.');
-      return;
+  const days = useMemo(() => {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const result = [];
+
+    const firstDayOfWeek = firstDay.getDay();
+    const daysFromPrevMonth = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+
+    for (let i = daysFromPrevMonth; i > 0; i--) {
+      result.push({ date: new Date(year, month, -i + 1), isCurrentMonth: false });
     }
-    if (!tempSelectedTimeSlot) {
-      alert('⚠️ Por favor selecciona un horario.');
-      return;
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+      result.push({ date: new Date(year, month, day), isCurrentMonth: true });
     }
+    const remainingDays = 7 - (result.length % 7);
+    if (remainingDays < 7) {
+      for (let i = 1; i <= remainingDays; i++) {
+        result.push({ date: new Date(year, month + 1, i), isCurrentMonth: false });
+      }
+    }
+    return result;
+  }, [currentMonth]);
+
+  const handleTimeSlotSelect = (slotId) => {
+    setTempSelectedTimeSlot(slotId);
+
+    // Guardar automáticamente al seleccionar horario
+    if (!tempSelectedDate) return;
 
     const selectedDate = new Date(tempSelectedDate + 'T00:00:00');
-    const dayOfWeek = selectedDate.getDay();
     const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const dayName = dayNames[dayOfWeek];
-
-    const selectedSlot = availableTimeSlots.find(s => s.id === tempSelectedTimeSlot);
+    const dayName = dayNames[selectedDate.getDay()];
+    const selectedSlot = availableTimeSlots.find(s => s.id === slotId);
 
     const newSchedule = {
       dayIndex: currentDayIndex,
       date: tempSelectedDate,
-      timeSlot: tempSelectedTimeSlot,
+      timeSlot: slotId,
       dayOfWeek: dayName,
       sectionId: selectedSlot?.section?.id,
       teacher: selectedSlot?.teacher
@@ -148,275 +137,145 @@ const MultiDayScheduleSelector = ({
     updatedSchedules[currentDayIndex] = newSchedule;
     onSchedulesChange(updatedSchedules);
 
-    // Si hay más días por completar, pasar al siguiente
+    // Avanzar al siguiente día automáticamente
     if (currentDayIndex < frequency - 1) {
-      setCurrentDayIndex(currentDayIndex + 1);
-      setTempSelectedDate(null);
-      setTempSelectedTimeSlot(null);
+      setTimeout(() => {
+        setCurrentDayIndex(currentDayIndex + 1);
+        setTempSelectedDate(null);
+        setTempSelectedTimeSlot(null);
+      }, 300);
     }
   };
 
   const handleContinue = () => {
-    if (selectedSchedules.length < frequency) {
-      alert(`⚠️ Por favor completa todos los ${frequency} días.`);
+    const completedCount = selectedSchedules.filter(s => s && s.date && s.timeSlot).length;
+    if (completedCount < frequency) {
+      alert(`Completa todos los ${frequency} días.`);
       return;
     }
-
-    // Validar que todos los días estén completos
-    for (let i = 0; i < frequency; i++) {
-      if (!selectedSchedules[i] || !selectedSchedules[i].date || !selectedSchedules[i].timeSlot) {
-        alert(`⚠️ Por favor completa el día ${i + 1}.`);
-        return;
-      }
-    }
-
     onContinue && onContinue();
   };
 
-  // Funciones del calendario
-  const isDateAvailable = (date) => {
-    const dateStr = date.toISOString().split('T')[0];
-    return allAvailableDates.some(d => d.date === dateStr);
-  };
-
-  const getDaysInMonth = () => {
-    const year = currentMonth.getFullYear();
-    const month = currentMonth.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const days = [];
-
-    const firstDayOfWeek = firstDay.getDay();
-    const daysFromPrevMonth = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-
-    for (let i = daysFromPrevMonth; i > 0; i--) {
-      const date = new Date(year, month, -i + 1);
-      days.push({ date, isCurrentMonth: false });
-    }
-
-    for (let day = 1; day <= lastDay.getDate(); day++) {
-      const date = new Date(year, month, day);
-      days.push({ date, isCurrentMonth: true });
-    }
-
-    const remainingDays = 7 - (days.length % 7);
-    if (remainingDays < 7) {
-      for (let i = 1; i <= remainingDays; i++) {
-        const date = new Date(year, month + 1, i);
-        days.push({ date, isCurrentMonth: false });
-      }
-    }
-
-    return days;
-  };
-
-  const handleDateClick = (date) => {
-    if (!isDateAvailable(date)) return;
-    const dateStr = date.toISOString().split('T')[0];
-    setTempSelectedDate(dateStr);
-  };
-
-  const goToPreviousMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
-  };
-
-  const goToNextMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
-  };
-
-  const days = getDaysInMonth();
   const monthName = currentMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
 
+  const dayLabels = {
+    sunday: 'Dom',
+    monday: 'Lun',
+    tuesday: 'Mar',
+    wednesday: 'Mié',
+    thursday: 'Jue',
+    friday: 'Vie',
+    saturday: 'Sáb'
+  };
+
+  const formatShortDate = (dateStr) => {
+    const date = new Date(dateStr + 'T00:00:00');
+    return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+  };
+
   if (loading) {
-    return (
-      <div className="simplified-step">
-        <div className="loading-dates">
-          <div className="spinner"></div>
-          <p>Cargando fechas disponibles...</p>
-        </div>
-      </div>
-    );
+    return <div className="step-container"><p>Cargando fechas...</p></div>;
   }
 
-  const currentSchedule = selectedSchedules[currentDayIndex];
-
   return (
-    <div className="simplified-step">
-      <div className="step-progress">Paso 3 de 6</div>
+    <div className="step-container">
+      <div className="step-header">
+        <span className="step-indicator">Paso 3 de 6</span>
+        <h2>Selecciona tus fechas y horarios</h2>
+      </div>
 
-      <h2 className="step-title">Selecciona tus fechas y horarios</h2>
-
-      {/* Indicador de progreso */}
-      <div className="multi-day-progress">
-        <div className="progress-header">
-          <h3>Día {currentDayIndex + 1} de {frequency}</h3>
-          <span className="progress-counter">
-            {selectedSchedules.filter(s => s && s.date && s.timeSlot).length}/{frequency} completados
-          </span>
-        </div>
-        <div className="progress-bar-container">
-          <div
-            className="progress-bar-fill"
-            style={{ width: `${(selectedSchedules.filter(s => s && s.date && s.timeSlot).length / frequency) * 100}%` }}
-          />
-        </div>
-
-        {/* Navegación entre días */}
+      <div className="day-progress">
+        <p>Día {currentDayIndex + 1} de {frequency}</p>
         <div className="day-tabs">
           {Array.from({ length: frequency }).map((_, index) => {
             const schedule = selectedSchedules[index];
             const isCompleted = schedule && schedule.date && schedule.timeSlot;
-            const isCurrent = index === currentDayIndex;
-
             return (
               <button
                 key={index}
-                className={`day-tab ${isCurrent ? 'active' : ''} ${isCompleted ? 'completed' : ''}`}
+                type="button"
+                className={`day-tab ${index === currentDayIndex ? 'active' : ''} ${isCompleted ? 'completed' : ''}`}
                 onClick={() => setCurrentDayIndex(index)}
               >
-                <span className="day-tab-number">Día {index + 1}</span>
-                {isCompleted && <span className="day-tab-check">✓</span>}
+                {isCompleted ? (
+                  <span className="day-tab-summary">
+                    <span className="tab-day">{dayLabels[schedule.dayOfWeek]} {formatShortDate(schedule.date)}</span>
+                    <span className="tab-time">{schedule.timeSlot.replace('-', ' – ')}</span>
+                  </span>
+                ) : (
+                  `Día ${index + 1}`
+                )}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Resumen del día actual si está completo */}
-      {currentSchedule && currentSchedule.date && (
-        <div className="current-day-summary">
-          <p>
-            <strong>Seleccionado:</strong> {new Date(currentSchedule.date + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })} - {currentSchedule.timeSlot}
-          </p>
-        </div>
-      )}
-
-      <div className="datetime-container">
-        {/* Calendario */}
+      <div className="datetime-grid">
         <div className="calendar-section">
-          <h3 className="section-subtitle">1. Selecciona una fecha</h3>
-          <div className="calendar-container">
-            <div className="calendar-nav">
-              <button onClick={goToPreviousMonth} className="nav-button">
-                ← Anterior
-              </button>
-              <h4 className="current-month">{monthName}</h4>
-              <button onClick={goToNextMonth} className="nav-button">
-                Siguiente →
-              </button>
-            </div>
+          <h3>1. Selecciona fecha</h3>
+          <div className="calendar-nav">
+            <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}>
+              ←
+            </button>
+            <span>{monthName}</span>
+            <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}>
+              →
+            </button>
+          </div>
 
-            <div className="date-calendar-grid">
-              <div className="date-calendar-weekdays">
-                <div>Lun</div>
-                <div>Mar</div>
-                <div>Mié</div>
-                <div>Jue</div>
-                <div>Vie</div>
-                <div>Sáb</div>
-                <div>Dom</div>
-              </div>
+          <div className="calendar-weekdays">
+            {['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map(d => <span key={d}>{d}</span>)}
+          </div>
 
-              <div className="date-calendar-days">
-                {days.map((dayObj, index) => {
-                  const isAvailable = dayObj.isCurrentMonth && isDateAvailable(dayObj.date);
-                  const isSelected = tempSelectedDate === dayObj.date.toISOString().split('T')[0];
-                  const isPast = dayObj.date < new Date(new Date().setHours(0, 0, 0, 0));
+          <div className="calendar-days">
+            {days.map((dayObj, index) => {
+              const dateStr = dayObj.date.toISOString().split('T')[0];
+              const isAvailable = dayObj.isCurrentMonth && availableDatesSet.has(dateStr);
+              const isSelected = tempSelectedDate === dateStr;
+              const isPast = dayObj.date < new Date(new Date().setHours(0, 0, 0, 0));
 
-                  return (
-                    <button
-                      key={index}
-                      className={`date-calendar-day
-                        ${!dayObj.isCurrentMonth ? 'other-month' : ''}
-                        ${isAvailable ? 'available' : ''}
-                        ${isSelected ? 'selected' : ''}
-                        ${isPast ? 'past' : ''}
-                      `}
-                      onClick={() => handleDateClick(dayObj.date)}
-                      disabled={!isAvailable || isPast}
-                    >
-                      {dayObj.date.getDate()}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {tempSelectedDate && (
-              <div className="selected-date-info">
-                ✓ Fecha seleccionada: <strong>
-                  {new Date(tempSelectedDate + 'T00:00:00').toLocaleDateString('es-ES', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                  })}
-                </strong>
-              </div>
-            )}
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  className={`calendar-day ${!dayObj.isCurrentMonth ? 'other-month' : ''} ${isAvailable ? 'available' : ''} ${isSelected ? 'selected' : ''}`}
+                  onClick={() => isAvailable && !isPast && setTempSelectedDate(dateStr)}
+                  disabled={!isAvailable || isPast}
+                >
+                  {dayObj.date.getDate()}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Horarios */}
         <div className="timeslots-section">
-          <h3 className="section-subtitle">2. Selecciona un horario</h3>
-
-          {!tempSelectedDate && (
-            <div className="info-message">
-              Primero selecciona una fecha para ver los horarios disponibles
-            </div>
-          )}
-
-          {tempSelectedDate && availableTimeSlots.length === 0 && (
-            <div className="info-message">
-              No hay horarios disponibles para esta fecha
-            </div>
-          )}
-
+          <h3>2. Selecciona horario</h3>
+          {!tempSelectedDate && <p>Primero selecciona una fecha</p>}
+          {tempSelectedDate && availableTimeSlots.length === 0 && <p>No hay horarios disponibles</p>}
           {tempSelectedDate && availableTimeSlots.length > 0 && (
             <div className="timeslots-list">
               {availableTimeSlots.map(slot => (
-                <div
+                <button
                   key={slot.id}
-                  className={`timeslot-card ${tempSelectedTimeSlot === slot.id ? 'selected' : ''}`}
-                  onClick={() => handleTimeSlotClick(slot)}
+                  type="button"
+                  className={`timeslot-btn ${tempSelectedTimeSlot === slot.id ? 'selected' : ''}`}
+                  onClick={() => handleTimeSlotSelect(slot.id)}
                 >
-                  <div className="radio-indicator">
-                    {tempSelectedTimeSlot === slot.id && <div className="radio-dot"></div>}
-                  </div>
-                  <div className="timeslot-info">
-                    <span className="timeslot-text">{slot.display}</span>
-                    <span className="timeslot-meta">
-                      Profesor: {slot.teacher} • {slot.available}/{slot.places} cupos
-                    </span>
-                  </div>
-                </div>
+                  {slot.display} - {slot.teacher}
+                </button>
               ))}
             </div>
-          )}
-
-          {tempSelectedDate && tempSelectedTimeSlot && (
-            <button
-              className="btn-save-day"
-              onClick={handleSaveCurrentDay}
-            >
-              {currentDayIndex < frequency - 1
-                ? `Guardar y continuar con día ${currentDayIndex + 2}`
-                : 'Guardar día'}
-            </button>
           )}
         </div>
       </div>
 
-      <div className="step-actions-center">
+      <div className="step-actions">
+        <button type="button" className="btn-secondary" onClick={onBack}>Volver</button>
         <button
-          className="btn-secondary-large"
-          onClick={onBack}
-        >
-          ← Volver
-        </button>
-        <button
-          className="btn-primary-large"
+          type="button"
+          className="btn-primary"
           onClick={handleContinue}
           disabled={selectedSchedules.filter(s => s && s.date && s.timeSlot).length < frequency}
         >

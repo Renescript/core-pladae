@@ -1,651 +1,753 @@
-/* ===========================================
-   ENROLLMENT GLOBAL STYLES
-   Sistema de diseño Atelier para inscripciones
-   =========================================== */
+/* ========================================
+   ENROLLMENT STYLES - Atelier Design
+   Sin backgrounds - heredan del layout
+   ======================================== */
 
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap');
-
-/* ===========================================
-   VARIABLES ATELIER
-   =========================================== */
-
-:root {
-  /* Colores Atelier */
-  --color-primary: #47a1bf;
-  --color-accent: #e07a5f;
-  --color-ochre: #f4a261;
-  --color-charcoal: #1f2933;
-  --color-paper: #f7f3ee;
-  --color-paper-dark: #f0ebe5;
-
-  /* Tipografía Atelier */
-  --font-display: 'Cormorant Garamond', serif;
-  --font-hand: 'Caveat', cursive;
-  --font-body: 'Outfit', sans-serif;
-
-  /* Estados */
-  --success-color: #10b981;
-  --success-light: #d1fae5;
-  --warning-color: #f59e0b;
-  --warning-light: #fef3c7;
-  --error-color: #ef4444;
-  --error-light: #fee2e2;
-
-  /* Espaciado */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-
-  /* Bordes */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
-  --radius-brush: 255px 15px 225px 15px / 15px 225px 15px 255px;
-
-  /* Sombras */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -1px rgb(0 0 0 / 0.04);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -2px rgb(0 0 0 / 0.04);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.03);
-  --shadow-primary: 0 4px 14px 0 rgb(71 161 191 / 0.25);
-  --shadow-accent: 0 4px 14px 0 rgb(224 122 95 / 0.25);
-
-  /* Transiciones */
-  --transition-fast: 150ms ease;
-  --transition-base: 250ms ease;
-  --transition-slow: 350ms ease;
-}
-
-/* ===========================================
-   CONTENEDOR PRINCIPAL
-   =========================================== */
+/* ========================================
+   PAGE LAYOUT
+   ======================================== */
 
 .enrollment-page {
   min-height: 100vh;
-  background-color: var(--color-paper);
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  padding: var(--space-6, 1.5rem);
 }
 
-.enrollment-step,
-.simplified-step {
-  max-width: 1200px;
+.enrollment-wrapper {
+  max-width: 950px;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-4);
-  font-family: var(--font-body);
-}
-
-.simplified-step.calendar-expanded {
-  max-width: 1400px;
-}
-
-/* ===========================================
-   BOTONES ATELIER
-   =========================================== */
-
-.enrollment-step .btn-primary,
-.enrollment-step .btn-secondary,
-.simplified-step .btn-primary,
-.simplified-step .btn-secondary {
-  padding: var(--space-4) var(--space-8);
-  border: none;
-  font-family: var(--font-body);
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-base);
-  min-width: 140px;
-  min-height: 48px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  border-radius: var(--radius-brush);
-  position: relative;
-}
-
-.enrollment-step .btn-primary,
-.simplified-step .btn-primary {
-  background-color: var(--color-accent);
-  color: white;
-  box-shadow: var(--shadow-accent);
-}
-
-.enrollment-step .btn-primary:hover:not(:disabled),
-.simplified-step .btn-primary:hover:not(:disabled) {
-  transform: scale(1.02) rotate(-1deg);
-  box-shadow: 0 10px 20px -5px rgba(224, 122, 95, 0.3);
-  background-color: #d06a4f;
-}
-
-.enrollment-step .btn-primary:active:not(:disabled),
-.simplified-step .btn-primary:active:not(:disabled) {
-  transform: scale(1) rotate(0);
-}
-
-.enrollment-step .btn-primary:disabled,
-.simplified-step .btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.enrollment-step .btn-secondary,
-.simplified-step .btn-secondary {
-  background: white;
-  color: var(--color-charcoal);
   border: 2px solid rgba(31, 41, 51, 0.2);
-  box-shadow: var(--shadow-sm);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgb(0 0 0 / 0.1));
+  overflow: hidden;
 }
 
-.enrollment-step .btn-secondary:hover,
-.simplified-step .btn-secondary:hover {
-  background: rgba(71, 161, 191, 0.08);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-  transform: scale(1.02) rotate(-1deg);
-  box-shadow: var(--shadow-md);
-}
+/* ========================================
+   HEADER
+   ======================================== */
 
-.enrollment-step .btn-secondary:active,
-.simplified-step .btn-secondary:active {
-  transform: scale(1) rotate(0);
-}
-
-/* Botones grandes */
-.btn-primary-large {
-  padding: var(--space-4) var(--space-10);
-  background-color: var(--color-accent);
-  color: white;
-  border: none;
-  border-radius: var(--radius-brush);
-  font-family: var(--font-body);
-  font-size: 1.125rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-base);
-  box-shadow: var(--shadow-accent);
-  min-width: 200px;
-}
-
-.btn-primary-large:hover:not(:disabled) {
-  transform: scale(1.02) rotate(-1deg);
-  box-shadow: 0 10px 20px -5px rgba(224, 122, 95, 0.3);
-}
-
-.btn-primary-large:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-secondary-large {
-  padding: var(--space-4) var(--space-10);
-  background: white;
-  color: var(--color-charcoal);
-  border: 2px solid rgba(31, 41, 51, 0.2);
-  border-radius: var(--radius-brush);
-  font-family: var(--font-body);
-  font-size: 1.125rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-base);
-  min-width: 200px;
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-secondary-large:hover {
-  background: rgba(71, 161, 191, 0.08);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-  transform: scale(1.02) rotate(-1deg);
-  box-shadow: var(--shadow-md);
-}
-
-/* ===========================================
-   MENSAJES DE ESTADO
-   =========================================== */
-
-.enrollment-step .loading-message,
-.enrollment-step .error-message,
-.simplified-step .loading-message,
-.simplified-step .error-message {
-  text-align: center;
-  padding: var(--space-8);
-  margin: var(--space-6) 0;
-  border-radius: var(--radius-lg);
-  font-family: var(--font-body);
-}
-
-.enrollment-step .loading-message,
-.simplified-step .loading-message {
-  background: rgba(71, 161, 191, 0.1);
-  color: var(--color-primary);
-  border: 1px solid rgba(71, 161, 191, 0.2);
-}
-
-.enrollment-step .loading-message p,
-.simplified-step .loading-message p {
-  font-size: 1rem;
-  font-weight: 500;
-  margin-top: var(--space-4);
-}
-
-.enrollment-step .error-message,
-.simplified-step .error-message {
-  background: var(--error-light);
-  color: var(--error-color);
-  border: 1px solid #fca5a5;
-}
-
-/* ===========================================
-   SPINNER
-   =========================================== */
-
-.enrollment-step .spinner,
-.simplified-step .spinner {
-  width: 36px;
-  height: 36px;
-  border: 3px solid rgba(71, 161, 191, 0.2);
-  border-top-color: var(--color-primary);
-  border-radius: var(--radius-full);
-  animation: enrollment-spin 0.8s linear infinite;
-  margin: 0 auto;
-}
-
-.enrollment-step .spinner-large,
-.simplified-step .spinner-large {
-  width: 48px;
-  height: 48px;
-  border-width: 4px;
-}
-
-@keyframes enrollment-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ===========================================
-   CARDS ATELIER
-   =========================================== */
-
-.enrollment-step .card,
-.simplified-step .card {
-  background: white;
-  border: 2px solid rgba(31, 41, 51, 0.1);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6);
-  transition: all var(--transition-base);
-  cursor: pointer;
-  position: relative;
-}
-
-.enrollment-step .card:hover,
-.simplified-step .card:hover {
-  border-color: var(--color-primary);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
-
-.enrollment-step .card.selected,
-.simplified-step .card.selected {
-  border-color: var(--color-primary);
-  border-width: 3px;
-  background: linear-gradient(135deg, rgba(71, 161, 191, 0.05) 0%, white 100%);
-  box-shadow: var(--shadow-primary);
-}
-
-/* ===========================================
-   CHECKMARKS DE SELECCIÓN
-   =========================================== */
-
-.selected-checkmark,
-.selection-checkmark {
-  position: absolute;
-  top: var(--space-3);
-  right: var(--space-3);
-  width: 32px;
-  height: 32px;
-  background: var(--color-primary);
-  color: white;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  font-weight: 700;
-  animation: checkmarkPop 0.3s ease;
-  box-shadow: 0 2px 8px rgba(71, 161, 191, 0.3);
-}
-
-@keyframes checkmarkPop {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* ===========================================
-   TÍTULOS Y TEXTO ATELIER
-   =========================================== */
-
-.enrollment-step h2,
-.simplified-step .step-title {
-  font-family: var(--font-display);
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: var(--color-charcoal);
-  margin: 0 0 var(--space-2) 0;
-  letter-spacing: -0.02em;
-}
-
-.enrollment-step .step-description,
-.simplified-step .step-description {
-  font-family: var(--font-body);
-  font-size: 1.125rem;
-  color: rgba(31, 41, 51, 0.7);
-  margin: 0 0 var(--space-8) 0;
-  font-weight: 300;
-}
-
-.step-progress {
-  text-align: center;
-  font-family: var(--font-hand);
-  font-size: 1.5rem;
-  color: var(--color-accent);
-  margin-bottom: var(--space-6);
-}
-
-.hint-text {
-  text-align: center;
-  color: rgba(31, 41, 51, 0.6);
-  font-family: var(--font-body);
-  font-size: 1rem;
-  margin: var(--space-4) 0 var(--space-8) 0;
-  font-weight: 300;
-}
-
-/* ===========================================
-   SECCIONES DE CONFIGURACIÓN
-   =========================================== */
-
-.config-section {
-  margin-bottom: var(--space-10);
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.config-title {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--color-charcoal);
-  margin: 0 0 var(--space-5) 0;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-/* ===========================================
-   ACCIONES DE PASO
-   =========================================== */
-
-.enrollment-step .step-actions,
-.simplified-step .step-actions {
+.enrollment-header {
   display: flex;
   justify-content: flex-end;
-  gap: var(--space-4);
-  margin-top: var(--space-8);
-  padding-top: var(--space-6);
-  border-top: 1px dashed rgba(31, 41, 51, 0.1);
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-4, 1rem) var(--space-6, 1.5rem);
+  border-bottom: 1px solid var(--border-light, #e2e8f0);
 }
 
-.step-actions-center {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-4);
-  margin-top: var(--space-8);
-}
-
-/* ===========================================
-   FORMULARIOS
-   =========================================== */
-
-.enrollment-step .form-group,
-.simplified-step .form-group {
-  margin-bottom: var(--space-5);
-}
-
-.enrollment-step .form-label,
-.simplified-step .form-label {
-  display: block;
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-charcoal);
-  margin-bottom: var(--space-2);
-}
-
-.enrollment-step .form-input,
-.simplified-step .form-input {
-  width: 100%;
-  padding: var(--space-3) var(--space-4);
-  border: 2px solid rgba(31, 41, 51, 0.15);
-  border-radius: var(--radius-md);
-  font-family: var(--font-body);
-  font-size: 1rem;
-  transition: all var(--transition-fast);
-  background: white;
-  color: var(--color-charcoal);
-}
-
-.enrollment-step .form-input:focus,
-.simplified-step .form-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(71, 161, 191, 0.1);
-}
-
-.enrollment-step .form-input::placeholder,
-.simplified-step .form-input::placeholder {
-  color: rgba(31, 41, 51, 0.4);
-}
-
-/* ===========================================
-   NOTAS E INFO
-   =========================================== */
-
-.enrollment-step .info-note,
-.simplified-step .info-note {
-  background: rgba(71, 161, 191, 0.1);
-  border-left: 4px solid var(--color-primary);
-  padding: var(--space-4);
-  border-radius: 0 var(--radius-md) var(--radius-md) 0;
-  font-family: var(--font-body);
-  font-size: 0.9375rem;
-  color: var(--color-charcoal);
-}
-
-/* ===========================================
-   INDICADORES DE DISPONIBILIDAD
-   =========================================== */
-
-.availability-indicator {
+.header-btn {
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-1);
-  flex-shrink: 0;
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-md, 10px);
+  font-size: 1.25rem;
+  color: var(--text-medium, #4a5568);
+  cursor: pointer;
 }
 
-.availability-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
+.header-btn:hover {
+  color: var(--color-primary, #47a1bf);
 }
 
-.availability-dot.available {
-  background: var(--success-color);
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+/* ========================================
+   STEP CONTAINER
+   ======================================== */
+
+.step-container {
+  padding: var(--space-8, 2rem) var(--space-6, 1.5rem);
 }
 
-.availability-dot.limited {
-  background: var(--color-ochre);
-  box-shadow: 0 0 0 2px rgba(244, 162, 97, 0.2);
+.step-container button:focus {
+  outline: none;
 }
 
-.availability-dot.unavailable {
-  background: rgba(31, 41, 51, 0.3);
+@media (min-width: 640px) {
+  .step-container {
+    padding: var(--space-10, 2.5rem) var(--space-8, 2rem);
+  }
 }
 
-.availability-text {
-  font-size: 0.75rem;
+.step-header {
+  text-align: center;
+  margin-bottom: var(--space-8, 2rem);
+}
+
+.step-indicator {
+  display: inline-block;
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-sm, 0.875rem);
   font-weight: 500;
-  color: rgba(31, 41, 51, 0.6);
-  white-space: nowrap;
+  color: var(--color-primary, #47a1bf);
+  padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+  border-radius: var(--radius-full, 9999px);
+  border: 1px solid var(--color-primary, #47a1bf);
+  margin-bottom: var(--space-3, 0.75rem);
 }
 
-/* ===========================================
-   BADGES ATELIER
-   =========================================== */
-
-.badge {
-  position: absolute;
-  top: -12px;
-  right: 20px;
-  padding: var(--space-1) var(--space-4);
-  border-radius: var(--radius-full);
-  font-family: var(--font-body);
-  font-size: 0.75rem;
+.step-header h2 {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-2xl, 1.5rem);
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: var(--color-charcoal, #1f2933);
+  margin: 0;
+  line-height: 1.3;
 }
 
-.badge-popular {
-  background: var(--color-primary);
+/* ========================================
+   CARDS - Técnicas, Frecuencia, Duración
+   ======================================== */
+
+.techniques-grid,
+.frequency-grid,
+.duration-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-4, 1rem);
+  margin-bottom: var(--space-8, 2rem);
+}
+
+.technique-card,
+.frequency-card,
+.duration-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-6, 1.5rem) var(--space-4, 1rem);
+  border: 2px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-lg, 16px);
+  cursor: pointer;
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  box-shadow: var(--shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+}
+
+.technique-card:hover,
+.frequency-card:hover,
+.duration-card:hover {
+  border-color: var(--color-primary, #47a1bf);
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgb(0 0 0 / 0.07));
+}
+
+.technique-card.selected,
+.frequency-card.selected,
+.duration-card.selected {
+  border-color: var(--color-primary, #47a1bf);
+  box-shadow: var(--shadow-primary, 0 4px 14px 0 rgb(71 161 191 / 0.25));
+}
+
+.technique-name {
+  font-weight: 600;
+  color: var(--color-charcoal, #1f2933);
+  text-align: center;
+}
+
+.frequency-number {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-2xl, 1.5rem);
+  font-weight: 700;
+  color: var(--color-primary, #47a1bf);
+  line-height: 1;
+}
+
+.frequency-label {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--text-medium, #4a5568);
+}
+
+.duration-months {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--color-charcoal, #1f2933);
+}
+
+.check {
+  color: var(--color-primary, #47a1bf);
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+/* ========================================
+   TRIAL / CLASE DE PRUEBA
+   ======================================== */
+
+.trial-section {
+  margin-bottom: var(--space-8, 2rem);
+}
+
+.trial-btn {
+  width: 100%;
+  padding: var(--space-4, 1rem) var(--space-6, 1.5rem);
+  border: 2px solid var(--color-primary, #47a1bf);
+  border-radius: var(--radius-lg, 16px);
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--color-primary, #47a1bf);
+  cursor: pointer;
+}
+
+.trial-btn:hover,
+.trial-btn.selected {
+  border-color: var(--color-primary, #47a1bf);
+  color: var(--color-primary, #47a1bf);
+  box-shadow: var(--shadow-primary, 0 4px 14px 0 rgb(71 161 191 / 0.25));
+}
+
+.trial-info {
+  background-color: #ffffff;
+  text-align: center;
+  padding: var(--space-8, 2rem);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-lg, 16px);
+  margin-bottom: var(--space-8, 2rem);
+}
+
+.trial-info h3 {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-xl, 1.25rem);
+  font-weight: 600;
+  color: var(--color-charcoal, #1f2933);
+  margin: 0 0 var(--space-2, 0.5rem);
+}
+
+/* ========================================
+   CALENDAR & DATE PICKER
+   ======================================== */
+
+.datetime-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6, 1.5rem);
+  margin-bottom: var(--space-8, 2rem);
+}
+
+@media (min-width: 768px) {
+  .datetime-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.calendar-section,
+.timeslots-section {
+  background: #ffffff;
+  padding: var(--space-5, 1.25rem);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-lg, 16px);
+}
+
+.calendar-section h3,
+.timeslots-section h3 {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-base, 1rem);
+  font-weight: 600;
+  color: var(--color-charcoal, #1f2933);
+  margin: 0 0 var(--space-4, 1rem);
+}
+
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.calendar-nav button {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-md, 10px);
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.calendar-nav button:hover {
+  border-color: var(--color-primary, #47a1bf);
+  color: var(--color-primary, #47a1bf);
+}
+
+.calendar-nav span {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-weight: 500;
+  color: var(--color-charcoal, #1f2933);
+  text-transform: capitalize;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: var(--space-2, 0.5rem);
+  text-align: center;
+}
+
+.calendar-weekdays span {
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: 600;
+  color: var(--text-light, #718096);
+  padding: var(--space-1, 0.25rem);
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-sm, 6px);
+  font-size: var(--font-size-sm, 0.875rem);
+  cursor: pointer;
+}
+
+.calendar-day:disabled {
+  color: var(--text-muted, #a0aec0);
+  cursor: not-allowed;
+  border-color: transparent;
+}
+
+.calendar-day.other-month {
+  color: var(--text-muted, #a0aec0);
+  border-color: transparent;
+}
+
+.calendar-day.available {
+  border-color: var(--success-color, #10b981);
+  font-weight: 500;
+}
+
+.calendar-day.available:hover {
+  box-shadow: var(--shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+}
+
+.calendar-day:focus {
+  outline: none;
+}
+
+.calendar-day.selected {
+  background-color: var(--color-primary, #47a1bf);
+  border-color: transparent;
+  color: white;
+  font-weight: 600;
+}
+
+/* ========================================
+   TIMESLOTS
+   ======================================== */
+
+.timeslots-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.timeslot-btn {
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-md, 10px);
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-sm, 0.875rem);
+  text-align: left;
+  cursor: pointer;
+}
+
+.timeslot-btn:hover {
+  border-color: var(--color-primary, #47a1bf);
+}
+
+.timeslot-btn:focus {
+  outline: none;
+}
+
+.timeslot-btn.selected {
+  background-color: var(--color-primary, #47a1bf);
+  border-color: transparent;
+  color: white;
+  font-weight: 500;
+}
+
+/* ========================================
+   DAY TABS / PROGRESS
+   ======================================== */
+
+.day-progress {
+  background-color: #ffffff;
+  padding: var(--space-4, 1rem);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-lg, 16px);
+  margin-bottom: var(--space-6, 1.5rem);
+}
+
+.day-progress p {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-weight: 500;
+  color: var(--color-charcoal, #1f2933);
+  margin: 0 0 var(--space-3, 0.75rem);
+}
+
+.day-tabs {
+  display: flex;
+  gap: var(--space-2, 0.5rem);
+  flex-wrap: wrap;
+}
+
+.day-tab {
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-md, 10px);
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-sm, 0.875rem);
+  cursor: pointer;
+}
+
+.day-tab:hover {
+  border-color: var(--color-primary, #47a1bf);
+}
+
+.day-tab.active {
+  border-color: var(--color-primary, #47a1bf);
+  color: var(--color-primary, #47a1bf);
+  font-weight: 500;
+}
+
+.day-tab.completed {
+  background-color: var(--color-primary, #47a1bf);
+  border-color: var(--color-primary, #47a1bf);
   color: white;
 }
 
-.badge-best-value {
-  background: var(--color-ochre);
-  color: var(--color-charcoal);
+.day-tab.completed.active {
+  background-color: var(--color-primary, #47a1bf);
+  /* border-color: var(--color-charcoal, #1f2933); */
 }
 
-.days-counter {
-  font-family: var(--font-hand);
-  font-size: 1.125rem;
-  color: var(--color-primary);
-  background: rgba(71, 161, 191, 0.1);
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-full);
+.day-tab-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
 }
 
-/* ===========================================
-   ANIMACIONES COMUNES
-   =========================================== */
+.day-tab-summary .tab-day {
+  font-weight: 600;
+  font-size: var(--font-size-sm, 0.875rem);
+}
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+.day-tab-summary .tab-time {
+  font-size: var(--font-size-xs, 0.75rem);
+  opacity: 0.9;
+}
+
+/* ========================================
+   SUMMARY CARD
+   ======================================== */
+
+.summary-card {
+  padding: var(--space-5, 1.25rem);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-lg, 16px);
+  margin-bottom: var(--space-6, 1.5rem);
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3, 0.75rem) 0;
+  border-bottom: 1px solid var(--border-light, #e2e8f0);
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-item .label {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--text-medium, #4a5568);
+}
+
+.summary-item .value {
+  font-weight: 600;
+  color: var(--color-charcoal, #1f2933);
+}
+
+.schedules-list,
+.dates-preview {
+  margin-bottom: var(--space-6, 1.5rem);
+}
+
+.schedules-list h3,
+.dates-preview h3 {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-base, 1rem);
+  font-weight: 600;
+  color: var(--color-charcoal, #1f2933);
+  margin: 0 0 var(--space-3, 0.75rem);
+}
+
+.schedule-item {
+  display: flex;
+  gap: var(--space-4, 1rem);
+  padding: var(--space-2, 0.5rem) 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--text-medium, #4a5568);
+  text-transform: capitalize;
+}
+
+.dates-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 0.5rem);
+}
+
+.date-chip {
+  padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+  border: 1px solid var(--color-primary, #47a1bf);
+  color: var(--color-primary, #47a1bf);
+  border-radius: var(--radius-full, 9999px);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 500;
+}
+
+/* ========================================
+   FORM FIELDS
+   ======================================== */
+
+.form-section {
+  margin-bottom: var(--space-6, 1.5rem);
+}
+
+.form-section h3 {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--color-charcoal, #1f2933);
+  margin: 0 0 var(--space-4, 1rem);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4, 1rem);
+}
+
+@media (min-width: 480px) {
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 0.25rem);
 }
 
-@keyframes popIn {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
+.form-field label {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--text-medium, #4a5568);
 }
 
-/* ===========================================
-   RESPONSIVE
-   =========================================== */
+.form-field input {
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  border: 1px solid var(--border-color, #cbd5e0);
+  border-radius: var(--radius-md, 10px);
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-base, 1rem);
+}
 
-@media (max-width: 640px) {
-  .enrollment-step,
-  .simplified-step {
-    padding: var(--space-6) var(--space-4);
-  }
+.form-field input:focus {
+  outline: none;
+  border-color: var(--color-primary, #47a1bf);
+  box-shadow: 0 0 0 3px var(--primary-100, #d9f2f7);
+}
 
-  .simplified-step.calendar-expanded {
-    max-width: 100%;
-    padding: var(--space-6) var(--space-2);
-  }
+.form-field input.error {
+  border-color: var(--error-color, #ef4444);
+}
 
-  .enrollment-step .btn-primary,
-  .enrollment-step .btn-secondary,
-  .simplified-step .btn-primary,
-  .simplified-step .btn-secondary {
-    width: 100%;
-    min-width: auto;
-  }
+.error-msg {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--error-color, #ef4444);
+}
 
-  .btn-primary-large,
-  .btn-secondary-large {
-    width: 100%;
-    min-width: auto;
-  }
+/* ========================================
+   PAYMENT METHODS
+   ======================================== */
 
-  .enrollment-step .step-actions,
-  .simplified-step .step-actions {
-    flex-direction: column-reverse;
-  }
+.payment-methods {
+  display: flex;
+  gap: var(--space-3, 0.75rem);
+  flex-wrap: wrap;
+}
 
-  .step-actions-center {
-    flex-direction: column;
-  }
+.payment-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: var(--space-4, 1rem);
+  border: 2px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-lg, 16px);
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-weight: 500;
+  cursor: pointer;
+}
 
-  .enrollment-step h2,
-  .simplified-step .step-title {
-    font-size: 2rem;
-  }
+.payment-btn:hover {
+  border-color: var(--color-primary, #47a1bf);
+}
 
-  .config-section {
-    max-width: 100%;
-  }
+.payment-btn.selected {
+  border-color: var(--color-primary, #47a1bf);
+  color: var(--color-primary, #47a1bf);
+}
 
-  .config-title {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-2);
-  }
+/* ========================================
+   TOTAL SECTION
+   ======================================== */
+
+.total-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4, 1rem) var(--space-5, 1.25rem);
+  border: 2px solid var(--color-charcoal, #1f2933);
+  border-radius: var(--radius-lg, 16px);
+  margin-bottom: var(--space-6, 1.5rem);
+}
+
+.total-section span:first-child {
+  font-size: var(--font-size-base, 1rem);
+  color: var(--color-charcoal, #1f2933);
+}
+
+.total-amount {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-xl, 1.25rem);
+  font-weight: 700;
+  color: var(--color-charcoal, #1f2933);
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+
+.step-actions {
+  display: flex;
+  gap: var(--space-3, 0.75rem);
+  justify-content: flex-end;
+  padding-top: var(--space-6, 1.5rem);
+  border-top: 1px solid var(--border-light, #e2e8f0);
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: var(--space-3, 0.75rem) var(--space-6, 1.5rem);
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-base, 1rem);
+  font-weight: 500;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  cursor: pointer;
+}
+
+/* .btn-primary {
+  border: 2px solid var(--color-accent, #e07a5f);
+  color: var(--color-accent, #e07a5f);
+} */
+
+/* .btn-primary:hover {
+  color: #d06a4f;
+  border-color: #d06a4f;
+} */
+
+.btn-primary:disabled {
+  border-color: var(--text-muted, #a0aec0);
+  color: var(--text-muted, #a0aec0);
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  color: var(--color-charcoal, #1f2933);
+  border: 2px solid var(--border-color, #cbd5e0);
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-primary, #47a1bf);
+  color: var(--color-primary, #47a1bf);
+}
+
+.btn-save {
+  width: 100%;
+  margin-top: var(--space-4, 1rem);
+  padding: var(--space-3, 0.75rem);
+  border: 2px solid var(--success-color, #10b981);
+  color: var(--success-color, #10b981);
+  border-radius: var(--radius-md, 10px);
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-save:hover {
+  color: #059669;
+  border-color: #059669;
+}
+
+/* ========================================
+   COURSES SUMMARY
+   ======================================== */
+
+.courses-summary {
+  margin-bottom: var(--space-6, 1.5rem);
+}
+
+.course-item {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-4, 1rem);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-md, 10px);
+  margin-bottom: var(--space-2, 0.5rem);
+  font-family: var(--font-body, 'Outfit', sans-serif);
+}
+
+.course-item.current {
+  border-color: var(--color-primary, #47a1bf);
+}
+
+/* ========================================
+   DURATION EXTRAS
+   ======================================== */
+
+.discount {
+  display: inline-block;
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  border: 1px solid var(--color-accent, #e07a5f);
+  color: var(--color-accent, #e07a5f);
+  border-radius: var(--radius-sm, 6px);
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: 600;
+}
+
+.total-classes {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--text-medium, #4a5568);
+}
+
+.price {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 700;
+  color: var(--color-primary, #47a1bf);
 }

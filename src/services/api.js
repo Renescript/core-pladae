@@ -23,9 +23,28 @@ const NO_CACHE_HEADERS = {
 };
 
 /**
- * Timeout por defecto para las peticiones (10 segundos)
+ * Timeout por defecto para las peticiones (5 segundos)
  */
-const DEFAULT_TIMEOUT = 10000;
+const DEFAULT_TIMEOUT = 5000;
+
+/**
+ * Cache simple para evitar llamadas repetidas
+ */
+const apiCache = new Map();
+const CACHE_TTL = 60000; // 1 minuto
+
+const getCachedData = (key) => {
+  const cached = apiCache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data;
+  }
+  apiCache.delete(key);
+  return null;
+};
+
+const setCachedData = (key, data) => {
+  apiCache.set(key, { data, timestamp: Date.now() });
+};
 
 /**
  * Realiza un fetch con timeout y manejo de AbortController
@@ -648,37 +667,30 @@ const generateCourseColor = (courseId) => {
  * @returns {Promise<Array>} Lista de cursos con horarios
  */
 export const getCoursesSchedulesGrid = async () => {
+  // Verificar cache primero
+  const cacheKey = 'coursesSchedulesGrid';
+  const cached = getCachedData(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   try {
-    // Intentar primero con el endpoint específico de grilla
-    console.log('🔍 Intentando obtener horarios desde:', `${API_BASE_URL}/courses/schedules-grid`);
-    let response = await fetchWithTimeout(`${API_BASE_URL}/courses/schedules-grid`, {
+    // Intentar directamente con /courses (más confiable)
+    const response = await fetchWithTimeout(`${API_BASE_URL}/courses`, {
       method: 'GET',
       headers: CACHEABLE_HEADERS
     });
-
-    console.log('📡 Response status:', response.status, response.ok);
-
-    // Si no existe, usar el endpoint general de cursos
-    if (!response.ok) {
-      console.log('⚠️ Endpoint /schedules-grid no disponible, intentando /courses');
-      response = await fetchWithTimeout(`${API_BASE_URL}/courses`, {
-        method: 'GET',
-        headers: CACHEABLE_HEADERS
-      });
-      console.log('📡 Response /courses status:', response.status, response.ok);
-    }
 
     if (!response.ok) {
       throw new Error(`Error HTTP: ${response.status}`);
     }
 
     const result = await response.json();
-    console.log('📦 Respuesta cruda del API:', result);
 
     if (result.success) {
       // Transformar los datos del backend al formato esperado por el componente
       const transformedData = result.data
-        .filter(course => course.sections && course.sections.length > 0) // Solo cursos con secciones
+        .filter(course => course.sections && course.sections.length > 0)
         .map(course => {
           const courseColor = generateCourseColor(course.id);
 
@@ -687,9 +699,8 @@ export const getCoursesSchedulesGrid = async () => {
             name: course.title,
             color: courseColor,
             category: course.category || 'General',
-            price_per_class: course.price_per_class || course.price || 7000, // Precio por técnica
+            price_per_class: course.price_per_class || course.price || 7000,
             schedules: course.sections.flatMap(section => {
-              // Cada sección puede tener múltiples horarios en su schedule array
               return section.schedule.map(scheduleItem => {
                 const timeSlot = `${scheduleItem.start_time}-${scheduleItem.end_time}`;
                 const day = mapWeekdayToEnglish(section.weekday);
@@ -701,7 +712,7 @@ export const getCoursesSchedulesGrid = async () => {
                   teacherId: section.teacher_id,
                   places: section.places,
                   available: section.available_places !== null ? section.available_places : section.places,
-                  pricePerSession: section.price_per_session || section.price || course.price_per_class || course.price || 7000, // Precio por sesión con fallback
+                  pricePerSession: section.price_per_session || section.price || course.price_per_class || course.price || 7000,
                   section: {
                     id: section.id,
                     startDate: section.start_date || new Date().toISOString().split('T')[0],
@@ -721,17 +732,18 @@ export const getCoursesSchedulesGrid = async () => {
           };
         });
 
-      console.log('✅ Datos transformados del backend:', transformedData);
+      // Guardar en cache
+      setCachedData(cacheKey, transformedData);
       return transformedData;
     } else {
       throw new Error('La respuesta de la API no fue exitosa');
     }
   } catch (error) {
-    console.error('❌ Error al obtener horarios desde la API:', error);
-    console.error('❌ Error details:', error.message);
-    console.warn('⚠️ Usando datos dummy como fallback');
+    console.error('Error al obtener horarios desde la API:', error.message);
     // Fallback a datos dummy si falla la API
-    return getDummyGridCalendarData();
+    const dummyData = getDummyGridCalendarData();
+    setCachedData(cacheKey, dummyData);
+    return dummyData;
   }
 };
 
@@ -740,6 +752,10 @@ export const getCoursesSchedulesGrid = async () => {
  * @returns {Promise<Array>} Lista de planes semanales con frecuencia
  */
 export const getWeeklyPlans = async () => {
+  const cacheKey = 'weeklyPlans';
+  const cached = getCachedData(cacheKey);
+  if (cached) return cached;
+
   try {
     const response = await fetchWithTimeout(`${API_BASE_URL}/weekly_plans`, {
       method: 'GET',
@@ -752,8 +768,8 @@ export const getWeeklyPlans = async () => {
 
     const result = await response.json();
 
-    // La API devuelve { success: true, data: [...] }
     if (result.success) {
+      setCachedData(cacheKey, result.data);
       return result.data;
     } else {
       throw new Error('La respuesta de la API no fue exitosa');
@@ -769,6 +785,10 @@ export const getWeeklyPlans = async () => {
  * @returns {Promise<Array>} Lista de períodos de pago
  */
 export const getPaymentPeriods = async () => {
+  const cacheKey = 'paymentPeriods';
+  const cached = getCachedData(cacheKey);
+  if (cached) return cached;
+
   try {
     const response = await fetchWithTimeout(`${API_BASE_URL}/payment_periods`, {
       method: 'GET',
@@ -781,13 +801,13 @@ export const getPaymentPeriods = async () => {
 
     const result = await response.json();
 
-    // La API devuelve { success: true, data: [...] }
     if (result.success) {
-      // Convertir discount_percentage de string a número
-      return result.data.map(period => ({
+      const data = result.data.map(period => ({
         ...period,
         discount_percentage: parseFloat(period.discount_percentage) || 0
       }));
+      setCachedData(cacheKey, data);
+      return data;
     } else {
       throw new Error('La respuesta de la API no fue exitosa');
     }

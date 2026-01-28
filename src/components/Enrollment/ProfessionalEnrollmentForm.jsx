@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createEnrollment, getPaymentPeriods } from '../../services/api';
 import TechniqueSelector from './TechniqueSelector';
 import SimplifiedPlanConfigurator from './SimplifiedPlanConfigurator';
@@ -7,8 +7,7 @@ import DurationSelector from './DurationSelector';
 import EditableScheduleCalendar from './EditableScheduleCalendar';
 import AddAnotherCoursePrompt from './AddAnotherCoursePrompt';
 import SimplifiedDataPayment from './SimplifiedDataPayment';
-import './ProfessionalEnrollment.css';
-import './ProfessionalEnrollmentOverrides.css';
+import './enrollment-global.css';
 
 const STORAGE_KEY = 'professional_enrollment_draft';
 
@@ -66,6 +65,7 @@ const clearDraft = () => {
 
 const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
   const savedDraft = loadDraft();
+  const saveTimeoutRef = useRef(null);
 
   const [currentStep, setCurrentStep] = useState(savedDraft?.currentStep || 1);
   const [technique, setTechnique] = useState(savedDraft?.technique || null);
@@ -225,20 +225,34 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
     setClassDates(allDates);
   };
 
+  // Guardar draft con debounce para evitar escrituras frecuentes
   useEffect(() => {
     if (currentStep > 1 || technique) {
-      saveDraft({
-        currentStep,
-        technique,
-        frequency,
-        weeklyPlan,
-        selectedSchedules,
-        durationMonths,
-        classDates,
-        studentData,
-        paymentMethod
-      });
+      // Cancelar el timeout anterior
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+      // Guardar después de 500ms de inactividad
+      saveTimeoutRef.current = setTimeout(() => {
+        saveDraft({
+          currentStep,
+          technique,
+          frequency,
+          weeklyPlan,
+          selectedSchedules,
+          durationMonths,
+          classDates,
+          studentData,
+          paymentMethod
+        });
+      }, 500);
     }
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
   }, [currentStep, technique, frequency, weeklyPlan, selectedSchedules, durationMonths, classDates, studentData, paymentMethod]);
 
   const handleClose = () => {
@@ -535,16 +549,13 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
   };
 
   return (
-    <div className="prof-enrollment-wrapper">
-      <div className="prof-enrollment-container">
-        <div className="prof-header-controls">
-          <button className="prof-header-btn" onClick={handleReset} title="Reiniciar formulario">
-            ↻
-          </button>
-          <button className="prof-header-btn" onClick={handleClose}>×</button>
+      <div className="enrollment-wrapper">
+        <div className="enrollment-header">
+          <button className="header-btn" onClick={handleReset} title="Reiniciar">↻</button>
+          <button className="header-btn" onClick={handleClose}>×</button>
         </div>
 
-        <div className="prof-enrollment-content">
+        <div>
           {/* Paso 1: Selección de técnica */}
           {currentStep === 1 && (
             <TechniqueSelector
@@ -659,7 +670,6 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
           )}
         </div>
       </div>
-    </div>
   );
 };
 
