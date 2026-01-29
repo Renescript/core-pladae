@@ -71,8 +71,12 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
     onSelectTechnique(technique);
     // Scroll hacia el calendario después de seleccionar
     setTimeout(() => {
-      scheduleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+      if (scheduleRef.current) {
+        const yOffset = -20;
+        const y = scheduleRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }, 150);
   };
 
   const handleContinue = () => {
@@ -95,7 +99,7 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
     <div className="step-container">
       <div className="step-header">
         <span className="step-indicator">Paso 1 de 5</span>
-        <h2>¿Qué técnica te gustaría aprender?</h2>
+        <h2>Selecciona la técnica que quieres aprender</h2>
       </div>
 
       {/* Grilla de técnicas */}
@@ -110,17 +114,7 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
               '--technique-color': technique.color
             }}
           >
-            <span className="technique-name">
-              {technique.name}
-              <svg
-                className="technique-underline"
-                viewBox="0 0 100 10"
-                preserveAspectRatio="none"
-                style={{ color: technique.color }}
-              >
-                <path d="M0 5 Q 25 0, 50 5 T 100 5" stroke="currentColor" strokeWidth="3" fill="none" />
-              </svg>
-            </span>
+            <span className="technique-name">{technique.name}</span>
           </button>
         ))}
       </div>
@@ -146,28 +140,22 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
                 <div className="weekly-grid-time">{timeSlot}</div>
                 {weekDays.map(day => {
                   const classes = getClassesAt(day.key, timeSlot);
+                  // Filtrar solo las clases del curso seleccionado
+                  const filteredClasses = selectedTechnique
+                    ? classes.filter(cls => cls.techniqueId === selectedTechnique.id)
+                    : [];
                   return (
                     <div key={`${day.key}-${timeSlot}`} className="weekly-grid-cell">
-                      {classes.map((cls, idx) => {
-                        const isSelected = selectedTechnique?.id === cls.techniqueId;
-                        return (
-                          <button
-                            key={idx}
-                            type="button"
-                            className={`weekly-grid-class ${isSelected ? 'selected' : ''}`}
-                            style={{
-                              backgroundColor: cls.color,
-                              opacity: selectedTechnique && !isSelected ? 0.4 : 1
-                            }}
-                            onClick={() => onSelectTechnique(
-                              techniques.find(t => t.id === cls.techniqueId)
-                            )}
-                            title={cls.techniqueName}
-                          >
-                            <span className="class-name">{cls.techniqueName}</span>
-                          </button>
-                        );
-                      })}
+                      {filteredClasses.map((cls, idx) => (
+                        <div
+                          key={idx}
+                          className="weekly-grid-class"
+                          style={{ backgroundColor: cls.color }}
+                          title={cls.techniqueName}
+                        >
+                          <span className="class-name">{cls.techniqueName}</span>
+                        </div>
+                      ))}
                     </div>
                   );
                 })}
@@ -198,10 +186,19 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
         {/* Contenido del día activo */}
         <div className="weekly-tab-content">
           {(() => {
+            if (!selectedTechnique) {
+              return (
+                <div className="weekly-tab-empty">
+                  Selecciona un curso para ver sus horarios
+                </div>
+              );
+            }
+
             const dayClasses = [];
             timeSlots.forEach(timeSlot => {
               const classes = getClassesAt(activeDay, timeSlot);
-              classes.forEach(cls => {
+              // Filtrar solo las clases del curso seleccionado
+              classes.filter(cls => cls.techniqueId === selectedTechnique.id).forEach(cls => {
                 dayClasses.push({ ...cls, timeSlot });
               });
             });
@@ -214,31 +211,18 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
               );
             }
 
-            return dayClasses.map((cls, idx) => {
-              const isSelected = selectedTechnique?.id === cls.techniqueId;
-              return (
-                <button
-                  key={idx}
-                  type="button"
-                  className={`weekly-tab-class ${isSelected ? 'selected' : ''}`}
-                  style={{
-                    borderLeftColor: cls.color,
-                    opacity: selectedTechnique && !isSelected ? 0.5 : 1
-                  }}
-                  onClick={() => onSelectTechnique(
-                    techniques.find(t => t.id === cls.techniqueId)
-                  )}
-                >
-                  <span className="tab-class-time">{cls.timeSlot}</span>
-                  <span
-                    className="tab-class-name"
-                    style={{ color: cls.color }}
-                  >
-                    {cls.techniqueName}
-                  </span>
-                </button>
-              );
-            });
+            return dayClasses.map((cls, idx) => (
+              <div
+                key={idx}
+                className="weekly-tab-class"
+                style={{ borderLeftColor: cls.color }}
+              >
+                <span className="tab-class-time">{cls.timeSlot}</span>
+                <span className="tab-class-name" style={{ color: cls.color }}>
+                  {cls.techniqueName}
+                </span>
+              </div>
+            ));
           })()}
         </div>
       </div>

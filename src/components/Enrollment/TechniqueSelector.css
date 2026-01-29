@@ -144,20 +144,9 @@ html {
   font-family: var(--font-body, 'Outfit', sans-serif);
   font-size: var(--font-size-xs, 0.75rem);
   text-align: left;
-  cursor: pointer;
-  transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
   gap: 2px;
-}
-
-.weekly-grid-class:hover {
-  transform: scale(1.02);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.weekly-grid-class.selected {
-  /* transform: scale(1.02); */
 }
 
 .weekly-grid-class .class-name {
@@ -235,22 +224,12 @@ html {
   border-left: 4px solid;
   background-color: white;
   font-family: var(--font-body, 'Outfit', sans-serif);
-  cursor: pointer;
-  transition: all 0.2s ease;
   text-align: left;
   width: 100%;
 }
 
 .weekly-tab-class:last-child {
   border-bottom: none;
-}
-
-.weekly-tab-class:hover {
-  background-color: var(--color-paper, #f7f3ee);
-}
-
-.weekly-tab-class.selected {
-  background-color: var(--color-paper, #f7f3ee);
 }
 
 .tab-class-time {

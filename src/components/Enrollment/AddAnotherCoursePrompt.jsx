@@ -13,13 +13,13 @@ const AddAnotherCoursePrompt = ({ completedEnrollments = [], currentCourse, onAd
       <div className="courses-summary">
         {completedEnrollments.map((enrollment, index) => (
           <div key={index} className="course-item">
-            <span>Curso {index + 1}: {enrollment._displayInfo?.technique}</span>
-            <span>{enrollment._displayInfo?.frequency}x/semana</span>
+            <span className="course-label">Curso seleccionado</span>
+            <span className="course-name">{enrollment._displayInfo?.technique}</span>
           </div>
         ))}
         <div className="course-item current">
-          <span>Curso {totalCourses}: {currentCourse?.technique}</span>
-          <span>{currentCourse?.frequency} vez por semana</span>
+          <span className="course-label">Curso seleccionado</span>
+          <span className="course-name">{currentCourse?.technique}</span>
         </div>
       </div>
 

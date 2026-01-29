@@ -10,6 +10,24 @@
 .enrollment-page {
   min-height: 100vh;
   padding: var(--space-6, 1.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ebe5dc;
+  background-image:
+    /* Manchas de pintura celeste */
+    radial-gradient(ellipse 25% 20% at 8% 15%, rgba(71, 161, 191, 0.35) 0%, rgba(71, 161, 191, 0.1) 40%, transparent 70%),
+    radial-gradient(ellipse 18% 25% at 92% 20%, rgba(135, 206, 235, 0.3) 0%, rgba(135, 206, 235, 0.08) 50%, transparent 80%),
+    radial-gradient(ellipse 22% 18% at 85% 85%, rgba(71, 161, 191, 0.32) 0%, rgba(71, 161, 191, 0.1) 45%, transparent 75%),
+    radial-gradient(ellipse 15% 20% at 5% 80%, rgba(176, 224, 230, 0.28) 0%, rgba(176, 224, 230, 0.08) 50%, transparent 80%),
+    /* Manchas coral/naranja */
+    radial-gradient(ellipse 20% 15% at 95% 50%, rgba(224, 122, 95, 0.25) 0%, rgba(224, 122, 95, 0.08) 45%, transparent 70%),
+    radial-gradient(ellipse 12% 18% at 3% 45%, rgba(224, 122, 95, 0.2) 0%, rgba(224, 122, 95, 0.05) 50%, transparent 75%),
+    /* Manchas amarillo/ocre */
+    radial-gradient(ellipse 16% 14% at 88% 10%, rgba(241, 196, 15, 0.18) 0%, rgba(241, 196, 15, 0.05) 50%, transparent 70%),
+    radial-gradient(ellipse 14% 16% at 10% 95%, rgba(241, 196, 15, 0.15) 0%, rgba(241, 196, 15, 0.04) 45%, transparent 70%),
+    /* Textura papel */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
 }
 
 .enrollment-wrapper {
@@ -19,6 +37,8 @@
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   box-shadow: var(--shadow-xl, 0 20px 25px -5px rgb(0 0 0 / 0.1));
   overflow: hidden;
+  background-color: #faf8f5;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
 }
 
 /* ========================================
@@ -481,9 +501,9 @@
 }
 
 .summary-title {
-  font-family: var(--font-display, 'Playfair Display', serif);
-  font-size: var(--font-size-2xl, 1.5rem);
-  font-weight: 400;
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 600;
   color: var(--color-charcoal, #1f2933);
   margin: 0;
 }
@@ -548,12 +568,35 @@
   padding-top: var(--space-4, 1rem);
 }
 
+.dates-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4, 1rem);
+}
+
 .dates-title {
-  display: block;
   font-family: var(--font-body, 'Outfit', sans-serif);
   font-size: var(--font-size-sm, 0.875rem);
   color: var(--text-medium, #4a5568);
-  margin-bottom: var(--space-4, 1rem);
+}
+
+.edit-dates-btn {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--color-primary, #47a1bf);
+  background: none;
+  border: 1px solid var(--color-primary, #47a1bf);
+  border-radius: var(--radius-md, 10px);
+  padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-dates-btn:hover {
+  background-color: var(--color-primary, #47a1bf);
+  color: white;
 }
 
 .dates-grid {
@@ -869,17 +912,30 @@
 }
 
 .course-item {
-  display: flex;
-  justify-content: space-between;
-  padding: var(--space-4, 1rem);
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-4, 1rem) var(--space-6, 1.5rem);
   border: 1px solid var(--border-light, #e2e8f0);
   border-radius: var(--radius-md, 10px);
   margin-bottom: var(--space-2, 0.5rem);
   font-family: var(--font-body, 'Outfit', sans-serif);
+  background-color: #ffffff;
 }
 
 .course-item.current {
   border-color: var(--color-primary, #47a1bf);
+}
+
+.course-label {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--text-medium, #4a5568);
+}
+
+.course-name {
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--color-charcoal, #1f2933);
 }
 
 /* ========================================
@@ -906,4 +962,178 @@
   font-size: var(--font-size-lg, 1.125rem);
   font-weight: 700;
   color: var(--color-primary, #47a1bf);
+}
+
+/* ========================================
+   EDITABLE CLASS LIST
+   ======================================== */
+
+.editable-list {
+  margin-top: var(--space-4, 1rem);
+  padding: var(--space-4, 1rem);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-lg, 16px);
+  background-color: #ffffff;
+}
+
+.edit-warning {
+  padding: var(--space-3, 0.75rem);
+  margin-bottom: var(--space-4, 1rem);
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: var(--radius-md, 10px);
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-sm, 0.875rem);
+  color: #92400e;
+}
+
+.edit-classes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.edit-class-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-3, 0.75rem);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-md, 10px);
+}
+
+.edit-class-row.duplicate {
+  border-color: #f59e0b;
+  background-color: #fffbeb;
+}
+
+.edit-class-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  flex: 1;
+}
+
+.edit-class-number {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--text-medium, #4a5568);
+  min-width: 70px;
+}
+
+.edit-class-date {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-base, 1rem);
+  font-weight: 600;
+  color: var(--color-charcoal, #1f2933);
+  text-transform: capitalize;
+}
+
+.edit-class-time {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-primary, #47a1bf);
+  font-weight: 500;
+}
+
+.edit-class-btn {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--color-primary, #47a1bf);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+}
+
+.edit-class-btn:hover {
+  text-decoration: underline;
+}
+
+.edit-dates-options {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 0.5rem);
+  padding-top: var(--space-3, 0.75rem);
+  border-top: 1px solid var(--border-light, #e2e8f0);
+  margin-top: var(--space-2, 0.5rem);
+}
+
+.no-dates {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--text-medium, #4a5568);
+}
+
+.edit-date-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-md, 10px);
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 50px;
+}
+
+.edit-date-option:hover:not(:disabled) {
+  border-color: var(--color-primary, #47a1bf);
+}
+
+.edit-date-option.current {
+  border-color: var(--color-primary, #47a1bf);
+  background-color: var(--color-primary, #47a1bf);
+  color: white;
+}
+
+.edit-date-option:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.edit-date-option.already-selected {
+  opacity: 0.4;
+  background-color: var(--border-light, #e2e8f0);
+}
+
+.option-weekday {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-xs, 0.75rem);
+  text-transform: capitalize;
+  color: var(--text-medium, #4a5568);
+}
+
+.edit-date-option.current .option-weekday {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.option-day {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.option-month {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-xs, 0.75rem);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.option-time {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.65rem;
+  color: var(--color-primary, #47a1bf);
+  margin-top: 4px;
+}
+
+.edit-date-option.current .option-time {
+  color: rgba(255, 255, 255, 0.9);
 }

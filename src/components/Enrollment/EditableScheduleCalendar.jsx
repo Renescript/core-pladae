@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import EditableClassList from './EditableClassList';
+
 const EditableScheduleCalendar = ({
   technique,
   frequency,
@@ -5,9 +8,13 @@ const EditableScheduleCalendar = ({
   selectedSchedules,
   durationMonths,
   classDates,
+  availableDates,
+  onClassDatesChange,
+  onValidationChange,
   onContinue,
   onBack
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
   const totalClasses = classDates.length;
 
   const dayTranslations = {
@@ -37,8 +44,8 @@ const EditableScheduleCalendar = ({
       </div>
 
       <div className="summary-card summary-card--no-hover">
-        <h3 className="summary-title">Tu plan</h3>
-        <div className="summary-underline"></div>
+        {/* <h3 className="summary-title">Tu plan</h3> */}
+        {/* <div className="summary-underline"></div> */}
 
         <div className="summary-rows">
           <div className="summary-row">
@@ -69,7 +76,16 @@ const EditableScheduleCalendar = ({
         </div>
 
         <div className="summary-dates-section">
-          <span className="dates-title">Fechas de tus clases</span>
+          <div className="dates-header">
+            <span className="dates-title">Fechas de tus clases</span>
+            <button
+              type="button"
+              className="edit-dates-btn"
+              onClick={() => setIsEditing(!isEditing)}
+            >
+              {isEditing ? 'Ocultar editor' : 'Editar fechas'}
+            </button>
+          </div>
           <div className="dates-grid">
             {classDates.map((date, index) => {
               const dateObj = new Date(date + 'T00:00:00');
@@ -85,6 +101,16 @@ const EditableScheduleCalendar = ({
           </div>
         </div>
       </div>
+
+      {isEditing && (
+        <EditableClassList
+          classDates={classDates}
+          availableDates={availableDates}
+          selectedSchedules={selectedSchedules}
+          onClassDatesChange={onClassDatesChange}
+          onValidationChange={onValidationChange}
+        />
+      )}
 
       <div className="step-actions">
         <button type="button" className="btn-secondary" onClick={onBack}>Volver</button>
