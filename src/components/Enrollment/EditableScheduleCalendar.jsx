@@ -16,6 +16,7 @@ const EditableScheduleCalendar = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const totalClasses = classDates.length;
+  const isTrialClass = weeklyPlan?.weekly_classes === 1 && weeklyPlan?.number_of_classes === 1;
 
   const dayTranslations = {
     'Monday': 'Lunes',
@@ -52,17 +53,21 @@ const EditableScheduleCalendar = ({
             <span className="row-label">Técnica</span>
             <span className="row-value">{technique?.name}</span>
           </div>
+          {!isTrialClass && (
+            <>
+              <div className="summary-row">
+                <span className="row-label">Frecuencia</span>
+                <span className="row-value">{frequency} {frequency === 1 ? 'vez' : 'veces'} por semana</span>
+              </div>
+              <div className="summary-row">
+                <span className="row-label">Duración</span>
+                <span className="row-value">{durationMonths} {durationMonths === 1 ? 'mes' : 'meses'}</span>
+              </div>
+            </>
+          )}
           <div className="summary-row">
-            <span className="row-label">Frecuencia</span>
-            <span className="row-value">{frequency} {frequency === 1 ? 'vez' : 'veces'} por semana</span>
-          </div>
-          <div className="summary-row">
-            <span className="row-label">Duración</span>
-            <span className="row-value">{durationMonths} {durationMonths === 1 ? 'mes' : 'meses'}</span>
-          </div>
-          <div className="summary-row">
-            <span className="row-label">Total de clases</span>
-            <span className="row-value">{totalClasses} clases</span>
+            <span className="row-label">{isTrialClass ? 'Tipo' : 'Total de clases'}</span>
+            <span className="row-value">{isTrialClass ? 'Clase de prueba' : `${totalClasses} clases`}</span>
           </div>
           {selectedSchedules.map((schedule, index) => (
             <div key={index} className="summary-row">
