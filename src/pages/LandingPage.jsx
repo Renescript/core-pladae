@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom';
+import '../components/Landing/landing.css';
 import Hero from '../components/Landing/Hero';
 import About from '../components/Landing/About';
 import Mission from '../components/Landing/Mission';
 import CoursesShowcase from '../components/Landing/CoursesShowcase';
-import Membership from '../components/Landing/Membership';
+import Schedule from '../components/Landing/Schedule';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -25,7 +26,9 @@ const LandingPage = () => {
         <div id="courses">
           <CoursesShowcase />
         </div>
-        <Membership />
+        <div id="schedule">
+          <Schedule />
+        </div>
       </main>
     </>
   );

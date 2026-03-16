@@ -7,6 +7,8 @@ import DurationSelector from './DurationSelector';
 import EditableScheduleCalendar from './EditableScheduleCalendar';
 import AddAnotherCoursePrompt from './AddAnotherCoursePrompt';
 import SimplifiedDataPayment from './SimplifiedDataPayment';
+import EnrollmentProgress from './EnrollmentProgress';
+import CartSummary from './CartSummary';
 import './enrollment-global.css';
 
 const STORAGE_KEY = 'professional_enrollment_draft';
@@ -550,12 +552,11 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
 
   return (
       <div className="enrollment-wrapper">
-        <div className="enrollment-header">
-          <button className="header-btn" onClick={handleReset} title="Reiniciar">↻</button>
-          <button className="header-btn" onClick={handleClose}>×</button>
-        </div>
-
-        <div>
+        <div className="enrollment-body">
+        <div className="enrollment-form-col">
+          <div className="enrollment-header">
+            <img src="/logo-gustarte-letras.png" alt="Gustarte" className="enrollment-logo" />
+          </div>
           {/* Paso 1: Selección de técnica */}
           {currentStep === 1 && (
             <TechniqueSelector
@@ -668,6 +669,20 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
               onBack={() => setCurrentStep(6)}
             />
           )}
+        </div>
+
+        <div className="enrollment-sidebar">
+          <CartSummary
+            technique={technique}
+            weeklyPlan={weeklyPlan}
+            frequency={frequency}
+            selectedSchedules={selectedSchedules}
+            durationMonths={durationMonths}
+            classDates={classDates}
+            priceInfo={calculateFinalPrice()}
+            embedded
+          />
+        </div>
         </div>
       </div>
   );

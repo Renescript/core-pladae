@@ -59,7 +59,6 @@ const DurationSelector = ({
   return (
     <div className="step-container">
       <div className="step-header">
-        <span className="step-indicator">Paso 4 de 6</span>
         <h2>{isTrialClass ? 'Clase de prueba' : '¿Cuánto tiempo quieres estudiar?'}</h2>
       </div>
 

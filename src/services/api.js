@@ -23,9 +23,10 @@ const NO_CACHE_HEADERS = {
 };
 
 /**
- * Timeout por defecto para las peticiones (5 segundos)
+ * Timeout por defecto para las peticiones (15 segundos)
+ * Render free tier puede tardar en cold start
  */
-const DEFAULT_TIMEOUT = 5000;
+const DEFAULT_TIMEOUT = 15000;
 
 /**
  * Cache simple para evitar llamadas repetidas

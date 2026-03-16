@@ -52,13 +52,13 @@ const MultiDayScheduleSelector = ({
   useEffect(() => {
     if (selectedSchedules[currentDayIndex]) {
       const schedule = selectedSchedules[currentDayIndex];
-      setTempSelectedDate(schedule.date);
-      setTempSelectedTimeSlot(schedule.timeSlot);
+      setTempSelectedDate(schedule.date || null);
+      setTempSelectedTimeSlot(schedule.timeSlot || null);
     } else {
       setTempSelectedDate(null);
       setTempSelectedTimeSlot(null);
     }
-  }, [currentDayIndex, selectedSchedules]);
+  }, [currentDayIndex]);
 
   useEffect(() => {
     if (!tempSelectedDate || !technique?.schedules) {
@@ -180,35 +180,8 @@ const MultiDayScheduleSelector = ({
   return (
     <div className="step-container">
       <div className="step-header">
-        <span className="step-indicator">Paso 3 de 6</span>
-        <h2>Selecciona tus fechas y horarios</h2>
-      </div>
-
-      <div className="day-progress">
-        <p>Día {currentDayIndex + 1} de {frequency}</p>
-        <div className="day-tabs">
-          {Array.from({ length: frequency }).map((_, index) => {
-            const schedule = selectedSchedules[index];
-            const isCompleted = schedule && schedule.date && schedule.timeSlot;
-            return (
-              <button
-                key={index}
-                type="button"
-                className={`day-tab ${index === currentDayIndex ? 'active' : ''} ${isCompleted ? 'completed' : ''}`}
-                onClick={() => setCurrentDayIndex(index)}
-              >
-                {isCompleted ? (
-                  <span className="day-tab-summary">
-                    <span className="tab-day">{dayLabels[schedule.dayOfWeek]} {formatShortDate(schedule.date)}</span>
-                    <span className="tab-time">{schedule.timeSlot.replace('-', ' – ')}</span>
-                  </span>
-                ) : (
-                  `Día ${index + 1}`
-                )}
-              </button>
-            );
-          })}
-        </div>
+        <h2>Selecciona tu fecha de inicio y horario</h2>
+        <p className="step-description">Elige la fecha en que quieres comenzar y el horario que más te acomode. En el siguiente paso podrás elegir por cuántos meses deseas inscribirte.</p>
       </div>
 
       <div className="datetime-grid">
@@ -240,7 +213,26 @@ const MultiDayScheduleSelector = ({
                   key={index}
                   type="button"
                   className={`calendar-day ${!dayObj.isCurrentMonth ? 'other-month' : ''} ${isAvailable ? 'available' : ''} ${isSelected ? 'selected' : ''}`}
-                  onClick={() => isAvailable && !isPast && setTempSelectedDate(dateStr)}
+                  onClick={() => {
+                    if (!isAvailable || isPast) return;
+                    setTempSelectedDate(dateStr);
+                    setTempSelectedTimeSlot(null);
+                    // Update schedule with date only, clear timeslot
+                    const selectedDate = new Date(dateStr + 'T00:00:00');
+                    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                    const updatedSchedules = [...selectedSchedules];
+                    // Pad array if needed
+                    while (updatedSchedules.length <= currentDayIndex) updatedSchedules.push(null);
+                    updatedSchedules[currentDayIndex] = {
+                      dayIndex: currentDayIndex,
+                      date: dateStr,
+                      dayOfWeek: dayNames[selectedDate.getDay()],
+                      timeSlot: null,
+                      sectionId: null,
+                      teacher: null
+                    };
+                    onSchedulesChange(updatedSchedules);
+                  }}
                   disabled={!isAvailable || isPast}
                 >
                   {dayObj.date.getDate()}
@@ -250,9 +242,9 @@ const MultiDayScheduleSelector = ({
           </div>
         </div>
 
-        <div className="timeslots-section">
+        <div className={`timeslots-section ${!tempSelectedDate ? 'disabled' : 'active'}`}>
           <h3>2. Selecciona horario</h3>
-          {!tempSelectedDate && <p>Primero selecciona una fecha</p>}
+          {!tempSelectedDate && <p className="timeslot-hint">Selecciona una fecha en el calendario para ver los horarios disponibles</p>}
           {tempSelectedDate && availableTimeSlots.length === 0 && <p>No hay horarios disponibles</p>}
           {tempSelectedDate && availableTimeSlots.length > 0 && (
             <div className="timeslots-list">
@@ -270,6 +262,33 @@ const MultiDayScheduleSelector = ({
           )}
         </div>
       </div>
+
+      {/* <div className="day-progress">
+        <p>Día {currentDayIndex + 1} de {frequency}</p>
+        <div className="day-tabs">
+          {Array.from({ length: frequency }).map((_, index) => {
+            const schedule = selectedSchedules[index];
+            const isCompleted = schedule && schedule.date && schedule.timeSlot;
+            return (
+              <button
+                key={index}
+                type="button"
+                className={`day-tab ${index === currentDayIndex ? 'active' : ''} ${isCompleted ? 'completed' : ''}`}
+                onClick={() => setCurrentDayIndex(index)}
+              >
+                {isCompleted ? (
+                  <span className="day-tab-summary">
+                    <span className="tab-day">{dayLabels[schedule.dayOfWeek]} {formatShortDate(schedule.date)}</span>
+                    <span className="tab-time">{schedule.timeSlot.replace('-', ' – ')}</span>
+                  </span>
+                ) : (
+                  `Día ${index + 1}`
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div> */}
 
       <div className="step-actions">
         <button type="button" className="btn-secondary" onClick={onBack}>Volver</button>

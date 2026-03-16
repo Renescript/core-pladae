@@ -6,7 +6,6 @@ const AddAnotherCoursePrompt = ({ completedEnrollments = [], currentCourse, onAd
   return (
     <div className="step-container">
       <div className="step-header">
-        <span className="step-indicator">Paso 6 de 7</span>
         <h2>{canAddMore ? '¿Quieres agregar otro curso?' : 'Cursos seleccionados'}</h2>
       </div>
 

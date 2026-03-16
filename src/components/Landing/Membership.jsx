@@ -1,5 +1,3 @@
-import './landing.css';
-
 const Membership = () => {
   return (
     <section className="membership-section">
@@ -43,6 +41,7 @@ const Membership = () => {
               src="/gus1.jpeg"
               alt="Espacio del estudio"
               className="membership-image"
+              loading="lazy"
             />
             <div className="membership-image-overlay"></div>
           </div>

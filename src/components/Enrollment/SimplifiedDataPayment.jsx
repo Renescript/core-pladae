@@ -55,7 +55,6 @@ const SimplifiedDataPayment = ({
   return (
     <div className="step-container">
       <div className="step-header">
-        <span className="step-indicator">Paso 7 de 7</span>
         <h2>Datos y pago</h2>
       </div>
 

@@ -74,7 +74,6 @@ const SimplifiedPlanConfigurator = ({
   return (
     <div className="step-container">
       <div className="step-header">
-        <span className="step-indicator">Paso 2 de 6</span>
         <h2>¿Cuántas veces a la semana quieres venir?</h2>
       </div>
 

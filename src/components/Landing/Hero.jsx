@@ -1,95 +1,52 @@
-import { useState, useEffect } from 'react';
-import './landing.css';
+const COLLAGE_ITEMS = [
+  { type: 'image', src: '/gus1.jpeg', alt: 'Taller de arte' },
+  { type: 'image', src: '/DSC_1077.JPG', alt: 'Clase en taller' },
+  { type: 'image', src: '/20250108_113538 (1).jpg', alt: 'Trabajo en taller' },
+  { type: 'video', src: '/hero-video.mp4', webm: '/hero-video.webm', alt: 'Video del taller' },
+  { type: 'image', src: '/DSC_1082_mirror.JPG', alt: 'Trabajo artístico' },
+  { type: 'image', src: '/gus4.jpeg', alt: 'Técnicas artísticas' },
+  { type: 'video', src: '/IMG_0159.mp4', webm: '/IMG_0159.webm', alt: 'Clase en vivo' },
+  { type: 'image', src: '/DSC_1201.JPG', alt: 'Sesión de arte' },
+];
 
 const Hero = ({ onInscripcionClick }) => {
-  const [currentImage, setCurrentImage] = useState(0);
-
-  const images = [
-    '/gus1.jpeg',
-    '/gus3.jpeg',
-    '/gus4.jpeg'
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <header className="hero-section">
-      {/* Background Elements */}
-      <div className="hero-bg-elements">
-        <div className="blob blob-1"></div>
-        <div className="blob blob-2"></div>
-        <div className="blob blob-3"></div>
-
-        {/* Paint Stroke SVG */}
-        <svg className="paint-stroke" viewBox="0 0 200 200" fill="currentColor">
-          <path d="M45.7,148.6c-6.7-2.2-12.8-5.8-17.6-10.8c-15.8-16.4-12.9-42.8,5.9-56.4c16.3-11.8,38.6-13.4,57.8-8.5 c22.4,5.7,42.6,18.8,58.8,35.6c13.6,14.1,24.1,31.5,26.8,50.9c1.4,10.2-1.4,20.7-8.5,28.3c-7.6,8.1-19.1,11.7-29.9,11.8 c-21.8,0.2-43.3-6.8-61.9-17.8C66.8,175.5,55.5,163.8,45.7,148.6z" />
-        </svg>
+      {/* Collage background */}
+      <div className="hero-collage">
+        {COLLAGE_ITEMS.map((item, i) => (
+          <div key={i} className={`collage-item collage-item--${i}`}>
+            {item.type === 'video' ? (
+              <video
+                className="collage-img"
+                muted
+                autoPlay
+                loop
+                playsInline
+                preload="metadata"
+              >
+                <source src={item.webm} type="video/webm" />
+                <source src={item.src} type="video/mp4" />
+              </video>
+            ) : (
+              <img src={item.src} alt={item.alt} className="collage-img" loading={i < 4 ? 'eager' : 'lazy'} />
+            )}
+          </div>
+        ))}
       </div>
 
-      <div className="hero-content-grid">
-        <div className="hero-text-content">
-          <div className="hero-tagline">
-            <span className="handwritten-text">Centro Artístico</span>
-            <svg className="underline-svg" viewBox="0 0 100 10" preserveAspectRatio="none">
-              <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="2" fill="none" />
-            </svg>
-          </div>
+      {/* Card with text content */}
+      <div className="hero-card">
+        <p className="hero-subtitle">SOMOS <span className="hero-highlight">GUSTARTE</span></p>
+        <h1 className="hero-title">ACADEMIA DE ARTE EN CONCEPCIÓN</h1>
+        <p className="hero-tagline-text">Talleres presenciales para adultos y jóvenes. Todos los niveles, horarios flexibles.</p>
 
-          <h1 className="hero-title">
-            GUSTARTE<span className=''>.</span>
-            {/*<br/> <span className="highlight-text">
-              Expresa.
-              <svg className="highlight-bg" viewBox="0 0 200 100" fill="currentColor">
-                <path d="M10,50 Q50,5 90,50 T190,50" stroke="none" fill="currentColor" />
-              </svg>
-            </span> */}
-          </h1>
-
-          <p className="hero-description">
-            Clases presenciales con instructores experimentados en pintura, dibujo y escultura. Arte al alcance de todos.
-          </p>
-
-          <div className="hero-buttons">
-            <button className="btn-brush btn-primary-brush" onClick={onInscripcionClick}>
-              Inscríbete Ahora
-            </button>
-            <button className="btn-outline-brush">
-              Ver Galería
-            </button>
-          </div>
-        </div>
-
-        <div className="hero-collage">
-          {/* Main Image */}
-          <div className="collage-main">
-            <img
-              src={images[currentImage]}
-              alt="Clase de arte"
-              className="collage-image"
-            />
-            <div className="tape-strip tape-main"></div>
-          </div>
-
-          {/* Secondary Image */}
-          <div className="collage-secondary">
-            <img
-              src={images[(currentImage + 1) % images.length]}
-              alt="Manos creando"
-              className="collage-image"
-            />
-            <div className="tape-strip tape-secondary"></div>
-          </div>
-
-          {/* Decorative Elements */}
-          <div className="collage-blob"></div>
-          <div className="collage-star">✦</div>
-        </div>
+        <button className="hero-cta" onClick={onInscripcionClick}>
+          <svg className="hero-cta-brush" viewBox="0 0 320 70" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M8,35 C12,18 35,8 70,12 C105,6 140,10 175,8 C210,6 250,12 280,10 C295,9 310,14 315,25 C318,32 316,42 312,48 C306,56 285,60 255,58 C220,62 180,60 145,62 C110,64 70,60 40,58 C22,56 10,52 6,45 C3,40 4,38 8,35Z" fill="var(--color-primary)" />
+          </svg>
+          <span className="hero-cta-text">QUIERO INSCRIBIRME</span>
+        </button>
       </div>
     </header>
   );

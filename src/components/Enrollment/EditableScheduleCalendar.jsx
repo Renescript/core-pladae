@@ -40,7 +40,6 @@ const EditableScheduleCalendar = ({
   return (
     <div className="step-container">
       <div className="step-header">
-        <span className="step-indicator">Paso 5 de 6</span>
         <h2>Resumen de tus clases</h2>
       </div>
 

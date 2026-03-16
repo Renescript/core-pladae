@@ -14,10 +14,6 @@ function AppHeader() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleEnrollClick = () => {
-    navigate('/inscripcion');
-  };
-
   const handleLogoClick = () => {
     navigate('/');
   };
@@ -29,30 +25,26 @@ function AppHeader() {
   }
 
   return (
-    <nav className="nav-main">
-      <div className="nav-container">
+    <nav className="nav-main nav-transparent">
+      <div className="nav-container-flat">
         <div className="nav-logo" onClick={handleLogoClick}>
-          <img src="/logo-gustarte-bla.png" alt="Gustarte" className="nav-logo-img" />
+          <img src="/logo-gustarte-letras.png" alt="Gustarte" className="nav-logo-img" />
         </div>
 
         <div className="nav-links">
-          <a href="#courses" className="nav-link">
-            Cursos
-            <span className="nav-link-underline"></span>
-          </a>
           <a href="#about" className="nav-link">
-            Nosotros
-            <span className="nav-link-underline"></span>
+            Quiénes somos
           </a>
-          <a href="#gallery" className="nav-link">
-            Galería
-            <span className="nav-link-underline"></span>
+          <a href="#courses" className="nav-link">
+            Nuestros cursos
           </a>
+          <a href="#contact" className="nav-link">
+            Contacto
+          </a>
+          <button className="nav-cta-btn" onClick={() => navigate('/inscripcion')}>
+            Inscríbete
+          </button>
         </div>
-
-        <button className="nav-cta btn-brush" onClick={handleEnrollClick}>
-          Inscríbete
-        </button>
 
         <button
           className="nav-mobile-toggle"
