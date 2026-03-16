@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getSectionCalendar } from '../../services/api';
 import './TechniqueSelector.css';
 import './SimplifiedDateTimeSelector.css';
@@ -19,32 +19,55 @@ const SimplifiedDateTimeSelector = ({
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const loadingRequestRef = useRef(false);
 
   // Cargar fechas de TODAS las secciones de la técnica
   useEffect(() => {
     const loadAllDates = async () => {
       if (!technique?.schedules || technique.schedules.length === 0) return;
 
+      // Evitar múltiples cargas simultáneas
+      if (loadingRequestRef.current) {
+        console.log('⏳ Ya hay una carga en progreso, saltando...');
+        return;
+      }
+
       try {
         setLoading(true);
+        loadingRequestRef.current = true;
         console.log('📅 Cargando fechas de todas las secciones de:', technique.name);
 
-        // Obtener todas las fechas de todas las secciones
+        // Obtener todas las fechas de todas las secciones usando Promise.allSettled
         const allDatesPromises = technique.schedules.map(schedule =>
           getSectionCalendar(schedule.section.id)
             .then(dates => ({
               sectionId: schedule.section.id,
               day: schedule.day,
-              dates: dates
+              dates: dates,
+              success: true
             }))
             .catch(err => {
-              console.error(`Error al cargar fechas de sección ${schedule.section.id}:`, err);
-              return { sectionId: schedule.section.id, day: schedule.day, dates: [] };
+              console.error(`❌ Error al cargar fechas de sección ${schedule.section.id}:`, err);
+              return {
+                sectionId: schedule.section.id,
+                day: schedule.day,
+                dates: [],
+                success: false,
+                error: err.message
+              };
             })
         );
 
-        const allSectionDates = await Promise.all(allDatesPromises);
-        console.log('📅 Fechas de todas las secciones:', allSectionDates);
+        const results = await Promise.allSettled(allDatesPromises);
+        console.log('📅 Resultados de carga:', results);
+
+        // Extraer las secciones que se cargaron exitosamente
+        const allSectionDates = results
+          .filter(result => result.status === 'fulfilled')
+          .map(result => result.value)
+          .filter(section => section.success);
+
+        console.log(`✅ ${allSectionDates.length}/${technique.schedules.length} secciones cargadas exitosamente`);
 
         // Combinar todas las fechas únicas
         const uniqueDates = new Set();
@@ -55,12 +78,14 @@ const SimplifiedDateTimeSelector = ({
         });
 
         const datesList = Array.from(uniqueDates).map(date => ({ date }));
-        console.log('📅 Fechas únicas disponibles:', datesList);
+        console.log('📅 Fechas únicas disponibles:', datesList.length);
         setAllAvailableDates(datesList);
       } catch (err) {
-        console.error('Error al cargar fechas:', err);
+        console.error('❌ Error crítico al cargar fechas:', err);
+        setAllAvailableDates([]);
       } finally {
         setLoading(false);
+        loadingRequestRef.current = false;
       }
     };
 

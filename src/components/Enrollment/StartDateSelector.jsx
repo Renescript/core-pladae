@@ -20,17 +20,28 @@ const StartDateSelector = ({
   // Cargar fechas disponibles desde el backend
   useEffect(() => {
     const loadAvailableDates = async () => {
-      if (!selectedSchedule?.section?.id) return;
+      if (!selectedSchedule?.section?.id) {
+        setAvailableDates([]);
+        return;
+      }
+
+      const sectionId = selectedSchedule.section.id;
 
       try {
         setLoading(true);
         setError(null);
 
-        console.log('📅 Cargando fechas disponibles para sección:', selectedSchedule.section.id);
+        console.log('📅 Cargando fechas disponibles para sección:', sectionId);
         console.log('📅 selectedSchedule completo:', selectedSchedule);
-        const dates = await getSectionCalendar(selectedSchedule.section.id);
-        console.log('📅 FECHAS CRUDAS DEL BACKEND:', dates);
-        console.log('📅 Total de fechas recibidas:', dates.length);
+
+        const dates = await getSectionCalendar(sectionId);
+
+        console.log(`✅ ${dates.length} fechas recibidas del backend para sección ${sectionId}`);
+
+        // Validar que dates sea un array
+        if (!Array.isArray(dates)) {
+          throw new Error('La respuesta del servidor no es un array de fechas');
+        }
 
         // El backend ya devuelve las fechas correctas para esta sección
         // NO necesitamos filtrar por día de la semana porque la sección ya tiene sus días definidos
@@ -41,8 +52,11 @@ const StartDateSelector = ({
           onAvailableDatesLoad(dates);
         }
       } catch (err) {
-        console.error('Error al cargar fechas disponibles:', err);
-        setError('No se pudieron cargar las fechas disponibles');
+        console.error(`❌ Error al cargar fechas para sección ${sectionId}:`, err);
+        const errorMessage = err.message || 'No se pudieron cargar las fechas disponibles';
+        setError(errorMessage);
+        setAvailableDates([]);
+
         if (onAvailableDatesLoad) {
           onAvailableDatesLoad([]);
         }
@@ -52,7 +66,7 @@ const StartDateSelector = ({
     };
 
     loadAvailableDates();
-  }, [selectedSchedule?.section?.id]); // Solo recargar cuando cambie la sección
+  }, [selectedSchedule?.section?.id, onAvailableDatesLoad]); // Incluir onAvailableDatesLoad en dependencias
 
   // Convierte el nombre del día en inglés a número (0=domingo, 1=lunes, etc.)
   const getDayOfWeek = (dayName) => {
