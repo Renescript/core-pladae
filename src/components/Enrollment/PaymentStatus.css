@@ -1,1 +1,258 @@
-/* Limpiado - usar enrollment-global.css */
+/* ========================================
+   PAYMENT STATUS PAGES
+   Usa el design system de enrollment
+   ======================================== */
+
+.ps-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6, 1.5rem);
+  background-color: var(--color-charcoal, #1f2933);
+}
+
+.ps-card {
+  width: 100%;
+  max-width: 480px;
+  background-color: var(--color-paper, #f7f3ee);
+  border-radius: 2rem;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.ps-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+}
+
+/* Icon */
+.ps-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ps-icon--success {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.ps-icon--error {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* Title */
+.ps-title {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 700;
+  color: var(--color-charcoal, #1f2933);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.ps-subtitle {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.9rem;
+  color: var(--text-light, #718096);
+  margin: -0.5rem 0 0;
+}
+
+/* Details */
+.ps-details {
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid rgba(31, 41, 51, 0.08);
+  overflow: hidden;
+}
+
+.ps-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid rgba(31, 41, 51, 0.05);
+}
+
+.ps-detail-row:last-child {
+  border-bottom: none;
+}
+
+.ps-detail-row--highlight {
+  background: rgba(71, 161, 191, 0.04);
+}
+
+.ps-detail-label {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.8rem;
+  color: var(--text-light, #718096);
+}
+
+.ps-detail-value {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-charcoal, #1f2933);
+  text-align: right;
+}
+
+.ps-detail-mono {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
+.ps-detail-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Info box */
+.ps-info {
+  width: 100%;
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.8rem;
+  color: var(--text-medium, #4a5568);
+  line-height: 1.5;
+  background: rgba(71, 161, 191, 0.06);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  text-align: left;
+}
+
+/* Help section (failure) */
+.ps-help {
+  width: 100%;
+  text-align: left;
+  background: rgba(245, 158, 11, 0.06);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+
+.ps-help-title {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-charcoal, #1f2933);
+  margin: 0 0 0.5rem;
+}
+
+.ps-help-list {
+  margin: 0;
+  padding: 0 0 0 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ps-help-list li {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.78rem;
+  color: var(--text-medium, #4a5568);
+  line-height: 1.4;
+}
+
+/* Actions */
+.ps-actions {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.ps-btn {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--radius-full, 9999px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.ps-btn--primary {
+  background-color: var(--color-primary, #47a1bf);
+  color: white;
+}
+
+.ps-btn--primary:hover {
+  background-color: #3b8da8;
+}
+
+.ps-btn--secondary {
+  background: none;
+  color: var(--text-medium, #4a5568);
+  border: 1.5px solid rgba(31, 41, 51, 0.15);
+}
+
+.ps-btn--secondary:hover {
+  border-color: var(--color-primary, #47a1bf);
+  color: var(--color-primary, #47a1bf);
+}
+
+/* Footer */
+.ps-footer-text {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.78rem;
+  color: var(--text-light, #718096);
+  margin: 0;
+}
+
+.ps-link {
+  color: var(--color-primary, #47a1bf);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.ps-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .ps-page {
+    padding: var(--space-3, 0.75rem);
+  }
+
+  .ps-card {
+    padding: 2rem 1.25rem;
+    border-radius: 1rem;
+  }
+
+  .ps-actions {
+    flex-direction: column;
+  }
+}
+
+/* Print */
+@media print {
+  .ps-page {
+    background: white;
+    padding: 0;
+  }
+
+  .ps-card {
+    box-shadow: none;
+    border-radius: 0;
+    max-width: 100%;
+  }
+
+  .ps-actions,
+  .ps-footer-text {
+    display: none;
+  }
+}

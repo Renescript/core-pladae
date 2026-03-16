@@ -5,7 +5,6 @@ const PaymentFailure = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // Extraer parámetros de la URL
   const reason = searchParams.get('reason') || 'No especificado';
   const buyOrder = searchParams.get('buy_order');
   const errorCode = searchParams.get('error_code');
@@ -22,75 +21,61 @@ const PaymentFailure = () => {
     return errorMessages[code] || reason;
   };
 
-  const handleRetry = () => {
-    // Volver a la página de inscripción
-    navigate('/');
-  };
-
-  const handleGoHome = () => {
-    navigate('/');
-  };
-
-  const handleContactSupport = () => {
-    // Redirigir a página de contacto o abrir email
-    window.location.href = 'mailto:soporte@pladae.com?subject=Problema con pago - Orden ' + buyOrder;
-  };
-
   return (
-    <div className="payment-status-container">
-      <div className="payment-status-card failure">
-        <div className="status-icon">✗</div>
-        <h1>Pago No Realizado</h1>
-        <p className="status-message">Tu transacción no pudo ser completada</p>
+    <div className="ps-page">
+      <div className="ps-card">
+        <img src="/logo-gustarte-letras.png" alt="Gustarte" className="ps-logo" />
 
-        <div className="failure-details">
-          <h3>Información del Error</h3>
+        <div className="ps-icon ps-icon--error">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </div>
 
-          <div className="detail-row">
-            <span className="label">Razón:</span>
-            <span className="value">{getErrorMessage(errorCode)}</span>
+        <h1 className="ps-title">Pago no realizado</h1>
+        <p className="ps-subtitle">Tu transacción no pudo ser completada</p>
+
+        <div className="ps-details">
+          <div className="ps-detail-row">
+            <span className="ps-detail-label">Razón</span>
+            <span className="ps-detail-value">{getErrorMessage(errorCode)}</span>
           </div>
-
           {buyOrder && (
-            <div className="detail-row">
-              <span className="label">Número de orden:</span>
-              <span className="value">{buyOrder}</span>
+            <div className="ps-detail-row">
+              <span className="ps-detail-label">N° de orden</span>
+              <span className="ps-detail-value ps-detail-mono">{buyOrder}</span>
             </div>
           )}
-
           {errorCode && (
-            <div className="detail-row">
-              <span className="label">Código de error:</span>
-              <span className="value">{errorCode}</span>
+            <div className="ps-detail-row">
+              <span className="ps-detail-label">Código</span>
+              <span className="ps-detail-value ps-detail-mono">{errorCode}</span>
             </div>
           )}
         </div>
 
-        <div className="info-box warning">
-          <h4>¿Qué hacer ahora?</h4>
-          <ul>
+        <div className="ps-help">
+          <p className="ps-help-title">¿Qué puedes hacer?</p>
+          <ul className="ps-help-list">
             <li>Verifica que tu tarjeta tenga fondos suficientes</li>
             <li>Confirma que los datos de tu tarjeta sean correctos</li>
             <li>Intenta con otro medio de pago</li>
-            <li>Si el problema persiste, contacta a tu banco o a nuestro soporte</li>
           </ul>
         </div>
 
-        <div className="actions">
-          <button className="btn-secondary" onClick={handleGoHome}>
-            Volver al Inicio
+        <div className="ps-actions">
+          <button className="ps-btn ps-btn--secondary" onClick={() => navigate('/')}>
+            Volver al inicio
           </button>
-          <button className="btn-primary" onClick={handleRetry}>
-            Intentar Nuevamente
+          <button className="ps-btn ps-btn--primary" onClick={() => navigate('/inscripcion')}>
+            Intentar nuevamente
           </button>
         </div>
 
-        <div className="support-section">
-          <p>¿Necesitas ayuda?</p>
-          <button className="btn-link" onClick={handleContactSupport}>
-            Contactar Soporte
-          </button>
-        </div>
+        <p className="ps-footer-text">
+          ¿Necesitas ayuda? <a href="mailto:contacto@gustarte.cl?subject=Problema con pago" className="ps-link">Contáctanos</a>
+        </p>
       </div>
     </div>
   );

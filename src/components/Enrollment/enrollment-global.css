@@ -17,8 +17,8 @@
 }
 
 .enrollment-wrapper {
-  width: 1200px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
   border: none;
   border-radius: 2rem;
@@ -27,14 +27,36 @@
   background-color: var(--color-paper, #f7f3ee);
 }
 
+@media (max-width: 640px) {
+  .enrollment-wrapper {
+    border-radius: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .enrollment-page {
+    padding: var(--space-3, 0.75rem);
+  }
+
+  .enrollment-wrapper {
+    border-radius: 0.75rem;
+  }
+}
+
 .enrollment-body {
   display: grid;
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .enrollment-body {
     grid-template-columns: 1fr 280px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .enrollment-body {
+    grid-template-columns: 1fr 300px;
   }
 }
 
@@ -49,14 +71,14 @@
   overflow-y: auto;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .enrollment-sidebar {
     display: block;
   }
 }
 
 /* Hide FAB when sidebar is visible */
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .cart-fab {
     display: none;
   }
@@ -80,6 +102,14 @@
   margin: 0;
 }
 
+.cart-embedded-subtitle {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.75rem;
+  color: var(--text-light, #718096);
+  margin: -0.5rem 0 0;
+  font-weight: 400;
+}
+
 /* ========================================
    HEADER
    ======================================== */
@@ -88,13 +118,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-4, 1rem) var(--space-6, 1.5rem);
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+}
+
+@media (min-width: 640px) {
+  .enrollment-header {
+    padding: var(--space-4, 1rem) var(--space-6, 1.5rem);
+  }
 }
 
 .enrollment-logo {
-  height: 50px;
+  height: 40px;
   width: auto;
   object-fit: contain;
+}
+
+@media (min-width: 640px) {
+  .enrollment-logo {
+    height: 50px;
+  }
 }
 
 .enrollment-header-actions {
@@ -226,25 +268,46 @@
   text-overflow: ellipsis;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .enrollment-progress {
-    padding: 0 1rem 0.75rem;
+    padding: 0 0.75rem 0.75rem;
     gap: 0.15rem;
   }
 
   .progress-item {
-    padding: 0.4rem 0.5rem;
+    padding: 0.35rem 0.4rem;
     flex-direction: column;
     text-align: center;
-    gap: 0.25rem;
+    gap: 0.2rem;
+  }
+
+  .progress-dot {
+    width: 22px;
+    height: 22px;
+    font-size: 0.65rem;
   }
 
   .progress-info {
     align-items: center;
   }
 
+  .progress-label {
+    font-size: 0.6rem;
+  }
+
   .progress-value {
     display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .progress-info {
+    display: none;
+  }
+
+  .progress-item {
+    padding: 0.3rem;
+    justify-content: center;
   }
 }
 
@@ -339,6 +402,10 @@
   font-weight: 700;
   color: var(--color-charcoal, #1f2933);
   margin: 0;
+}
+
+.cart-panel-header .cart-embedded-subtitle {
+  margin: 0.15rem 0 0;
 }
 
 .cart-close {
@@ -484,28 +551,36 @@
 .cart-items {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid rgba(31, 41, 51, 0.08);
+  overflow: hidden;
+  user-select: none;
+  cursor: default;
+  pointer-events: none;
 }
 
 .cart-item {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  padding: 0.75rem;
-  background: white;
-  border-radius: 10px;
-  border: 1px solid rgba(31, 41, 51, 0.06);
-  opacity: 0.45;
+  gap: 0.15rem;
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid rgba(31, 41, 51, 0.05);
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+.cart-item:last-child {
+  border-bottom: none;
 }
 
 .cart-item.filled {
   opacity: 1;
-  border-color: rgba(71, 161, 191, 0.15);
 }
 
 .cart-item-label {
   font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 600;
   color: var(--text-light, #718096);
   text-transform: uppercase;
@@ -513,12 +588,12 @@
 }
 
 .cart-item.filled .cart-item-label {
-  color: var(--color-primary, #47a1bf);
+  color: var(--text-medium, #4a5568);
 }
 
 .cart-item-value {
   font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: var(--color-charcoal, #1f2933);
 }
@@ -526,28 +601,32 @@
 .cart-schedules {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: 0.3rem;
 }
 
 .cart-schedule-chip {
   font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 500;
-  color: var(--color-primary, #47a1bf);
-  background: rgba(71, 161, 191, 0.08);
-  padding: 0.2rem 0.6rem;
-  border-radius: 6px;
+  color: var(--text-medium, #4a5568);
+  background: rgba(31, 41, 51, 0.04);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  border: 1px dashed rgba(31, 41, 51, 0.1);
 }
 
 /* Cart Total */
 .cart-total {
   background: white;
   border-radius: 12px;
-  padding: 1rem;
+  padding: 0.85rem;
   border: 1px solid rgba(31, 41, 51, 0.08);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  user-select: none;
+  cursor: default;
+  pointer-events: none;
 }
 
 .cart-discount {
@@ -569,19 +648,77 @@
   border-top: 1px solid rgba(31, 41, 51, 0.1);
 }
 
+/* Section labels in cart */
+.cart-section-label {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-light, #718096);
+  display: block;
+}
+
+.cart-section-label--active {
+  color: var(--color-primary, #47a1bf);
+}
+
+/* Course indicator banner */
+.enrollment-course-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.25rem;
+  background: rgba(71, 161, 191, 0.06);
+  border-bottom: 1px solid rgba(71, 161, 191, 0.1);
+}
+
+.course-indicator-badge {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: white;
+  background: var(--color-primary, #47a1bf);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full, 9999px);
+  white-space: nowrap;
+}
+
+.course-indicator-text {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.8rem;
+  color: var(--text-medium, #4a5568);
+}
+
+.course-indicator-text strong {
+  color: var(--color-charcoal, #1f2933);
+}
+
 /* ========================================
    STEP CONTAINER
    ======================================== */
 
 .step-container {
-  padding: 0em 2em 2em 2em;
+  padding: 1.25rem 1rem 1.5rem;
 }
 
 .step-container button:focus {
   outline: none;
 }
 
+@media (min-width: 480px) {
+  .step-container {
+    padding: 1.5rem 1.25rem 2rem;
+  }
+}
+
 @media (min-width: 640px) {
+  .step-container {
+    padding: var(--space-8, 2rem);
+  }
+}
+
+@media (min-width: 1024px) {
   .step-container {
     padding: var(--space-10, 2.5rem) var(--space-8, 2rem);
   }
@@ -606,7 +743,7 @@
 
 .step-header h2 {
   font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: var(--font-size-2xl, 1.5rem);
+  font-size: clamp(1.15rem, 2.5vw, 1.5rem);
   font-weight: 600;
   color: var(--color-charcoal, #1f2933);
   margin: 0;
@@ -1470,6 +1607,106 @@
 }
 
 /* ========================================
+   CONFIRM / ADD ANOTHER COURSE
+   ======================================== */
+
+.confirm-courses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.confirm-course-card {
+  background: white;
+  border: 1px solid rgba(31, 41, 51, 0.1);
+  border-radius: var(--radius-lg, 16px);
+  overflow: hidden;
+}
+
+.confirm-course-header {
+  padding: 0.85rem 1.25rem;
+  background: var(--color-primary, #47a1bf);
+}
+
+.confirm-course-name {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+}
+
+.confirm-course-details {
+  padding: 0.25rem 0;
+}
+
+.confirm-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.6rem 1.25rem;
+  border-bottom: 1px solid rgba(31, 41, 51, 0.05);
+}
+
+.confirm-detail-row:last-child {
+  border-bottom: none;
+}
+
+.confirm-detail-label {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.85rem;
+  color: var(--text-light, #718096);
+  flex-shrink: 0;
+}
+
+.confirm-detail-value {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-charcoal, #1f2933);
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.confirm-schedule {
+  display: block;
+}
+
+.confirm-price-row {
+  background: rgba(71, 161, 191, 0.04);
+}
+
+.confirm-detail-price {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-charcoal, #1f2933);
+}
+
+.confirm-add-btn {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px dashed rgba(71, 161, 191, 0.3);
+  border-radius: var(--radius-lg, 16px);
+  background: none;
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-primary, #47a1bf);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 1.5rem;
+}
+
+.confirm-add-btn:hover {
+  border-color: var(--color-primary, #47a1bf);
+  background: rgba(71, 161, 191, 0.04);
+}
+
+/* ========================================
    DURATION EXTRAS
    ======================================== */
 
@@ -1699,33 +1936,27 @@
 .step-description {
   color: var(--text-light, #718096);
   font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: 0.95rem;
+  font-size: clamp(0.8rem, 1.5vw, 0.95rem);
   line-height: 1.5;
-  margin: 0.5rem 0 1.5rem 0;
+  margin: 0.5rem 0 1.25rem 0;
   text-align: center;
 }
 
 .courses-selection {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1.25rem;
 }
 
-@media (min-width: 1200px) {
-  .courses-selection {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1199px) {
+@media (min-width: 600px) {
   .courses-selection {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 767px) {
+@media (min-width: 1280px) {
   .courses-selection {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -1845,26 +2076,20 @@
 /* Plan Selection */
 .plans-selection {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
   margin-top: 2rem;
 }
 
-@media (min-width: 1400px) {
-  .plans-selection {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (min-width: 1024px) and (max-width: 1399px) {
-  .plans-selection {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 480px) {
   .plans-selection {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .plans-selection {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -1917,9 +2142,9 @@
 
 /* Contenido del plan */
 .plan-option h3 {
-  font-size: 1.75rem;
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
   margin: 0;
-  padding: 2rem 2rem 1rem;
+  padding: 1.5rem 1.25rem 0.75rem;
   color: #1e293b;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -1934,8 +2159,8 @@
 .plan-description {
   color: #64748b;
   margin: 0;
-  padding: 0 2rem 1.5rem;
-  font-size: 0.9375rem;
+  padding: 0 1.25rem 1.25rem;
+  font-size: 0.875rem;
   line-height: 1.6;
   background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(248,249,250,0.4) 100%);
   border-bottom: 2px solid #f1f3f5;
@@ -1955,7 +2180,7 @@
 }
 
 .price-amount {
-  font-size: 3.5rem;
+  font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 900;
   color: #0f172a;
   line-height: 1;
@@ -1975,7 +2200,7 @@
 
 /* Features section */
 .plan-features {
-  padding: 2rem 1.5rem;
+  padding: 1.25rem 1.25rem;
   flex-grow: 1;
   background: white;
 }
@@ -2060,7 +2285,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 2rem 2rem 1.5rem;
+  padding: 1.5rem 1.25rem 1rem;
   background: white;
 }
 
@@ -2069,7 +2294,7 @@
 }
 
 .price-amount {
-  font-size: 3rem;
+  font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 900;
   color: #0f172a;
   background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
@@ -2087,7 +2312,7 @@
 
 /* Plan Details */
 .plan-details {
-  padding: 1.5rem 2rem 2rem;
+  padding: 1.25rem 1.25rem 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -2108,7 +2333,7 @@
 
 .classes-number {
   display: block;
-  font-size: 2.5rem;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
   font-weight: 800;
   color: #111827;
   line-height: 1;
@@ -2419,6 +2644,13 @@
 @media (min-width: 768px) {
   .payment-summary {
     display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .payment-summary {
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
   }
@@ -2535,7 +2767,7 @@
 }
 
 .total-amount {
-  font-size: 2.5rem;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
   color: #000000;
   font-weight: 900;
   letter-spacing: -0.02em;
@@ -2933,20 +3165,6 @@
 }
 
 /* Responsive */
-@media (min-width: 1600px) {
-  .plans-selection {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
-  }
-}
-
-@media (min-width: 1400px) {
-  .container,
-  .courses-grid {
-    padding: 0 3rem;
-  }
-}
-
 @media (max-width: 768px) {
   .plans-selection {
     grid-template-columns: 1fr;
@@ -2958,21 +3176,37 @@
 
   .payment-summary {
     grid-template-columns: 1fr !important;
-    gap: 1.5rem;
+    gap: 1rem;
   }
 
   .summary-card-content .info-row {
     flex-direction: column;
   }
 
-  .total-amount {
-    font-size: 2rem;
+  .payment-total-card {
+    padding: 1.25rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .student-form {
+    padding: 1.25rem;
   }
 }
 
 @media (max-width: 480px) {
   .success-content {
     padding: 1.5rem;
+  }
+
+  .student-form {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .form-group input {
+    padding: 0.75rem 1rem;
   }
 }
 

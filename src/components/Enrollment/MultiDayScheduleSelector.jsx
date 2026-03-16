@@ -181,7 +181,7 @@ const MultiDayScheduleSelector = ({
     <div className="step-container">
       <div className="step-header">
         <h2>¿Cuándo quieres empezar?</h2>
-        <p className="step-description">Elige la fecha en que quieres comenzar y el horario que más te acomode. En el siguiente paso podrás elegir por cuántos meses deseas inscribirte.</p>
+        <p className="step-description">Elige la fecha en que quieres comenzar y el horario que más te acomode. En el siguiente paso podrás elegir por cuánto tiempo deseas inscribirte.</p>
       </div>
 
       <div className="datetime-grid">

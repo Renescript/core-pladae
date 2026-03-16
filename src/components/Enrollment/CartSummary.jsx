@@ -9,7 +9,6 @@ const MONTH_NAMES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Jul
 const DAY_NAMES = { monday: 'Lunes', tuesday: 'Martes', wednesday: 'Miércoles', thursday: 'Jueves', friday: 'Viernes', saturday: 'Sábado' };
 
 const MiniCalendar = ({ classDates, selectedSchedules, durationMonths, weeklyPlan }) => {
-  // Auto-generate preview dates from selected schedules when classDates not yet generated
   const previewDates = useMemo(() => {
     if (classDates.length > 0) return [];
     if (!durationMonths) return [];
@@ -28,7 +27,6 @@ const MiniCalendar = ({ classDates, selectedSchedules, durationMonths, weeklyPla
       const start = new Date(s.date + 'T00:00:00');
       const targetDay = dayMap[s.dayOfWeek];
       let count = 0;
-
       let current = new Date(start);
       while (count < classesPerDay) {
         if (current.getDay() === targetDay) {
@@ -47,7 +45,6 @@ const MiniCalendar = ({ classDates, selectedSchedules, durationMonths, weeklyPla
 
   const [viewMonth, setViewMonth] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
 
-  // Auto-navigate to the month of the first relevant date
   useEffect(() => {
     const firstDate = displayDates[0] || [...startDatesSet][0];
     if (firstDate) {
@@ -69,8 +66,7 @@ const MiniCalendar = ({ classDates, selectedSchedules, durationMonths, weeklyPla
 
     const result = [];
     for (let i = startDay - 1; i >= 0; i--) {
-      const d = new Date(year, month, -i);
-      result.push({ date: d, isCurrentMonth: false });
+      result.push({ date: new Date(year, month, -i), isCurrentMonth: false });
     }
     for (let i = 1; i <= lastDay.getDate(); i++) {
       result.push({ date: new Date(year, month, i), isCurrentMonth: true });
@@ -116,85 +112,163 @@ const MiniCalendar = ({ classDates, selectedSchedules, durationMonths, weeklyPla
   );
 };
 
-const CartContent = ({ technique, weeklyPlan, frequency, selectedSchedules, durationMonths, classDates, priceInfo }) => (
-  <>
-    <MiniCalendar classDates={classDates || []} selectedSchedules={selectedSchedules} durationMonths={durationMonths} weeklyPlan={weeklyPlan} />
+// Resumen compacto de un curso completado — mismo estilo que cart-items
+const CompletedCourseCard = ({ enrollment }) => {
+  const info = enrollment._displayInfo;
+  if (!info) return null;
 
+  return (
     <div className="cart-items">
-      <div className={`cart-item ${technique ? 'filled' : ''}`}>
+      <div className="cart-item filled">
         <span className="cart-item-label">Curso</span>
-        <span className="cart-item-value">{technique?.name || 'Por seleccionar'}</span>
+        <span className="cart-item-value">{info.technique}</span>
       </div>
-
-      <div className={`cart-item ${frequency ? 'filled' : ''}`}>
+      <div className="cart-item filled">
         <span className="cart-item-label">Frecuencia</span>
-        <span className="cart-item-value">{frequency ? `${frequency}x por semana` : 'Por seleccionar'}</span>
+        <span className="cart-item-value">{info.frequency}x por semana</span>
       </div>
-
-      <div className={`cart-item ${selectedSchedules?.length ? 'filled' : ''}`}>
-        <span className="cart-item-label">Horarios</span>
-        {selectedSchedules?.length > 0 ? (
+      {info.schedules?.length > 0 && (
+        <div className="cart-item filled">
+          <span className="cart-item-label">Horarios</span>
           <div className="cart-schedules">
-            {selectedSchedules.map((s, i) => (
+            {info.schedules.map((s, i) => (
               <span key={i} className="cart-schedule-chip">
                 {DAY_NAMES[s.dayOfWeek] || s.dayOfWeek} {s.timeSlot}
               </span>
             ))}
           </div>
-        ) : (
-          <span className="cart-item-value">Por seleccionar</span>
-        )}
-      </div>
-
-      <div className={`cart-item ${durationMonths ? 'filled' : ''}`}>
+        </div>
+      )}
+      <div className="cart-item filled">
         <span className="cart-item-label">Duración</span>
         <span className="cart-item-value">
-          {durationMonths ? `${durationMonths} mes${durationMonths > 1 ? 'es' : ''}` : 'Por seleccionar'}
+          {info.durationMonths} mes{info.durationMonths > 1 ? 'es' : ''}
+          {info.totalClasses > 0 && ` · ${info.totalClasses} clases`}
         </span>
       </div>
-
-      {classDates?.length > 0 && (
+      {info.priceInfo?.finalPrice > 0 && (
         <div className="cart-item filled">
-          <span className="cart-item-label">Total clases</span>
-          <span className="cart-item-value">{classDates.length} clases</span>
+          <span className="cart-item-label">Total</span>
+          <span className="cart-item-value">{formatPrice(info.priceInfo.finalPrice)}</span>
         </div>
       )}
     </div>
+  );
+};
 
-    {priceInfo?.finalPrice > 0 && (
-      <div className="cart-total">
-        {priceInfo.discountPercent > 0 && (
-          <div className="cart-discount">
-            <span>Subtotal</span>
-            <span>{formatPrice(priceInfo.subtotal)}</span>
-          </div>
-        )}
-        {priceInfo.discountPercent > 0 && (
-          <div className="cart-discount">
-            <span>Descuento ({priceInfo.discountPercent}%)</span>
-            <span>-{formatPrice(priceInfo.discountAmount)}</span>
-          </div>
-        )}
-        <div className="cart-final-price">
-          <span>Total</span>
-          <span>{formatPrice(priceInfo.finalPrice)}</span>
+// Items del curso actual (sin calendario ni precio — se renderizan aparte)
+const CurrentItems = ({ technique, frequency, selectedSchedules, durationMonths, classDates }) => (
+  <div className="cart-items">
+    <div className={`cart-item ${technique ? 'filled' : ''}`}>
+      <span className="cart-item-label">Curso</span>
+      <span className="cart-item-value">{technique?.name || 'Por seleccionar'}</span>
+    </div>
+
+    <div className={`cart-item ${frequency ? 'filled' : ''}`}>
+      <span className="cart-item-label">Frecuencia</span>
+      <span className="cart-item-value">{frequency ? `${frequency}x por semana` : 'Por seleccionar'}</span>
+    </div>
+
+    <div className={`cart-item ${selectedSchedules?.length ? 'filled' : ''}`}>
+      <span className="cart-item-label">Horarios</span>
+      {selectedSchedules?.length > 0 ? (
+        <div className="cart-schedules">
+          {selectedSchedules.map((s, i) => (
+            <span key={i} className="cart-schedule-chip">
+              {DAY_NAMES[s.dayOfWeek] || s.dayOfWeek} {s.timeSlot}
+            </span>
+          ))}
         </div>
+      ) : (
+        <span className="cart-item-value">Por seleccionar</span>
+      )}
+    </div>
+
+    <div className={`cart-item ${durationMonths ? 'filled' : ''}`}>
+      <span className="cart-item-label">Duración</span>
+      <span className="cart-item-value">
+        {durationMonths ? `${durationMonths} mes${durationMonths > 1 ? 'es' : ''}` : 'Por seleccionar'}
+      </span>
+    </div>
+
+    {classDates?.length > 0 && (
+      <div className="cart-item filled">
+        <span className="cart-item-label">Total clases</span>
+        <span className="cart-item-value">{classDates.length} clases</span>
       </div>
     )}
-  </>
+  </div>
 );
 
-const CartSummary = ({ technique, weeklyPlan, frequency, selectedSchedules, durationMonths, classDates, priceInfo, embedded }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const itemCount = [technique, frequency, selectedSchedules?.length, durationMonths].filter(Boolean).length;
+const PriceSection = ({ priceInfo }) => {
+  if (!priceInfo?.finalPrice) return null;
+  return (
+    <div className="cart-total">
+      {priceInfo.discountPercent > 0 && (
+        <div className="cart-discount">
+          <span>Subtotal</span>
+          <span>{formatPrice(priceInfo.subtotal)}</span>
+        </div>
+      )}
+      {priceInfo.discountPercent > 0 && (
+        <div className="cart-discount">
+          <span>Descuento ({priceInfo.discountPercent}%)</span>
+          <span>-{formatPrice(priceInfo.discountAmount)}</span>
+        </div>
+      )}
+      <div className="cart-final-price">
+        <span>Total</span>
+        <span>{formatPrice(priceInfo.finalPrice)}</span>
+      </div>
+    </div>
+  );
+};
 
-  const contentProps = { technique, weeklyPlan, frequency, selectedSchedules, durationMonths, classDates, priceInfo };
+const CartSummary = ({ technique, weeklyPlan, frequency, selectedSchedules, durationMonths, classDates, priceInfo, completedEnrollments = [], embedded }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const itemCount = [technique, frequency, selectedSchedules?.length, durationMonths].filter(Boolean).length + completedEnrollments.length;
+
+  const hasCompleted = completedEnrollments.length > 0;
+
+  // Orden: cursos completados → curso actual (items) → precio → calendario
+  const content = (
+    <>
+      {hasCompleted && completedEnrollments.map((enrollment, i) => (
+        <div key={i}>
+          <span className="cart-section-label">
+            {completedEnrollments.length > 1 ? `Curso ${i + 1}` : 'Curso anterior'}
+          </span>
+          <CompletedCourseCard enrollment={enrollment} />
+        </div>
+      ))}
+
+      {hasCompleted && <span className="cart-section-label cart-section-label--active">Curso actual</span>}
+
+      <CurrentItems
+        technique={technique}
+        frequency={frequency}
+        selectedSchedules={selectedSchedules}
+        durationMonths={durationMonths}
+        classDates={classDates}
+      />
+
+      <PriceSection priceInfo={priceInfo} />
+
+      <MiniCalendar
+        classDates={classDates || []}
+        selectedSchedules={selectedSchedules}
+        durationMonths={durationMonths}
+        weeklyPlan={weeklyPlan}
+      />
+    </>
+  );
 
   if (embedded) {
     return (
       <div className="cart-embedded">
         <h3 className="cart-embedded-title">Tu inscripción</h3>
-        <CartContent {...contentProps} />
+        <p className="cart-embedded-subtitle">Resumen de lo que llevas seleccionado</p>
+        {content}
       </div>
     );
   }
@@ -214,11 +288,14 @@ const CartSummary = ({ technique, weeklyPlan, frequency, selectedSchedules, dura
 
       <div className={`cart-panel ${isOpen ? 'open' : ''}`}>
         <div className="cart-panel-header">
-          <h3>Tu inscripción</h3>
+          <div>
+            <h3>Tu inscripción</h3>
+            <p className="cart-embedded-subtitle">Resumen de lo que llevas seleccionado</p>
+          </div>
           <button className="cart-close" onClick={() => setIsOpen(false)}>×</button>
         </div>
         <div className="cart-panel-body">
-          <CartContent {...contentProps} />
+          {content}
         </div>
       </div>
     </>

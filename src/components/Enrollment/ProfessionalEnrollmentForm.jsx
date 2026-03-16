@@ -103,27 +103,26 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
     loadPaymentPeriods();
   }, []);
 
+  // Detectar si algún horario seleccionado cae en sábado
+  const hasSaturdaySchedule = selectedSchedules.some(s => s?.dayOfWeek === 'saturday');
+
   // Funciones de cálculo de precios
   const calculateMonthlyPrice = () => {
-    console.log('💰 calculateMonthlyPrice - weeklyPlan:', weeklyPlan);
-    console.log('💰 calculateMonthlyPrice - weeklyPlan?.price:', weeklyPlan?.price);
-
-    // El precio mensual viene directamente del weekly_plan seleccionado en el paso 2
     if (weeklyPlan?.price) {
-      console.log('✅ Usando precio de weeklyPlan:', weeklyPlan.price);
+      // Si hay horario de sábado y el plan tiene precio de sábado, usarlo
+      if (hasSaturdaySchedule && weeklyPlan.saturday_price) {
+        return weeklyPlan.saturday_price;
+      }
       return weeklyPlan.price;
     }
 
     // Fallback: calcular desde técnica si no hay weekly_plan
-    console.warn('⚠️ weeklyPlan no disponible, usando fallback');
     let pricePerClass = 7000;
     if (technique?.price_per_class) {
       pricePerClass = technique.price_per_class;
     }
     const classesPerMonth = frequency * 4;
-    const fallbackPrice = pricePerClass * classesPerMonth;
-    console.log('⚠️ Precio calculado con fallback:', fallbackPrice);
-    return fallbackPrice;
+    return pricePerClass * classesPerMonth;
   };
 
   const getDiscountPercentage = (months) => {
@@ -557,6 +556,14 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
           <div className="enrollment-header">
             <img src="/logo-gustarte-letras.png" alt="Gustarte" className="enrollment-logo" />
           </div>
+          {completedEnrollments.length > 0 && currentStep <= 5 && (
+            <div className="enrollment-course-indicator">
+              <span className="course-indicator-badge">Curso {completedEnrollments.length + 1}</span>
+              <span className="course-indicator-text">
+                Ya tienes <strong>{completedEnrollments.map(e => e._displayInfo?.technique).join(', ')}</strong> — ahora elige tu siguiente curso
+              </span>
+            </div>
+          )}
           {/* Paso 1: Selección de técnica */}
           {currentStep === 1 && (
             <TechniqueSelector
@@ -641,7 +648,10 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
               currentCourse={{
                 technique: technique?.name,
                 frequency,
-                durationMonths
+                durationMonths,
+                selectedSchedules,
+                priceInfo: calculateFinalPrice(),
+                totalClasses: classDates.length
               }}
               onAddAnother={handleAddAnotherCourse}
               onContinue={handleContinueToPayment}
@@ -680,6 +690,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
             durationMonths={durationMonths}
             classDates={classDates}
             priceInfo={calculateFinalPrice()}
+            completedEnrollments={completedEnrollments}
             embedded
           />
         </div>
