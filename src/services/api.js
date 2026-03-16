@@ -23,10 +23,10 @@ const NO_CACHE_HEADERS = {
 };
 
 /**
- * Timeout por defecto para las peticiones (15 segundos)
+ * Timeout por defecto para las peticiones (30 segundos)
  * Render free tier puede tardar en cold start
  */
-const DEFAULT_TIMEOUT = 15000;
+const DEFAULT_TIMEOUT = 30000;
 
 /**
  * Cache simple para evitar llamadas repetidas
@@ -51,7 +51,7 @@ const setCachedData = (key, data) => {
  * Realiza un fetch con timeout y manejo de AbortController
  * @param {string} url - URL a consultar
  * @param {Object} options - Opciones de fetch
- * @param {number} timeout - Timeout en milisegundos (por defecto 10s)
+ * @param {number} timeout - Timeout en milisegundos (por defecto 30s)
  * @returns {Promise<Response>} Respuesta del fetch
  */
 const fetchWithTimeout = async (url, options = {}, timeout = DEFAULT_TIMEOUT) => {
@@ -72,6 +72,53 @@ const fetchWithTimeout = async (url, options = {}, timeout = DEFAULT_TIMEOUT) =>
     }
     throw error;
   }
+};
+
+/**
+ * Realiza un fetch con reintentos automáticos en caso de fallo
+ * @param {string} url - URL a consultar
+ * @param {Object} options - Opciones de fetch
+ * @param {number} maxRetries - Número máximo de reintentos (por defecto 2)
+ * @param {number} timeout - Timeout en milisegundos
+ * @returns {Promise<Response>} Respuesta del fetch
+ */
+const fetchWithRetry = async (url, options = {}, maxRetries = 2, timeout = DEFAULT_TIMEOUT) => {
+  let lastError;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      if (attempt > 0) {
+        console.log(`🔄 Reintento ${attempt}/${maxRetries} para ${url}`);
+        // Esperar antes de reintentar (backoff exponencial)
+        await new Promise(resolve => setTimeout(resolve, Math.min(1000 * Math.pow(2, attempt - 1), 5000)));
+      }
+
+      const response = await fetchWithTimeout(url, options, timeout);
+
+      // Si la respuesta es exitosa, retornarla
+      if (response.ok) {
+        if (attempt > 0) {
+          console.log(`✅ Éxito después de ${attempt} reintento(s)`);
+        }
+        return response;
+      }
+
+      // Si es un error 4xx (cliente), no reintentar
+      if (response.status >= 400 && response.status < 500) {
+        return response;
+      }
+
+      // Si es un error 5xx (servidor), guardar y reintentar
+      lastError = new Error(`Error HTTP ${response.status}`);
+
+    } catch (error) {
+      lastError = error;
+      console.error(`❌ Intento ${attempt + 1} falló:`, error.message);
+    }
+  }
+
+  // Si todos los intentos fallaron, lanzar el último error
+  throw lastError;
 };
 
 /**
@@ -366,10 +413,11 @@ export const getSectionCalendar = async (sectionId) => {
     const url = `${API_BASE_URL}/sections/${sectionId}/calendar`;
     console.log('📅 Llamando a URL:', url);
 
-    const response = await fetchWithTimeout(url, {
+    // Usar fetchWithRetry para manejar fallos intermitentes
+    const response = await fetchWithRetry(url, {
       method: 'GET',
       headers: NO_CACHE_HEADERS
-    });
+    }, 2); // 2 reintentos máximo
 
     console.log('📅 Response status:', response.status, response.ok);
 

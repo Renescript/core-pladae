@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getSectionCalendar } from '../../services/api';
 import StartDateSelector from './StartDateSelector';
 import './MultiCourseStartDateSelector.css';
@@ -19,42 +19,80 @@ const MultiCourseStartDateSelector = ({
   const [loadingDates, setLoadingDates] = useState({});
   const [errors, setErrors] = useState({});
 
+  // Ref para rastrear peticiones en curso y evitar duplicados
+  const loadingRequestsRef = useRef(new Set());
+
   // Cargar fechas disponibles para cada curso
   useEffect(() => {
-    selectedSchedules.forEach(async (schedule) => {
-      const sectionId = schedule.section?.id;
-      if (!sectionId) return;
+    const loadAllDates = async () => {
+      // Filtrar solo las secciones que necesitan cargar datos
+      const sectionsToLoad = selectedSchedules.filter(schedule => {
+        const sectionId = schedule.section?.id;
+        if (!sectionId) return false;
+        // No cargar si ya está en cache o si ya está siendo cargada
+        if (availableDatesMap[sectionId] || loadingRequestsRef.current.has(sectionId)) {
+          return false;
+        }
+        return true;
+      });
 
-      // Evitar cargar múltiples veces
-      if (availableDatesMap[sectionId]) return;
+      if (sectionsToLoad.length === 0) return;
 
-      try {
-        setLoadingDates(prev => ({ ...prev, [sectionId]: true }));
-        console.log(`📅 Cargando fechas para sección ${sectionId}`);
+      // Marcar todas las secciones como "cargando"
+      const newLoadingStates = {};
+      sectionsToLoad.forEach(schedule => {
+        const sectionId = schedule.section.id;
+        newLoadingStates[sectionId] = true;
+        loadingRequestsRef.current.add(sectionId);
+      });
+      setLoadingDates(prev => ({ ...prev, ...newLoadingStates }));
 
-        const dates = await getSectionCalendar(sectionId);
+      console.log(`📅 Cargando ${sectionsToLoad.length} secciones en paralelo`);
 
-        setAvailableDatesMap(prev => ({
-          ...prev,
-          [sectionId]: dates
-        }));
+      // Cargar todas las fechas en paralelo usando Promise.allSettled
+      const loadPromises = sectionsToLoad.map(async (schedule) => {
+        const sectionId = schedule.section.id;
+        try {
+          console.log(`📅 Cargando fechas para sección ${sectionId}`);
+          const dates = await getSectionCalendar(sectionId);
+          return { sectionId, dates, error: null };
+        } catch (error) {
+          console.error(`❌ Error al cargar fechas para sección ${sectionId}:`, error);
+          return { sectionId, dates: null, error: error.message || 'No se pudieron cargar las fechas' };
+        }
+      });
 
-        setErrors(prev => {
-          const newErrors = { ...prev };
-          delete newErrors[sectionId];
-          return newErrors;
-        });
-      } catch (error) {
-        console.error(`Error al cargar fechas para sección ${sectionId}:`, error);
-        setErrors(prev => ({
-          ...prev,
-          [sectionId]: 'No se pudieron cargar las fechas disponibles'
-        }));
-      } finally {
-        setLoadingDates(prev => ({ ...prev, [sectionId]: false }));
-      }
-    });
-  }, [selectedSchedules]);
+      const results = await Promise.allSettled(loadPromises);
+
+      // Procesar todos los resultados de una vez
+      const newDatesMap = {};
+      const newErrors = {};
+      const finishedLoading = {};
+
+      results.forEach((result) => {
+        if (result.status === 'fulfilled') {
+          const { sectionId, dates, error } = result.value;
+          finishedLoading[sectionId] = false;
+          loadingRequestsRef.current.delete(sectionId);
+
+          if (error) {
+            newErrors[sectionId] = error;
+          } else if (dates) {
+            newDatesMap[sectionId] = dates;
+          }
+        }
+      });
+
+      // Actualizar todos los estados de una vez
+      setAvailableDatesMap(prev => ({ ...prev, ...newDatesMap }));
+      setErrors(prev => ({ ...prev, ...newErrors }));
+      setLoadingDates(prev => ({ ...prev, ...finishedLoading }));
+
+      console.log(`✅ Carga completada. ${Object.keys(newDatesMap).length} exitosas, ${Object.keys(newErrors).length} con errores`);
+    };
+
+    loadAllDates();
+  }, [selectedSchedules, availableDatesMap]);
 
   // Actualizar fechas cuando cambie el estado local
   useEffect(() => {
