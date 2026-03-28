@@ -28,7 +28,7 @@ function AppHeader() {
     <nav className="nav-main nav-transparent">
       <div className="nav-container-flat">
         <div className="nav-logo" onClick={handleLogoClick}>
-          <img src="/logo-gustarte-letras.png" alt="Gustarte" className="nav-logo-img" />
+          <img src="/g9.png" alt="Gustarte" className="nav-logo-img" />
         </div>
 
         <div className="nav-links">
@@ -75,7 +75,7 @@ function AppFooter() {
       <div className="footer-container">
         <div className="footer-content">
           <div className="footer-section footer-brand">
-            <img src="/logo-gustarte-bla.png" alt="Gustarte" className="footer-logo-img" />
+            <img src="/logo-update.png" alt="Gustarte" className="footer-logo-img" />
             <p className="footer-description">
               Arte para todos.
             </p>

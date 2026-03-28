@@ -78,24 +78,32 @@
   object-fit: cover;
   display: block;
   transition: transform 0.6s ease;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
 }
 
 .collage-item:hover .collage-img {
   transform: scale(1.05);
 }
 
-/* Overlay sobre collage (desactivado por ahora) */
+/* Overlay sobre collage para matizar el fondo */
 .hero-collage::after {
-  display: none;
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(31, 41, 51, 0.35);
+  z-index: 1;
+  pointer-events: none;
 }
 
 /* Card over collage */
 .hero-card {
   position: relative;
   z-index: 2;
-  background: rgb(255, 255, 255);
+  background: rgba(255, 255, 255, 0.38);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   max-width: 800px;
-  margin-left: max(1rem, calc((100% - 1400px) / 2));
+  margin: 0 auto;
   padding: 2.5rem 2.5rem 2rem;
   border-radius: 12px;
   box-shadow: 0 25px 80px -10px rgba(0, 0, 0, 0.4), 0 10px 30px -5px rgba(0, 0, 0, 0.2);
@@ -118,7 +126,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 1.75rem;
   font-weight: 400;
-  color: rgba(31, 41, 51, 0.5);
+  color: #1a1a1a;
   margin: 0 0 2rem 0;
   letter-spacing: 0.01em;
 }
@@ -152,7 +160,7 @@
   font-weight: 700;
   font-size: 2.75rem;
   line-height: 1;
-  color: rgba(31, 41, 51, 0.82);
+  color: #1a1a1a;
   margin: 0 0 1rem 0;
   padding: 0;
   letter-spacing: 0.05em;
@@ -175,7 +183,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 1.25rem;
   font-weight: 400;
-  color: rgba(31, 41, 51, 0.6);
+  color: #2b2b2b;
   margin: 0 0 2rem 0;
   line-height: 1.5;
 }
@@ -193,60 +201,32 @@
   }
 }
 
-/* CTA Button - Watercolor brush stroke */
+/* CTA Button */
 .hero-cta {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
+  display: inline-block;
+  background-color: var(--color-charcoal);
+  color: white;
   border: none;
+  padding: 0.9rem 2.5rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  border-radius: var(--radius-full);
   cursor: pointer;
-  padding: 0;
-  min-width: 300px;
-  height: 64px;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 @media (min-width: 768px) {
   .hero-cta {
-    min-width: 360px;
-    height: 72px;
+    font-size: 1.2rem;
+    padding: 1rem 3rem;
   }
 }
 
 .hero-cta:hover {
+  background-color: #2d3d4d;
   transform: translateY(-2px);
-}
-
-.hero-cta:hover .hero-cta-brush {
-  filter: brightness(0.88);
-}
-
-.hero-cta-brush {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transition: filter 0.3s ease;
-  opacity: 0.82;
-}
-
-.hero-cta-text {
-  position: relative;
-  z-index: 1;
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  color: white;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-}
-
-@media (min-width: 768px) {
-  .hero-cta-text {
-    font-size: 1.25rem;
-  }
 }
 
 /* Mobile collage: 2 columns instead of 4 */
@@ -391,6 +371,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: 65% center;
   opacity: 0.8;
 }
 
@@ -655,7 +636,7 @@
 .course-description {
   font-family: 'Outfit', sans-serif;
   font-size: 1.15rem;
-  color: rgba(31, 41, 51, 0.6);
+  color: #2b2b2b;
   line-height: 1.6;
   margin: 0 0 1.25rem 0;
   display: -webkit-box;
@@ -684,7 +665,7 @@
   gap: 0.4rem;
   font-family: 'Outfit', sans-serif;
   font-size: 1rem;
-  color: rgba(31, 41, 51, 0.5);
+  color: #3a3a3a;
 }
 
 .course-meta-item svg {
@@ -718,7 +699,7 @@
 
 .schedule-section {
   padding: 6rem 1rem;
-  background-color: white;
+  background-color: var(--color-charcoal);
   display: none;
 }
 
@@ -755,7 +736,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 2.75rem;
   font-weight: 700;
-  color: var(--color-charcoal);
+  color: var(--color-paper);
   margin: 0;
   line-height: 1.1;
   letter-spacing: 0.02em;
@@ -770,7 +751,7 @@
 .schedule-subtitle {
   font-family: 'Outfit', sans-serif;
   font-size: 1.15rem;
-  color: rgba(31, 41, 51, 0.5);
+  color: rgba(247, 243, 238, 0.6);
   margin: 0.75rem 0 0;
 }
 
@@ -821,14 +802,14 @@
 .schedule-grid {
   border-radius: 1rem;
   overflow: hidden;
-  background-color: white;
-  border: 2px solid rgba(31, 41, 51, 0.15);
+  background-color: #f0ece7;
+  border: 2px solid rgba(31, 41, 51, 0.12);
 }
 
 .schedule-grid-header {
   display: grid;
   grid-template-columns: 110px repeat(6, 1fr);
-  background-color: var(--color-charcoal);
+  background-color: #3a4a5a;
   border-bottom: 1px solid rgba(31, 41, 51, 0.1);
 }
 
@@ -840,7 +821,7 @@
 .schedule-grid-day {
   padding: 0.85rem 0.5rem;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.875rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: white;
   text-align: center;
@@ -861,6 +842,10 @@
   border-bottom: 1px solid #e2e8f0;
 }
 
+.schedule-grid-row:nth-child(even) {
+  background-color: rgba(31, 41, 51, 0.09);
+}
+
 .schedule-grid-row:last-child {
   border-bottom: none;
 }
@@ -868,10 +853,10 @@
 .schedule-grid-time {
   padding: 0.75rem;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.8rem;
+  font-size: 1.05rem;
   font-weight: 500;
-  color: rgba(31, 41, 51, 0.5);
-  border-right: 1px solid #e2e8f0;
+  color: #2b2b2b;
+  border-right: 1px solid rgba(31, 41, 51, 0.1);
   display: flex;
   align-items: center;
 }
@@ -890,11 +875,11 @@
 }
 
 .schedule-grid-class {
-  padding: 0.4rem 0.5rem;
+  padding: 0.5rem 0.6rem;
   border-radius: 6px;
   color: white;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.7rem;
+  font-size: 0.95rem;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
@@ -920,7 +905,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
-  color: rgba(31, 41, 51, 0.5);
+  color: #3a3a3a;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -937,7 +922,7 @@
 }
 
 .schedule-tab-content {
-  background-color: white;
+  background-color: #f0ece7;
   border: 1px solid rgba(31, 41, 51, 0.1);
   border-radius: 1rem;
   overflow: hidden;
@@ -947,7 +932,7 @@
   padding: 1.5rem;
   text-align: center;
   font-family: 'Outfit', sans-serif;
-  color: rgba(31, 41, 51, 0.4);
+  color: #555;
 }
 
 .schedule-tab-class {
@@ -965,14 +950,14 @@
 
 .schedule-tab-time {
   font-family: 'Outfit', sans-serif;
-  font-size: 0.875rem;
-  color: rgba(31, 41, 51, 0.5);
+  font-size: 1rem;
+  color: #3a3a3a;
   min-width: 100px;
 }
 
 .schedule-tab-name {
   font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
 }
 
@@ -1168,17 +1153,17 @@
 
 .mission-section {
   padding: 6rem 1rem;
-  background-color: var(--color-charcoal);
+  background-color: var(--color-paper);
 }
 
 .mission-card {
   max-width: 1400px;
   margin: 0 auto;
-  background-color: var(--color-paper);
+  background-color: var(--color-charcoal);
   border-radius: 2rem;
   overflow: hidden;
   position: relative;
-  color: var(--color-charcoal);
+  color: var(--color-paper);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
@@ -1228,7 +1213,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 2.75rem;
   font-weight: 700;
-  color: var(--color-charcoal);
+  color: var(--color-paper);
   margin: 0 0 1.5rem 0;
   line-height: 1.1;
   letter-spacing: 0.02em;
@@ -1249,7 +1234,7 @@
 .mission-description {
   font-family: 'Outfit', sans-serif;
   font-size: 1.25rem;
-  color: rgba(31, 41, 51, 0.7);
+  color: rgba(247, 243, 238, 0.8);
   line-height: 1.7;
   margin: 0 0 1rem 0;
 }
@@ -1290,5 +1275,5 @@
 .mission-image-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to right, var(--color-paper), transparent);
+  background: linear-gradient(to right, var(--color-charcoal), transparent);
 }

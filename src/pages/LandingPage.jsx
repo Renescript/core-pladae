@@ -20,11 +20,11 @@ const LandingPage = () => {
         <div id="about">
           <About />
         </div>
-        <div id="mission">
-          <Mission />
-        </div>
         <div id="courses">
           <CoursesShowcase />
+        </div>
+        <div id="mission">
+          <Mission />
         </div>
         <div id="schedule">
           <Schedule />

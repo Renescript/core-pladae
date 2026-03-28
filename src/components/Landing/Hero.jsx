@@ -42,10 +42,7 @@ const Hero = ({ onInscripcionClick }) => {
         <p className="hero-tagline-text">Talleres presenciales para adultos y jóvenes. Todos los niveles, horarios flexibles.</p>
 
         <button className="hero-cta" onClick={onInscripcionClick}>
-          <svg className="hero-cta-brush" viewBox="0 0 320 70" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M8,35 C12,18 35,8 70,12 C105,6 140,10 175,8 C210,6 250,12 280,10 C295,9 310,14 315,25 C318,32 316,42 312,48 C306,56 285,60 255,58 C220,62 180,60 145,62 C110,64 70,60 40,58 C22,56 10,52 6,45 C3,40 4,38 8,35Z" fill="var(--color-primary)" />
-          </svg>
-          <span className="hero-cta-text">QUIERO INSCRIBIRME</span>
+          QUIERO INSCRIBIRME
         </button>
       </div>
     </header>
