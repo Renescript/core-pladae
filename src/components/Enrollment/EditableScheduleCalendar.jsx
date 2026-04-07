@@ -52,22 +52,24 @@ const EditableScheduleCalendar = ({
             <span className="row-label">Técnica</span>
             <span className="row-value">{technique?.name}</span>
           </div>
+            <div className="summary-row">
+            <span className="row-label">Frecuencia</span>
+            <span className="row-value">
+              {isTrialClass ? '1 clase' : `${frequency} ${frequency === 1 ? 'vez' : 'veces'} por semana`}
+            </span>
+          </div>
           {!isTrialClass && (
             <>
-              <div className="summary-row">
-                <span className="row-label">Frecuencia</span>
-                <span className="row-value">{frequency} {frequency === 1 ? 'vez' : 'veces'} por semana</span>
-              </div>
               <div className="summary-row">
                 <span className="row-label">Duración</span>
                 <span className="row-value">{durationMonths} {durationMonths === 1 ? 'mes' : 'meses'}</span>
               </div>
+              <div className="summary-row">
+                <span className="row-label">Total de clases</span>
+                <span className="row-value">{totalClasses} clases</span>
+              </div>
             </>
           )}
-          <div className="summary-row">
-            <span className="row-label">{isTrialClass ? 'Tipo' : 'Total de clases'}</span>
-            <span className="row-value">{isTrialClass ? 'Clase de prueba' : `${totalClasses} clases`}</span>
-          </div>
           {selectedSchedules.map((schedule, index) => (
             <div key={index} className="summary-row">
               <span className="row-label">{index === 0 ? 'Horario' : ''}</span>

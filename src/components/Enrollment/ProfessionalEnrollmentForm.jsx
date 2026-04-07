@@ -455,6 +455,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
       _displayInfo: {
         technique: technique?.name,
         frequency,
+        isTrialClass: weeklyPlan?.weekly_classes === 1 && weeklyPlan?.number_of_classes === 1,
         durationMonths,
         totalClasses: classDates.length,
         schedules: selectedSchedules,
@@ -594,7 +595,35 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
               selectedSchedules={selectedSchedules}
               onSchedulesChange={handleSchedulesChange}
               onAvailableDatesChange={setAvailableDates}
-              onContinue={() => setCurrentStep(4)}
+              onContinue={() => {
+                const isTrial = weeklyPlan?.weekly_classes === 1 && weeklyPlan?.number_of_classes === 1;
+                if (isTrial) {
+                  setDurationMonths(1);
+                  // generateClassDates usa durationMonths del state, pero aún no se actualizó,
+                  // así que generamos las fechas inline
+                  const totalClasses = 1;
+                  const dayMap = { 'sunday': 0, 'monday': 1, 'tuesday': 2, 'wednesday': 3, 'thursday': 4, 'friday': 5, 'saturday': 6 };
+                  const allDates = [];
+                  selectedSchedules.forEach(schedule => {
+                    const startDate = schedule.date;
+                    const targetDayNumber = dayMap[schedule.dayOfWeek];
+                    let currentDate = new Date(startDate + 'T00:00:00');
+                    let count = 0;
+                    while (count < totalClasses) {
+                      if (currentDate.getDay() === targetDayNumber) {
+                        allDates.push(currentDate.toISOString().split('T')[0]);
+                        count++;
+                      }
+                      currentDate.setDate(currentDate.getDate() + 1);
+                    }
+                  });
+                  allDates.sort();
+                  setClassDates(allDates);
+                  setCurrentStep(6);
+                } else {
+                  setCurrentStep(4);
+                }
+              }}
               onBack={() => setCurrentStep(2)}
             />
           )}
@@ -648,6 +677,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
               currentCourse={{
                 technique: technique?.name,
                 frequency,
+                isTrialClass: weeklyPlan?.weekly_classes === 1 && weeklyPlan?.number_of_classes === 1,
                 durationMonths,
                 selectedSchedules,
                 priceInfo: calculateFinalPrice(),
@@ -655,7 +685,10 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
               }}
               onAddAnother={handleAddAnotherCourse}
               onContinue={handleContinueToPayment}
-              onBack={() => setCurrentStep(5)}
+              onBack={() => {
+                const isTrial = weeklyPlan?.weekly_classes === 1 && weeklyPlan?.number_of_classes === 1;
+                setCurrentStep(isTrial ? 3 : 5);
+              }}
             />
           )}
 

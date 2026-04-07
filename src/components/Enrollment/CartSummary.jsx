@@ -125,7 +125,7 @@ const CompletedCourseCard = ({ enrollment }) => {
       </div>
       <div className="cart-item filled">
         <span className="cart-item-label">Frecuencia</span>
-        <span className="cart-item-value">{info.frequency}x por semana</span>
+        <span className="cart-item-value">{info.isTrialClass ? '1 clase' : `${info.frequency}x por semana`}</span>
       </div>
       {info.schedules?.length > 0 && (
         <div className="cart-item filled">
@@ -139,13 +139,15 @@ const CompletedCourseCard = ({ enrollment }) => {
           </div>
         </div>
       )}
-      <div className="cart-item filled">
-        <span className="cart-item-label">Duración</span>
-        <span className="cart-item-value">
-          {info.durationMonths} mes{info.durationMonths > 1 ? 'es' : ''}
-          {info.totalClasses > 0 && ` · ${info.totalClasses} clases`}
-        </span>
-      </div>
+      {!info.isTrialClass && (
+        <div className="cart-item filled">
+          <span className="cart-item-label">Duración</span>
+          <span className="cart-item-value">
+            {info.durationMonths} mes{info.durationMonths > 1 ? 'es' : ''}
+            {info.totalClasses > 0 && ` · ${info.totalClasses} clases`}
+          </span>
+        </div>
+      )}
       {info.priceInfo?.finalPrice > 0 && (
         <div className="cart-item filled">
           <span className="cart-item-label">Total</span>
@@ -157,7 +159,7 @@ const CompletedCourseCard = ({ enrollment }) => {
 };
 
 // Items del curso actual (sin calendario ni precio — se renderizan aparte)
-const CurrentItems = ({ technique, frequency, selectedSchedules, durationMonths, classDates }) => (
+const CurrentItems = ({ technique, frequency, isTrialClass, selectedSchedules, durationMonths, classDates }) => (
   <div className="cart-items">
     <div className={`cart-item ${technique ? 'filled' : ''}`}>
       <span className="cart-item-label">Curso</span>
@@ -166,7 +168,7 @@ const CurrentItems = ({ technique, frequency, selectedSchedules, durationMonths,
 
     <div className={`cart-item ${frequency ? 'filled' : ''}`}>
       <span className="cart-item-label">Frecuencia</span>
-      <span className="cart-item-value">{frequency ? `${frequency}x por semana` : 'Por seleccionar'}</span>
+      <span className="cart-item-value">{frequency ? (isTrialClass ? '1 clase' : `${frequency}x por semana`) : 'Por seleccionar'}</span>
     </div>
 
     <div className={`cart-item ${selectedSchedules?.length ? 'filled' : ''}`}>
@@ -184,12 +186,14 @@ const CurrentItems = ({ technique, frequency, selectedSchedules, durationMonths,
       )}
     </div>
 
-    <div className={`cart-item ${durationMonths ? 'filled' : ''}`}>
-      <span className="cart-item-label">Duración</span>
-      <span className="cart-item-value">
-        {durationMonths ? `${durationMonths} mes${durationMonths > 1 ? 'es' : ''}` : 'Por seleccionar'}
-      </span>
-    </div>
+    {!isTrialClass && (
+      <div className={`cart-item ${durationMonths ? 'filled' : ''}`}>
+        <span className="cart-item-label">Duración</span>
+        <span className="cart-item-value">
+          {durationMonths ? `${durationMonths} mes${durationMonths > 1 ? 'es' : ''}` : 'Por seleccionar'}
+        </span>
+      </div>
+    )}
 
     {classDates?.length > 0 && (
       <div className="cart-item filled">
@@ -247,6 +251,7 @@ const CartSummary = ({ technique, weeklyPlan, frequency, selectedSchedules, dura
       <CurrentItems
         technique={technique}
         frequency={frequency}
+        isTrialClass={weeklyPlan?.weekly_classes === 1 && weeklyPlan?.number_of_classes === 1}
         selectedSchedules={selectedSchedules}
         durationMonths={durationMonths}
         classDates={classDates}

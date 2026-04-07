@@ -8,7 +8,7 @@ const formatPrice = (price) => {
   return '$' + price.toLocaleString('es-CL');
 };
 
-const CourseSummaryCard = ({ name, frequency, durationMonths, schedules, priceInfo, totalClasses }) => (
+const CourseSummaryCard = ({ name, frequency, isTrialClass, durationMonths, schedules, priceInfo, totalClasses }) => (
   <div className="confirm-course-card">
     <div className="confirm-course-header">
       <span className="confirm-course-name">{name}</span>
@@ -16,7 +16,7 @@ const CourseSummaryCard = ({ name, frequency, durationMonths, schedules, priceIn
     <div className="confirm-course-details">
       <div className="confirm-detail-row">
         <span className="confirm-detail-label">Frecuencia</span>
-        <span className="confirm-detail-value">{frequency}x por semana</span>
+        <span className="confirm-detail-value">{isTrialClass ? '1 clase' : `${frequency}x por semana`}</span>
       </div>
       {schedules?.length > 0 && (
         <div className="confirm-detail-row">
@@ -30,13 +30,15 @@ const CourseSummaryCard = ({ name, frequency, durationMonths, schedules, priceIn
           </span>
         </div>
       )}
-      <div className="confirm-detail-row">
-        <span className="confirm-detail-label">Duración</span>
-        <span className="confirm-detail-value">
-          {durationMonths} mes{durationMonths > 1 ? 'es' : ''}
-          {totalClasses > 0 && ` (${totalClasses} clases)`}
-        </span>
-      </div>
+      {!isTrialClass && (
+        <div className="confirm-detail-row">
+          <span className="confirm-detail-label">Duración</span>
+          <span className="confirm-detail-value">
+            {durationMonths} mes{durationMonths > 1 ? 'es' : ''}
+            {totalClasses > 0 && ` (${totalClasses} clases)`}
+          </span>
+        </div>
+      )}
       {priceInfo?.finalPrice > 0 && (
         <div className="confirm-detail-row confirm-price-row">
           <span className="confirm-detail-label">Total</span>
@@ -65,6 +67,7 @@ const AddAnotherCoursePrompt = ({ completedEnrollments = [], currentCourse, onAd
             key={index}
             name={enrollment._displayInfo?.technique}
             frequency={enrollment._displayInfo?.frequency}
+            isTrialClass={enrollment._displayInfo?.isTrialClass}
             durationMonths={enrollment._displayInfo?.durationMonths}
             schedules={enrollment._displayInfo?.schedules}
             priceInfo={enrollment._displayInfo?.priceInfo}
@@ -74,6 +77,7 @@ const AddAnotherCoursePrompt = ({ completedEnrollments = [], currentCourse, onAd
         <CourseSummaryCard
           name={currentCourse?.technique}
           frequency={currentCourse?.frequency}
+          isTrialClass={currentCourse?.isTrialClass}
           durationMonths={currentCourse?.durationMonths}
           schedules={currentCourse?.selectedSchedules}
           priceInfo={currentCourse?.priceInfo}

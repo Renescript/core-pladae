@@ -64,9 +64,7 @@ const DurationSelector = ({
 
       {isTrialClass ? (
         <div className="trial-info">
-          <h3>{weeklyPlan?.plan || 'Clase de prueba'}</h3>
           <p className="price">${monthlyPrice?.toLocaleString('es-CL')}</p>
-          <p>1 clase incluida</p>
         </div>
       ) : (
         <div className="duration-grid">
