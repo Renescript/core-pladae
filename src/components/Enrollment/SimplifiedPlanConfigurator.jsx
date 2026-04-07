@@ -31,7 +31,7 @@ const SimplifiedPlanConfigurator = ({
   }, []);
 
   const trialClass = weeklyPlans.find(plan => plan.event_type === 'trial');
-  const regularPlans = weeklyPlans.filter(plan => plan.event_type === null);
+  const regularPlans = weeklyPlans.filter(plan => plan.event_type === null).sort((a, b) => a.weekly_classes - b.weekly_classes);
 
   const scrollToActions = () => {
     setTimeout(() => {

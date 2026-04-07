@@ -912,7 +912,14 @@
   border-radius: var(--radius-lg, 16px);
 }
 
-.calendar-section h3,
+.calendar-section h3 {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-base, 1rem);
+  font-weight: 600;
+  color: var(--color-charcoal, #1f2933);
+  margin: 0 0 var(--space-4, 1rem);
+}
+
 .timeslots-section.disabled {
   opacity: 0.4;
   pointer-events: none;
@@ -931,10 +938,10 @@
 
 .timeslot-hint {
   font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm, 0.875rem);
   color: var(--text-light, #718096);
   text-align: center;
-  padding: 1.5rem 0;
+  padding: var(--space-6, 1.5rem) 0;
 }
 
 .timeslots-section h3 {
@@ -1079,23 +1086,14 @@
    ======================================== */
 
 .day-progress {
-  background-color: white;
-  padding: var(--space-4, 1rem);
-  border: 1px solid var(--border-light, #e2e8f0);
-  border-radius: var(--radius-lg, 16px);
+  padding: 0;
   margin-bottom: var(--space-6, 1.5rem);
-}
-
-.day-progress p {
-  font-family: var(--font-body, 'Outfit', sans-serif);
-  font-weight: 500;
-  color: var(--color-charcoal, #1f2933);
-  margin: 0 0 var(--space-3, 0.75rem);
 }
 
 .day-tabs {
   display: flex;
-  gap: var(--space-2, 0.5rem);
+  gap: var(--space-3, 0.75rem);
+  justify-content: center;
   flex-wrap: wrap;
 }
 
@@ -1146,11 +1144,24 @@
   opacity: 0.9;
 }
 
+.day-tab-empty {
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.calendar-day-hint {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-primary, #47a1bf);
+  font-weight: 500;
+  margin: 0 0 var(--space-2, 0.5rem);
+}
+
 /* ========================================
    SUMMARY CARD
    ======================================== */
 
 .summary-card {
+  background-color: white;
   padding: var(--space-5, 1.25rem);
   border: 1px solid var(--border-light, #e2e8f0);
   border-radius: var(--radius-lg, 16px);
@@ -1554,6 +1565,24 @@
   color: var(--color-primary, #47a1bf);
 }
 
+.btn-clear {
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--text-medium, #4a5568);
+  background: none;
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-full, 9999px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-clear:hover {
+  color: var(--color-accent, #e07a5f);
+  border-color: var(--color-accent, #e07a5f);
+}
+
 .btn-save {
   width: 100%;
   margin-top: var(--space-4, 1rem);
@@ -1613,39 +1642,39 @@
 .confirm-courses-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: var(--space-4, 1rem);
+  margin-bottom: var(--space-6, 1.5rem);
 }
 
 .confirm-course-card {
   background: white;
-  border: 1px solid rgba(31, 41, 51, 0.1);
+  border: 1px solid var(--border-light, #e2e8f0);
   border-radius: var(--radius-lg, 16px);
   overflow: hidden;
 }
 
 .confirm-course-header {
-  padding: 0.85rem 1.25rem;
+  padding: var(--space-3, 0.75rem) var(--space-5, 1.25rem);
   background: var(--color-primary, #47a1bf);
 }
 
 .confirm-course-name {
   font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: 1rem;
+  font-size: var(--font-size-base, 1rem);
   font-weight: 700;
   color: white;
 }
 
 .confirm-course-details {
-  padding: 0.25rem 0;
+  padding: var(--space-1, 0.25rem) 0;
 }
 
 .confirm-detail-row {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 0.6rem 1.25rem;
-  border-bottom: 1px solid rgba(31, 41, 51, 0.05);
+  padding: var(--space-3, 0.75rem) var(--space-5, 1.25rem);
+  border-bottom: 1px solid var(--border-light, #e2e8f0);
 }
 
 .confirm-detail-row:last-child {
@@ -1654,20 +1683,20 @@
 
 .confirm-detail-label {
   font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: 0.85rem;
-  color: var(--text-light, #718096);
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--text-medium, #4a5568);
   flex-shrink: 0;
 }
 
 .confirm-detail-value {
   font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm, 0.875rem);
   font-weight: 500;
   color: var(--color-charcoal, #1f2933);
   text-align: right;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 2px;
 }
 
 .confirm-schedule {
@@ -1680,7 +1709,7 @@
 
 .confirm-detail-price {
   font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg, 1.125rem);
   font-weight: 700;
   color: var(--color-charcoal, #1f2933);
 }
@@ -1688,17 +1717,17 @@
 .confirm-add-btn {
   display: block;
   width: 100%;
-  padding: 0.75rem;
+  padding: var(--space-3, 0.75rem);
   border: 2px dashed rgba(71, 161, 191, 0.3);
   border-radius: var(--radius-lg, 16px);
   background: none;
   font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm, 0.875rem);
   font-weight: 600;
   color: var(--color-primary, #47a1bf);
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-6, 1.5rem);
 }
 
 .confirm-add-btn:hover {

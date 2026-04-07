@@ -51,9 +51,6 @@ const SuccessMessage = ({ enrollmentData, onClose }) => {
 
           <div className="success-info">
             <p>
-              Hemos enviado un email de confirmación a <strong>{enrollmentData.student.email}</strong>
-            </p>
-            <p>
               El instructor se pondrá en contacto contigo antes del inicio del curso.
             </p>
           </div>

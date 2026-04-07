@@ -79,9 +79,9 @@ const PaymentSuccess = () => {
           )}
         </div>
 
-        <div className="ps-info">
+        {/* <div className="ps-info">
           Recibirás un correo electrónico con los detalles de tu inscripción y el comprobante de pago.
-        </div>
+        </div> */}
 
         <div className="ps-actions">
           <button className="ps-btn ps-btn--secondary" onClick={() => window.print()}>
