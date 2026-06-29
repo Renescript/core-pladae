@@ -1,22 +1,41 @@
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import LandingPage from './pages/LandingPage';
 import EnrollmentPage from './pages/EnrollmentPage';
 import CopyEnrollmentPage from './pages/CopyEnrollmentPage';
 import TestEnrollmentPage from './pages/TestEnrollmentPage';
 import CalendarTestPage from './pages/CalendarTestPage';
+import WorkshopPage from './pages/WorkshopPage';
 import PaymentSuccess from './components/Enrollment/PaymentSuccess';
 import PaymentFailure from './components/Enrollment/PaymentFailure';
+import { workshops } from './data/workshops';
 import './App.css';
 
 function AppHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [coursesOpen, setCoursesOpen] = useState(false);
+  const coursesRef = useRef(null);
 
   const handleLogoClick = () => {
     navigate('/');
   };
+
+  // Cerrar dropdown al click afuera o tecla Escape
+  useEffect(() => {
+    if (!coursesOpen) return;
+    const onClick = (e) => {
+      if (coursesRef.current && !coursesRef.current.contains(e.target)) setCoursesOpen(false);
+    };
+    const onKey = (e) => { if (e.key === 'Escape') setCoursesOpen(false); };
+    document.addEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [coursesOpen]);
 
   // No mostrar header en las páginas de enrollment y pago
   const hideHeaderPaths = ['/enrollment', '/copy-enrollment', '/inscripcion', '/calendar-test', '/payment/success', '/payment/failure'];
@@ -24,21 +43,60 @@ function AppHeader() {
     return null;
   }
 
+  const goToWorkshop = (slug) => {
+    setCoursesOpen(false);
+    navigate(`/talleres/${slug}`);
+  };
+
   return (
     <nav className="nav-main nav-transparent">
       <div className="nav-container-flat">
         <div className="nav-logo" onClick={handleLogoClick}>
-          <img src="/g9.png" alt="Gustarte" className="nav-logo-img" />
+          <img src="/gustarte-logo-2.png" alt="Gustarte" className="nav-logo-img" />
         </div>
 
         <div className="nav-links">
-          <a href="#about" className="nav-link">
+          <a href="/#about" className="nav-link">
             Quiénes somos
           </a>
-          <a href="#courses" className="nav-link">
-            Nuestros cursos
-          </a>
-          <a href="#contact" className="nav-link">
+
+          <div className="nav-dropdown" ref={coursesRef}>
+            <button
+              className="nav-link nav-dropdown-trigger"
+              onClick={() => setCoursesOpen((v) => !v)}
+              aria-haspopup="true"
+              aria-expanded={coursesOpen}
+            >
+              Nuestros cursos
+              <svg
+                className={`nav-dropdown-caret ${coursesOpen ? 'is-open' : ''}`}
+                width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+
+            {coursesOpen && (
+              <ul className="nav-dropdown-menu" role="menu">
+                {workshops.map((w) => (
+                  <li key={w.slug} role="none">
+                    <button
+                      className="nav-dropdown-item"
+                      onClick={() => goToWorkshop(w.slug)}
+                      role="menuitem"
+                    >
+                      <span className="nav-dropdown-item-name">{w.name}</span>
+                      <span className="nav-dropdown-item-cat">{w.category}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <a href="/#contact" className="nav-link">
             Contacto
           </a>
           <button className="nav-cta-btn" onClick={() => navigate('/inscripcion')}>
@@ -119,6 +177,7 @@ function App() {
           <Route path="/calendar-test" element={<CalendarTestPage />} />
           <Route path="/payment/success" element={<PaymentSuccess />} />
           <Route path="/payment/failure" element={<PaymentFailure />} />
+          <Route path="/talleres/:slug" element={<WorkshopPage />} />
         </Routes>
         <AppFooter />
       </div>

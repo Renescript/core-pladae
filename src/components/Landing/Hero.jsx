@@ -9,7 +9,13 @@ const COLLAGE_ITEMS = [
   { type: 'image', src: '/DSC_1201.JPG', alt: 'Sesión de arte' },
 ];
 
+const DISCIPLINES = ['Óleo', 'Acuarela', 'Dibujo', 'Acrílico', 'Escultura', 'Taller Infantil'];
+
 const Hero = ({ onInscripcionClick }) => {
+  const handleExplorar = () => {
+    document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <header className="hero-section">
       {/* Collage background */}
@@ -35,14 +41,38 @@ const Hero = ({ onInscripcionClick }) => {
         ))}
       </div>
 
-      {/* Card with text content */}
+      {/* Dark glass card */}
       <div className="hero-card">
-        <p className="hero-subtitle">SOMOS <span className="hero-highlight">GUSTARTE</span></p>
-        <h1 className="hero-title">ACADEMIA DE ARTE EN CONCEPCIÓN</h1>
-        <p className="hero-tagline-text">Talleres presenciales para adultos y jóvenes. Todos los niveles, horarios flexibles.</p>
+        <span className="hero-eyebrow">Talleres presenciales · Concepción</span>
 
-        <button className="hero-cta" onClick={onInscripcionClick}>
-          QUIERO INSCRIBIRME
+        <h1 className="hero-title">
+          Un espacio donde el <span className="hero-title-accent">arte</span> se vive
+        </h1>
+
+        <p className="hero-tagline-text">
+          Para adultos y jóvenes. Todos los niveles, horarios flexibles y grupos reducidos para que encuentres tu propia voz.
+        </p>
+
+        <p className="hero-disciplines">
+          {DISCIPLINES.map((d, i) => (
+            <span key={d}>
+              <span className="hero-discipline">{d}</span>
+              {i < DISCIPLINES.length - 1 && <span className="hero-discipline-sep" aria-hidden="true">·</span>}
+            </span>
+          ))}
+        </p>
+
+        <div className="hero-cta-row">
+          <button className="hero-cta hero-cta--primary" onClick={onInscripcionClick}>
+            Quiero inscribirme
+          </button>
+        </div>
+
+        <button className="hero-explore" onClick={handleExplorar} aria-label="Explorar">
+          <span>EXPLORAR</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
         </button>
       </div>
     </header>

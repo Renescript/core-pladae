@@ -5,6 +5,7 @@ import About from '../components/Landing/About';
 import Mission from '../components/Landing/Mission';
 import CoursesShowcase from '../components/Landing/CoursesShowcase';
 import Schedule from '../components/Landing/Schedule';
+import Reveal from '../components/Reveal';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -17,18 +18,18 @@ const LandingPage = () => {
     <>
       <main>
         <Hero onInscripcionClick={handleInscripcionClick} />
-        <div id="about">
+        <Reveal as="div" id="about">
           <About />
-        </div>
-        <div id="courses">
+        </Reveal>
+        <Reveal as="div" id="courses">
           <CoursesShowcase />
-        </div>
-        <div id="mission">
+        </Reveal>
+        <Reveal as="div" id="mission">
           <Mission />
-        </div>
-        <div id="schedule">
+        </Reveal>
+        <Reveal as="div" id="schedule">
           <Schedule />
-        </div>
+        </Reveal>
       </main>
     </>
   );
