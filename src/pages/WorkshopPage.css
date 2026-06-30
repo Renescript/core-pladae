@@ -1,0 +1,456 @@
+/* ========================================
+   WORKSHOP PAGE — detalle de cada taller
+   ======================================== */
+
+.workshop-page {
+  min-height: 70vh;
+  padding-bottom: clamp(3rem, 2rem + 3vw, 6rem);
+  background: #fff;
+}
+
+/* ============ HERO ============ */
+.workshop-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 1.5rem + 3vw, 5rem);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(3rem, 2rem + 3vw, 5rem) clamp(1.5rem, 0.5rem + 3vw, 3rem);
+  align-items: center;
+}
+
+.workshop-hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.workshop-kicker {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.workshop-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(2.5rem, 1.5rem + 3vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--color-charcoal);
+  margin: 0;
+}
+
+.workshop-tagline {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.15rem);
+  font-weight: 400;
+  line-height: 1.55;
+  color: #4a5568;
+  margin: 0.4rem 0 0;
+  max-width: 480px;
+}
+
+.workshop-professor-hero {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  color: var(--color-charcoal);
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+.workshop-professor-hero strong {
+  font-weight: 700;
+}
+
+.workshop-professor-prefix {
+  color: #6b7280;
+  font-weight: 400;
+}
+
+/* ============ HIGHLIGHTS ============ */
+.workshop-highlights {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.workshop-highlight {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.workshop-highlight-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(71, 161, 191, 0.12);
+  display: grid;
+  place-items: center;
+  color: var(--color-primary);
+}
+
+.workshop-highlight-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.workshop-highlight-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.workshop-highlight-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-charcoal);
+  margin: 0 0 0.2rem;
+  line-height: 1.2;
+}
+
+.workshop-highlight-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  color: #6b7280;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* ============ CTAs ============ */
+.workshop-cta-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.workshop-cta {
+  background: var(--color-charcoal);
+  color: #fff;
+  border: 2px solid var(--color-charcoal);
+  padding: 0.85rem 1.85rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.workshop-cta:hover {
+  background: #2d3d4d;
+  border-color: #2d3d4d;
+  transform: translateY(-2px);
+}
+
+.workshop-cta--outline {
+  background: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.workshop-cta--outline:hover {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.workshop-cta--outline svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ============ REEL COLUMN ============ */
+.workshop-reel-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.workshop-reel-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 9 / 16;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow:
+    0 25px 60px -15px rgba(0, 0, 0, 0.35),
+    0 10px 30px -10px rgba(0, 0, 0, 0.2);
+  background: #000;
+  margin: 0 auto;
+}
+
+.workshop-reel {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Sticker "Clases presenciales y online" */
+.workshop-reel-sticker {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 96px;
+  height: 96px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px dashed rgba(71, 161, 191, 0.45);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  text-align: center;
+  line-height: 1.2;
+  box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.22);
+}
+
+.workshop-reel-sticker svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Info bar (Inicio / Duración / Modalidad) */
+.workshop-info-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: rgba(71, 161, 191, 0.08);
+  border-radius: 14px;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.workshop-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.workshop-info-item > svg {
+  width: 22px;
+  height: 22px;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.workshop-info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.workshop-info-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.workshop-info-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-charcoal);
+}
+
+/* ============ DESCRIPTION + LEARNINGS ============ */
+.workshop-description {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 1rem + 2vw, 3.5rem) clamp(1.5rem, 0.5rem + 3vw, 3rem);
+}
+
+.workshop-section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--color-charcoal);
+  margin: 0 0 1.25rem 0;
+}
+
+.workshop-learnings {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.workshop-learnings li {
+  position: relative;
+  padding-left: 1.5rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: #2b2b2b;
+}
+
+.workshop-learnings li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+
+/* ============ META CARDS ============ */
+.workshop-meta {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 0.5rem + 3vw, 3rem);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.workshop-meta-card {
+  background: #f7f3ee;
+  border-radius: 14px;
+  padding: 1.75rem 1.5rem;
+}
+
+.workshop-meta-card--price {
+  background: var(--color-charcoal);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+}
+
+.workshop-meta-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin: 0 0 0.75rem 0;
+  color: var(--color-primary);
+}
+
+.workshop-meta-card--price .workshop-meta-title {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.workshop-meta-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-charcoal);
+  margin: 0 0 0.5rem 0;
+}
+
+.workshop-meta-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #4a5568;
+  margin: 0;
+}
+
+.workshop-schedule {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.workshop-schedule li {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  color: #2b2b2b;
+}
+
+.workshop-meta-price {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin: 0 0 1.25rem 0;
+}
+
+.workshop-cta--secondary {
+  background: #fff;
+  color: var(--color-charcoal);
+  border-color: #fff;
+}
+
+.workshop-cta--secondary:hover {
+  background: var(--color-paper);
+  border-color: var(--color-paper);
+  color: var(--color-charcoal);
+}
+
+/* ============ MOBILE ============ */
+@media (max-width: 900px) {
+  .workshop-hero {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    padding-top: 5rem;
+  }
+
+  .workshop-reel-column {
+    order: -1;
+  }
+
+  .workshop-tagline {
+    max-width: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .workshop-info-bar {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .workshop-cta-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .workshop-cta {
+    justify-content: center;
+  }
+
+  .workshop-reel-sticker {
+    width: 80px;
+    height: 80px;
+    font-size: 0.55rem;
+  }
+}

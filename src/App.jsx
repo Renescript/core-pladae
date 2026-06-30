@@ -1,21 +1,29 @@
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import LandingPage from './pages/LandingPage';
+import WorkshopPage from './pages/WorkshopPage';
 import EnrollmentPage from './pages/EnrollmentPage';
 import CopyEnrollmentPage from './pages/CopyEnrollmentPage';
 import TestEnrollmentPage from './pages/TestEnrollmentPage';
 import CalendarTestPage from './pages/CalendarTestPage';
 import PaymentSuccess from './components/Enrollment/PaymentSuccess';
 import PaymentFailure from './components/Enrollment/PaymentFailure';
+import { workshops } from './data/workshops';
 import './App.css';
 
 function AppHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [coursesOpen, setCoursesOpen] = useState(false);
 
   const handleLogoClick = () => {
     navigate('/');
+  };
+
+  const handleWorkshopClick = (slug) => {
+    navigate(`/talleres/${slug}`);
+    setCoursesOpen(false);
   };
 
   // No mostrar header en las páginas de enrollment y pago
@@ -28,16 +36,44 @@ function AppHeader() {
     <nav className="nav-main nav-transparent">
       <div className="nav-container-flat">
         <div className="nav-logo" onClick={handleLogoClick}>
-          <img src="/g9.png" alt="Gustarte" className="nav-logo-img" />
+          <img src="/gustarte-logo-1.png" alt="Gustarte" className="nav-logo-img" />
         </div>
 
         <div className="nav-links">
           <a href="#about" className="nav-link">
             Quiénes somos
           </a>
-          <a href="#courses" className="nav-link">
-            Nuestros cursos
-          </a>
+
+          <div
+            className="nav-dropdown"
+            onMouseEnter={() => setCoursesOpen(true)}
+            onMouseLeave={() => setCoursesOpen(false)}
+          >
+            <button
+              className="nav-link nav-dropdown-trigger"
+              onClick={() => setCoursesOpen(!coursesOpen)}
+              aria-expanded={coursesOpen}
+            >
+              Nuestros cursos
+              <svg className="nav-dropdown-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none">
+                <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            {coursesOpen && (
+              <div className="nav-dropdown-menu">
+                {workshops.map((w) => (
+                  <button
+                    key={w.slug}
+                    className="nav-dropdown-item"
+                    onClick={() => handleWorkshopClick(w.slug)}
+                  >
+                    {w.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <a href="#contact" className="nav-link">
             Contacto
           </a>
@@ -113,6 +149,7 @@ function App() {
         <AppHeader />
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/talleres/:slug" element={<WorkshopPage />} />
           <Route path="/enrollment" element={<EnrollmentPage />} />
           <Route path="/copy-enrollment" element={<CopyEnrollmentPage />} />
           <Route path="/inscripcion" element={<TestEnrollmentPage />} />
