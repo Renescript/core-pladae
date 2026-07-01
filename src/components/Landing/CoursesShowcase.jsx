@@ -15,6 +15,7 @@ const CoursesShowcase = () => {
     if (titleLower.includes('acrílico')) return '/acrilico.jpg';
     if (titleLower.includes('escultura')) return '/escultura.jpg';
     if (titleLower.includes('infantil')) return '/taller-infantil.jpg';
+    if (titleLower.includes('cómic') || titleLower.includes('comic')) return '/comic.jpg';
     return '/placeholder-course.jpg';
   };
 

@@ -106,8 +106,8 @@ const WorkshopPage = () => {
             <div className="workshop-info-item">
               <IconCalendar />
               <div className="workshop-info-text">
-                <span className="workshop-info-label">Inicio</span>
-                <span className="workshop-info-value">{workshop.startLabel}</span>
+                <span className="workshop-info-label">Materiales</span>
+                <span className="workshop-info-value">{workshop.materials}</span>
               </div>
             </div>
             <div className="workshop-info-item">
@@ -139,7 +139,9 @@ const WorkshopPage = () => {
                 preload="metadata"
                 poster={workshop.fallbackImage}
               >
-                <source src={workshop.video.webm} type="video/webm" />
+                {workshop.video.webm && (
+                  <source src={workshop.video.webm} type="video/webm" />
+                )}
                 <source src={workshop.video.mp4} type="video/mp4" />
               </video>
             ) : (
@@ -164,7 +166,9 @@ const WorkshopPage = () => {
         <div className="workshop-meta-card">
           <h3 className="workshop-meta-title">Profesor/a</h3>
           <p className="workshop-meta-name">{workshop.professor.name}</p>
-          <p className="workshop-meta-text">{workshop.professor.bio}</p>
+          {workshop.professor.bio && (
+            <p className="workshop-meta-text">{workshop.professor.bio}</p>
+          )}
         </div>
 
         <div className="workshop-meta-card">
