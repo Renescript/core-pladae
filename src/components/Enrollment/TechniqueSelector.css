@@ -43,6 +43,42 @@ html {
   }
 }
 
+/* Botones "Ver Tarifas" y "Ver Horario" */
+.technique-info-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3, 0.75rem);
+  margin-top: var(--space-6, 1.5rem);
+}
+
+.technique-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md, 10px);
+  background-color: var(--color-charcoal, #1f2933);
+  color: white;
+  text-decoration: none;
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.technique-info-btn:visited,
+.technique-info-btn:active,
+.technique-info-btn:focus {
+  color: white;
+}
+
+.technique-info-btn:hover {
+  background-color: #2d3d4d;
+  color: white;
+  transform: translateY(-1px);
+}
+
 /* ========================================
    WEEKLY GRID
    ======================================== */

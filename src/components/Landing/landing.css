@@ -196,17 +196,36 @@
   }
 }
 
+/* CTA grid — stacked en mobile, 2×2 en desktop */
+.hero-cta-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .hero-cta-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
 /* CTA Button */
 .hero-cta {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
   background-color: var(--color-charcoal);
   color: white;
   border: none;
-  padding: 0.9rem 2.5rem;
+  padding: 0.9rem 1.5rem;
   font-family: 'Outfit', sans-serif;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
@@ -214,14 +233,30 @@
 
 @media (min-width: 768px) {
   .hero-cta {
-    font-size: 1.2rem;
-    padding: 1rem 3rem;
+    font-size: 1rem;
+    padding: 1rem 1.5rem;
   }
+}
+
+.hero-cta:visited,
+.hero-cta:active,
+.hero-cta:focus {
+  color: white;
 }
 
 .hero-cta:hover {
   background-color: #2d3d4d;
+  color: white;
   transform: translateY(-2px);
+}
+
+.hero-cta--primary {
+  background-color: var(--color-primary);
+}
+
+.hero-cta--primary:hover {
+  background-color: #3b8da8;
+  color: white;
 }
 
 /* Mobile collage: 2 columns instead of 4 */
@@ -667,25 +702,43 @@
   opacity: 0.6;
 }
 
+.showcase-cta-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+
 .showcase-cta {
   display: block;
   width: 100%;
-  margin-top: 1.25rem;
-  padding: 0.65rem 1.5rem;
+  padding: 0.65rem 1rem;
   background-color: var(--color-primary);
   color: white;
   border: none;
   border-radius: var(--radius-full);
   font-family: 'Outfit', sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 0.03em;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .showcase-cta:hover {
   background-color: #3b8da8;
+  color: white;
+}
+
+.showcase-cta--secondary {
+  background-color: transparent;
+  color: var(--color-charcoal);
+  border: 1px solid var(--color-charcoal);
+}
+
+.showcase-cta--secondary:hover {
+  background-color: var(--color-charcoal);
+  color: white;
 }
 
 /* ========================================

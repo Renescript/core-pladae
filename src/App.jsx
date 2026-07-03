@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-ro
 import { useState } from 'react';
 import LandingPage from './pages/LandingPage';
 import WorkshopPage from './pages/WorkshopPage';
+import PreciosPage from './pages/PreciosPage';
+import HorarioPage from './pages/HorarioPage';
 import EnrollmentPage from './pages/EnrollmentPage';
 import CopyEnrollmentPage from './pages/CopyEnrollmentPage';
 import TestEnrollmentPage from './pages/TestEnrollmentPage';
@@ -150,6 +152,8 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/talleres/:slug" element={<WorkshopPage />} />
+          <Route path="/precios" element={<PreciosPage />} />
+          <Route path="/horario" element={<HorarioPage />} />
           <Route path="/enrollment" element={<EnrollmentPage />} />
           <Route path="/copy-enrollment" element={<CopyEnrollmentPage />} />
           <Route path="/inscripcion" element={<TestEnrollmentPage />} />

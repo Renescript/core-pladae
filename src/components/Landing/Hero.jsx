@@ -41,9 +41,20 @@ const Hero = ({ onInscripcionClick }) => {
         <h1 className="hero-title">ACADEMIA DE ARTE EN CONCEPCIÓN</h1>
         <p className="hero-tagline-text">Talleres presenciales para adultos y jóvenes. Todos los niveles, horarios flexibles.</p>
 
-        <button className="hero-cta" onClick={onInscripcionClick}>
-          QUIERO INSCRIBIRME
-        </button>
+        <div className="hero-cta-grid">
+          <button className="hero-cta hero-cta--primary" onClick={onInscripcionClick}>
+            QUIERO INSCRIBIRME
+          </button>
+          <a className="hero-cta" href="#courses">
+            INFORMACIÓN TALLERES
+          </a>
+          <a className="hero-cta" href="/precios">
+            PRECIOS DE TALLERES
+          </a>
+          <a className="hero-cta" href="/horario">
+            HORARIO GENERAL
+          </a>
+        </div>
       </div>
     </header>
   );

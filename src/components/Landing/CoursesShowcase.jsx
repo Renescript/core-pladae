@@ -19,14 +19,14 @@ const CoursesShowcase = () => {
     return '/placeholder-course.jpg';
   };
 
-  const getLevelBadge = (index) => {
-    const levels = [
-      { text: 'Principiante', color: 'badge-ochre' },
-      { text: 'Todos los niveles', color: 'badge-primary' },
-      { text: 'Intermedio', color: 'badge-accent' },
-      { text: 'Avanzado', color: 'badge-primary' }
-    ];
-    return levels[index % levels.length];
+  const getWorkshopSlug = (courseTitle) => {
+    const t = courseTitle.toLowerCase();
+    if (t.includes('óleo') || t.includes('oleo') || t.includes('acrílico') || t.includes('acrilico')) return 'oleo-y-acrilico';
+    if (t.includes('acuarela') || t.includes('dibujo') || t.includes('ilustración')) return 'acuarela-dibujo';
+    if (t.includes('escultura') || t.includes('cerámica') || t.includes('ceramica')) return 'ceramica-escultura';
+    if (t.includes('infantil')) return 'arte-infantil';
+    if (t.includes('cómic') || t.includes('comic')) return 'comic';
+    return null;
   };
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const CoursesShowcase = () => {
       try {
         setLoading(true);
         const data = await getCourses();
-        setCourses(data);
+        setCourses([...data].sort((a, b) => a.id - b.id));
         setError(null);
       } catch (err) {
         console.error('Error al cargar cursos:', err);
@@ -83,9 +83,8 @@ const CoursesShowcase = () => {
         {renderHeader()}
 
         <div className="courses-grid">
-          {courses.map((course, index) => {
+          {courses.map((course) => {
             const instructor = course.sections?.[0]?.teacher_name || 'Por asignar';
-            const level = getLevelBadge(index);
 
             return (
               <article key={course.id} className="showcase-card">
@@ -118,9 +117,19 @@ const CoursesShowcase = () => {
                       2 hrs por sesión
                     </span>
                   </div>
-                  <button className="showcase-cta" onClick={() => navigate('/inscripcion')}>
-                    Inscríbete
-                  </button>
+                  <div className="showcase-cta-row">
+                    {getWorkshopSlug(course.title) && (
+                      <button
+                        className="showcase-cta showcase-cta--secondary"
+                        onClick={() => navigate(`/talleres/${getWorkshopSlug(course.title)}`)}
+                      >
+                        Más info
+                      </button>
+                    )}
+                    <button className="showcase-cta" onClick={() => navigate('/inscripcion')}>
+                      Inscríbete
+                    </button>
+                  </div>
                 </div>
               </article>
             );

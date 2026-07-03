@@ -1,0 +1,196 @@
+.horarios-section {
+  background-color: #1a2530;
+  color: #e6ecf2;
+  padding: clamp(2rem, 1.5rem + 2vw, 4rem) 0;
+  border-radius: 18px;
+}
+
+.horarios-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 0.5rem + 2vw, 2.5rem);
+}
+
+.horarios-header {
+  text-align: center;
+  margin-bottom: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
+}
+
+.horarios-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(2rem, 1.5rem + 3vw, 3.25rem);
+  font-weight: 300;
+  letter-spacing: 0.35em;
+  color: #f4f7fa;
+  margin: 0;
+}
+
+.horarios-subtitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.35em;
+  color: #a8b5c1;
+  margin: 0.5rem 0 0;
+  text-transform: uppercase;
+}
+
+.horarios-loading {
+  text-align: center;
+  color: #a8b5c1;
+  padding: 2rem 0;
+}
+
+/* ── SALÓN ─────────────────────────────────────────────── */
+.salon-block {
+  margin-top: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
+}
+
+.salon-heading {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.salon-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1.15rem, 1rem + 0.8vw, 1.5rem);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  color: #f4f7fa;
+  margin: 0;
+}
+
+.salon-subtitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  color: #a8b5c1;
+  margin: 0.35rem 0 0;
+  text-transform: uppercase;
+}
+
+/* ── GRID (TABLE) ───────────────────────────────────────── */
+.salon-grid-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.salon-grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 4px;
+  table-layout: fixed;
+  min-width: 520px;
+}
+
+.salon-corner {
+  width: 90px;
+  background: transparent;
+}
+
+.salon-day-header {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: #a8b5c1;
+  text-transform: uppercase;
+  padding: 0.4rem 0.15rem;
+  background: transparent;
+}
+
+.salon-time {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #a8b5c1;
+  text-align: right;
+  padding: 0.4rem 0.65rem;
+  background: transparent;
+  white-space: nowrap;
+}
+
+.salon-cell {
+  background-color: #2b3a48;
+  border-radius: 6px;
+  vertical-align: middle;
+  text-align: center;
+  height: 58px;
+  padding: 3px;
+}
+
+.salon-empty {
+  color: #4a5b6a;
+  font-size: 0.85rem;
+}
+
+.salon-class {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0.3rem 0.25rem;
+  border-radius: 6px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: white;
+  line-height: 1.15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .salon-class {
+    font-size: 0.65rem;
+  }
+  .salon-time {
+    font-size: 0.8rem;
+  }
+  .salon-day-header {
+    font-size: 0.75rem;
+  }
+  .salon-cell {
+    height: 66px;
+  }
+}
+
+/* ── ACCIONES ───────────────────────────────────────────── */
+.horarios-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+  margin-top: clamp(1.75rem, 1rem + 1.5vw, 2.75rem);
+}
+
+.horarios-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #2f6d68;
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.horarios-cta:hover {
+  background-color: #38857f;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.horarios-cta--primary {
+  background-color: #3fa093;
+}
+
+.horarios-cta--primary:hover {
+  background-color: #4bb3a6;
+}

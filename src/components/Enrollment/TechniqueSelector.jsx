@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
 import { getCoursesSchedulesGrid } from '../../services/api';
+import Membership from '../Landing/Membership';
+import HorariosGrid from '../Landing/HorariosGrid';
+import InfoDrawer from './InfoDrawer';
+import '../Landing/landing.css';
 import './TechniqueSelector.css';
 
 const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue }) => {
   const [techniques, setTechniques] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [openDrawer, setOpenDrawer] = useState(null); // 'precios' | 'horario' | null
 
   useEffect(() => {
     const loadTechniques = async () => {
@@ -65,6 +70,23 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
         ))}
       </div>
 
+      <div className="technique-info-actions">
+        <button
+          type="button"
+          className="technique-info-btn"
+          onClick={() => setOpenDrawer('precios')}
+        >
+          Ver Tarifas
+        </button>
+        <button
+          type="button"
+          className="technique-info-btn"
+          onClick={() => setOpenDrawer('horario')}
+        >
+          Ver Horario
+        </button>
+      </div>
+
       <div className="step-actions">
         <button
           type="button"
@@ -75,6 +97,22 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
           Continuar
         </button>
       </div>
+
+      <InfoDrawer
+        open={openDrawer === 'precios'}
+        onClose={() => setOpenDrawer(null)}
+        title="Tarifas"
+      >
+        <Membership />
+      </InfoDrawer>
+
+      <InfoDrawer
+        open={openDrawer === 'horario'}
+        onClose={() => setOpenDrawer(null)}
+        title="Horario general"
+      >
+        <HorariosGrid showActions={false} />
+      </InfoDrawer>
     </div>
   );
 };

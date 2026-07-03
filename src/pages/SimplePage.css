@@ -1,0 +1,38 @@
+.simple-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(2rem, 1rem + 3vw, 4rem) clamp(1rem, 0.5rem + 2vw, 3rem);
+}
+
+.simple-page-header {
+  margin-bottom: clamp(2rem, 1rem + 2vw, 3.5rem);
+  text-align: left;
+}
+
+.simple-page-kicker {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin: 0 0 0.75rem 0;
+}
+
+.simple-page-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 1rem 0;
+  line-height: 1.15;
+}
+
+.simple-page-intro {
+  font-family: 'Work Sans', sans-serif;
+  font-size: clamp(1rem, 0.9rem + 0.3vw, 1.15rem);
+  color: #4a5568;
+  max-width: 640px;
+  margin: 0;
+  line-height: 1.55;
+}

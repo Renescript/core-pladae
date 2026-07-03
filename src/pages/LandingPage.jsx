@@ -4,7 +4,7 @@ import Hero from '../components/Landing/Hero';
 import About from '../components/Landing/About';
 import Mission from '../components/Landing/Mission';
 import CoursesShowcase from '../components/Landing/CoursesShowcase';
-import Schedule from '../components/Landing/Schedule';
+import HorariosGrid from '../components/Landing/HorariosGrid';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const LandingPage = () => {
           <Mission />
         </div>
         <div id="schedule">
-          <Schedule />
+          <HorariosGrid />
         </div>
       </main>
     </>

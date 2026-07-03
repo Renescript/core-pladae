@@ -333,23 +333,21 @@
   margin: 0 auto;
   padding: 0 clamp(1.5rem, 0.5rem + 3vw, 3rem);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 
-.workshop-meta-card {
-  background: #f7f3ee;
-  border-radius: 14px;
-  padding: 1.75rem 1.5rem;
+@media (min-width: 720px) {
+  .workshop-meta {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
-.workshop-meta-card--price {
-  background: var(--color-charcoal);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 140px;
+.workshop-meta-card {
+  background: color-mix(in srgb, var(--color-primary) 10%, white);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 22%, transparent);
+  border-radius: 18px;
+  padding: 1.75rem 1.5rem;
 }
 
 .workshop-meta-title {
@@ -360,10 +358,6 @@
   text-transform: uppercase;
   margin: 0 0 0.75rem 0;
   color: var(--color-primary);
-}
-
-.workshop-meta-card--price .workshop-meta-title {
-  color: rgba(255, 255, 255, 0.65);
 }
 
 .workshop-meta-name {
@@ -382,19 +376,84 @@
   margin: 0;
 }
 
-.workshop-schedule {
+/* Mini calendario semanal */
+.workshop-weekcal {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.weekcal-day {
+  background: white;
+  border-radius: 12px;
+  padding: 0.75rem 0.35rem 0.85rem;
+  text-align: center;
+  min-height: 108px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.weekcal-day--active {
+  border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+  box-shadow: 0 4px 14px -6px color-mix(in srgb, var(--color-primary) 45%, transparent);
+}
+
+.weekcal-day--inactive {
+  background: color-mix(in srgb, var(--color-primary) 4%, white);
+  opacity: 0.55;
+}
+
+.weekcal-day-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  padding-bottom: 0.45rem;
+  margin-bottom: 0.55rem;
+  width: 100%;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.weekcal-times {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.35rem;
+  width: 100%;
 }
 
-.workshop-schedule li {
+.weekcal-times li {
   font-family: 'Outfit', sans-serif;
-  font-size: 0.95rem;
-  color: #2b2b2b;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-charcoal);
+  background: color-mix(in srgb, var(--color-primary) 14%, white);
+  border-radius: 6px;
+  padding: 0.22rem 0.35rem;
+  white-space: nowrap;
+}
+
+.weekcal-empty {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--color-primary) 45%, transparent);
+}
+
+@media (max-width: 640px) {
+  .workshop-weekcal {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .weekcal-times li {
+    font-size: 0.75rem;
+  }
 }
 
 .workshop-meta-price {
@@ -402,18 +461,6 @@
   font-size: 2.25rem;
   font-weight: 700;
   margin: 0 0 1.25rem 0;
-}
-
-.workshop-cta--secondary {
-  background: #fff;
-  color: var(--color-charcoal);
-  border-color: #fff;
-}
-
-.workshop-cta--secondary:hover {
-  background: var(--color-paper);
-  border-color: var(--color-paper);
-  color: var(--color-charcoal);
 }
 
 /* ============ MOBILE ============ */

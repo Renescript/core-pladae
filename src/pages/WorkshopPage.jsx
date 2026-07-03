@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { getWorkshopBySlug } from '../data/workshops';
+import { getWorkshopBySlug, legacySlugRedirects } from '../data/workshops';
+import WorkshopPricing from '../components/Landing/WorkshopPricing';
 import './WorkshopPage.css';
 
 const IconPencil = () => (
@@ -57,12 +58,15 @@ const HIGHLIGHT_ICONS = [IconPencil, IconEye, IconPalette];
 const WorkshopPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const workshop = getWorkshopBySlug(slug);
+
+  const redirectSlug = legacySlugRedirects[slug];
+  const workshop = redirectSlug ? null : getWorkshopBySlug(slug);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [slug]);
 
+  if (redirectSlug) return <Navigate to={`/talleres/${redirectSlug}`} replace />;
   if (!workshop) return <Navigate to="/" replace />;
 
   return (
@@ -173,24 +177,41 @@ const WorkshopPage = () => {
 
         <div className="workshop-meta-card">
           <h3 className="workshop-meta-title">Horarios</h3>
-          <ul className="workshop-schedule">
-            {workshop.schedule.map((s, i) => (
-              <li key={i}>
-                <strong>{s.day}</strong> · {s.time}
-              </li>
-            ))}
-          </ul>
+          <div className="workshop-weekcal">
+            {[
+              { name: 'Lunes', short: 'Lun' },
+              { name: 'Martes', short: 'Mar' },
+              { name: 'Miércoles', short: 'Mié' },
+              { name: 'Jueves', short: 'Jue' },
+              { name: 'Viernes', short: 'Vie' },
+              { name: 'Sábado', short: 'Sáb' },
+            ].map(({ name, short }) => {
+              const dayTimes = workshop.schedule.filter((s) => s.day === name);
+              const active = dayTimes.length > 0;
+              return (
+                <div
+                  key={name}
+                  className={`weekcal-day ${active ? 'weekcal-day--active' : 'weekcal-day--inactive'}`}
+                >
+                  <span className="weekcal-day-label">{short}</span>
+                  {active ? (
+                    <ul className="weekcal-times">
+                      {dayTimes.map((s, i) => (
+                        <li key={i}>{s.time}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span className="weekcal-empty">—</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="workshop-meta-card workshop-meta-card--price">
-          <button
-            className="workshop-cta workshop-cta--secondary"
-            onClick={() => navigate('/inscripcion')}
-          >
-            Inscribirme
-          </button>
-        </div>
       </section>
+
+      <WorkshopPricing customPlans={workshop.customPricing || null} />
     </main>
   );
 };
