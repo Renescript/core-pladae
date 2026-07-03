@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import '../components/Landing/landing.css';
-import Membership from '../components/Landing/Membership';
+import WorkshopPricing from '../components/Landing/WorkshopPricing';
 import './SimplePage.css';
 
 const PreciosPage = () => {
@@ -14,11 +14,11 @@ const PreciosPage = () => {
         <p className="simple-page-kicker">Talleres</p>
         <h1 className="simple-page-title">Precios de talleres</h1>
         <p className="simple-page-intro">
-          Planes mensuales con descuento por permanencia. Consulta también nuestra membresía anual
-          con acceso a taller abierto y beneficios exclusivos.
+          Planes mensuales con descuento por permanencia. Puedes empezar con una clase de prueba
+          y luego decidir el ritmo que más te acomode.
         </p>
       </header>
-      <Membership />
+      <WorkshopPricing showHeader={false} />
     </main>
   );
 };

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getCoursesSchedulesGrid } from '../../services/api';
-import Membership from '../Landing/Membership';
+import WorkshopPricing from '../Landing/WorkshopPricing';
 import HorariosGrid from '../Landing/HorariosGrid';
 import InfoDrawer from './InfoDrawer';
 import '../Landing/landing.css';
@@ -103,7 +103,7 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
         onClose={() => setOpenDrawer(null)}
         title="Tarifas"
       >
-        <Membership />
+        <WorkshopPricing showHeader={false} showActions={false} />
       </InfoDrawer>
 
       <InfoDrawer

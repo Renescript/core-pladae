@@ -19,7 +19,7 @@ const computeDiscount = (basePricePerClass, planPrice, numClasses) => {
 const isNonMonthly = (plan) =>
   plan.event_type === 'trial' || plan.event_type === 'single';
 
-const WorkshopPricing = ({ customPlans = null }) => {
+const WorkshopPricing = ({ customPlans = null, showHeader = true, showActions = true }) => {
   const navigate = useNavigate();
   const [plans, setPlans] = useState(customPlans || []);
   const [loading, setLoading] = useState(!customPlans);
@@ -84,14 +84,16 @@ const WorkshopPricing = ({ customPlans = null }) => {
 
   return (
     <section className="workshop-pricing">
-      <header className="pricing-header">
-        <p className="pricing-kicker">Planes</p>
-        <h2 className="pricing-title">Elige cuántas clases al mes</h2>
-        <p className="pricing-intro">
-          Todos los planes incluyen materiales. Puedes empezar con una clase de prueba y luego
-          decidir el ritmo que más te acomode.
-        </p>
-      </header>
+      {showHeader && (
+        <header className="pricing-header">
+          <p className="pricing-kicker">Planes</p>
+          <h2 className="pricing-title">Elige cuántas clases al mes</h2>
+          <p className="pricing-intro">
+            Todos los planes incluyen materiales. Puedes empezar con una clase de prueba y luego
+            decidir el ritmo que más te acomode.
+          </p>
+        </header>
+      )}
 
       {nonMonthly.length > 0 && (
         <div className="pricing-table pricing-table--trial">
@@ -168,15 +170,17 @@ const WorkshopPricing = ({ customPlans = null }) => {
         </div>
       )}
 
-      <div className="pricing-actions">
-        <button
-          type="button"
-          className="pricing-cta"
-          onClick={() => navigate('/inscripcion')}
-        >
-          Inscribirme
-        </button>
-      </div>
+      {showActions && (
+        <div className="pricing-actions">
+          <button
+            type="button"
+            className="pricing-cta"
+            onClick={() => navigate('/inscripcion')}
+          >
+            Inscribirme
+          </button>
+        </div>
+      )}
     </section>
   );
 };
