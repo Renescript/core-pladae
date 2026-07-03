@@ -1961,6 +1961,57 @@
   margin: 0 auto;
 }
 
+.calendar-hint {
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.82rem;
+  color: var(--text-medium, #4a5568);
+  background-color: color-mix(in srgb, var(--color-primary, #47a1bf) 10%, white);
+  border-left: 3px solid var(--color-primary, #47a1bf);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  margin: 0.5rem 0 0.75rem;
+  line-height: 1.4;
+}
+
+.calendar-summary {
+  list-style: none;
+  padding: 0.6rem 0.75rem;
+  margin: 0.6rem 0 0.9rem;
+  background-color: color-mix(in srgb, var(--color-primary, #47a1bf) 8%, white);
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 0.85rem;
+}
+
+.calendar-summary-item {
+  color: var(--text-medium, #4a5568);
+  padding: 0.15rem 0;
+}
+
+.calendar-summary-item strong {
+  color: var(--color-charcoal, #1f2933);
+  margin-right: 0.35rem;
+  font-weight: 600;
+}
+
+.calendar-summary-item.done {
+  color: var(--color-charcoal, #1f2933);
+}
+
+.calendar-summary-item.done::before {
+  content: '✓ ';
+  color: var(--color-primary, #47a1bf);
+  font-weight: 700;
+}
+
+.calendar-summary-item.current {
+  color: var(--color-primary, #47a1bf);
+  font-weight: 600;
+}
+
 /* Course Selection */
 .step-description {
   color: var(--text-light, #718096);

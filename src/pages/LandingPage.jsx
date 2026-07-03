@@ -5,6 +5,7 @@ import About from '../components/Landing/About';
 import Mission from '../components/Landing/Mission';
 import CoursesShowcase from '../components/Landing/CoursesShowcase';
 import HorariosGrid from '../components/Landing/HorariosGrid';
+import Location from '../components/Landing/Location';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ const LandingPage = () => {
         <div id="schedule">
           <HorariosGrid />
         </div>
+        <Location />
       </main>
     </>
   );

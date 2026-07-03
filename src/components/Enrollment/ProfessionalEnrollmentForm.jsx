@@ -577,6 +577,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
           {/* Paso 2: Frecuencia */}
           {currentStep === 2 && (
             <SimplifiedPlanConfigurator
+              technique={technique}
               frequency={frequency}
               selectedDays={[]}
               onFrequencyChange={handleFrequencyChange}

@@ -121,7 +121,9 @@ function AppFooter() {
           <div className="footer-section">
             <h4>Contacto</h4>
             <p>contacto@gustarte.cl</p>
-            <p>+56 9 1234 5678</p>
+            <p>+56 9 2371 8373</p>
+            <p>Av. Chacabuco 960, Concepción</p>
+            <p>Depto 301 — 3er piso (tocar citófono)</p>
           </div>
           <div className="footer-section">
             <h4>Horarios</h4>

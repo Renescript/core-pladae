@@ -92,6 +92,18 @@ const MultiDayScheduleSelector = ({
     return anyCompleted.dayOfWeek === 'saturday';
   }, [selectedSchedules, frequency]);
 
+  // Días de la semana ya "gastados" por otros currentDayIndex (para bloquear en el calendario).
+  // Cuando el plan es N×semana los N slots deben caer en días distintos.
+  const usedDaysOfWeek = useMemo(() => {
+    const days = new Set();
+    selectedSchedules.forEach((s, idx) => {
+      if (idx !== currentDayIndex && s && s.dayOfWeek && s.timeSlot) {
+        days.add(s.dayOfWeek);
+      }
+    });
+    return days;
+  }, [selectedSchedules, currentDayIndex]);
+
   const availableDatesSet = useMemo(() => {
     return new Set(allAvailableDates.map(d => d.date));
   }, [allAvailableDates]);
@@ -238,6 +250,31 @@ const MultiDayScheduleSelector = ({
             ? `Selecciona la fecha de tu ${currentDayIndex === 0 ? 'primera' : currentDayIndex === 1 ? 'segunda' : currentDayIndex === 2 ? 'tercera' : `${currentDayIndex + 1}ª`} clase semanal`
             : '1. Selecciona fecha'
           }</h3>
+          {frequency > 1 && (
+            <ul className="calendar-summary">
+              {Array.from({ length: frequency }).map((_, idx) => {
+                const s = selectedSchedules[idx];
+                const isCurrent = idx === currentDayIndex;
+                const isDone = s && s.dayOfWeek && s.timeSlot;
+                let statusText;
+                if (isDone) {
+                  statusText = `${dayLabels[s.dayOfWeek]} · ${s.timeSlot.replace('-', ' – ')} hrs elegido`;
+                } else if (isCurrent) {
+                  statusText = 'eligiendo…';
+                } else {
+                  statusText = 'pendiente';
+                }
+                return (
+                  <li
+                    key={idx}
+                    className={`calendar-summary-item ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''}`}
+                  >
+                    <strong>Día {idx + 1}:</strong> {statusText}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
           <div className="calendar-nav">
             <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}>
               ←
@@ -257,7 +294,10 @@ const MultiDayScheduleSelector = ({
               const dateStr = dayObj.date.toISOString().split('T')[0];
               const isSaturday = dayObj.date.getDay() === 6;
               const isBlockedByType = lockedToSaturday !== null && (lockedToSaturday ? !isSaturday : isSaturday);
-              const isAvailable = dayObj.isCurrentMonth && availableDatesSet.has(dateStr) && !isBlockedByType;
+              const dayNameKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+              const dayName = dayNameKeys[dayObj.date.getDay()];
+              const isBlockedByDuplicate = frequency > 1 && usedDaysOfWeek.has(dayName);
+              const isAvailable = dayObj.isCurrentMonth && availableDatesSet.has(dateStr) && !isBlockedByType && !isBlockedByDuplicate;
               const isSelected = tempSelectedDate === dateStr;
               const isPast = dayObj.date < new Date(new Date().setHours(0, 0, 0, 0));
 
@@ -266,6 +306,7 @@ const MultiDayScheduleSelector = ({
                   key={index}
                   type="button"
                   className={`calendar-day ${!dayObj.isCurrentMonth ? 'other-month' : ''} ${isAvailable ? 'available' : ''} ${isSelected ? 'selected' : ''}`}
+                  title={isBlockedByDuplicate ? 'Ya elegiste este día en otra clase semanal' : undefined}
                   onClick={() => {
                     if (!isAvailable || isPast) return;
                     setTempSelectedDate(dateStr);

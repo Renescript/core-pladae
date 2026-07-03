@@ -3,6 +3,7 @@ import { getWeeklyPlans } from '../../services/api';
 import './SimplifiedPlanConfigurator.css';
 
 const SimplifiedPlanConfigurator = ({
+  technique,
   frequency,
   onFrequencyChange,
   onPlanSelect,
@@ -30,8 +31,17 @@ const SimplifiedPlanConfigurator = ({
     loadWeeklyPlans();
   }, []);
 
+  // Cantidad máxima de veces/semana que el taller elegido permite: días únicos con clase.
+  // Si el taller tiene solo 1 día con clases, no ofrecemos planes de 2+ veces/semana.
+  const maxWeeklyClasses = technique?.schedules
+    ? new Set(technique.schedules.map(s => s.day)).size
+    : Infinity;
+
   const trialClass = weeklyPlans.find(plan => plan.event_type === 'trial');
-  const regularPlans = weeklyPlans.filter(plan => plan.event_type === null).sort((a, b) => a.weekly_classes - b.weekly_classes);
+  const regularPlans = weeklyPlans
+    .filter(plan => plan.event_type === null)
+    .filter(plan => plan.weekly_classes <= maxWeeklyClasses)
+    .sort((a, b) => a.weekly_classes - b.weekly_classes);
 
   const scrollToActions = () => {
     setTimeout(() => {
