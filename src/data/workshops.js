@@ -116,10 +116,6 @@ export const workshops = [
     schedule: [
       { day: 'Miércoles', time: '18:00 – 20:00' },
     ],
-    customPricing: [
-      { id: 'trial-1', plan: 'Clase de prueba', number_of_classes: 1, weekly_classes: 1, price: 7000, saturday_price: 7000, event_type: 'trial' },
-      { id: 4, plan: '4 clases', number_of_classes: 4, weekly_classes: 1, price: 45000, saturday_price: 45000, event_type: null },
-    ],
     category: 'Escultura',
   },
   {
@@ -188,14 +184,6 @@ export const workshops = [
     schedule: [
       { day: 'Lunes', time: '18:00 – 20:00' },
       { day: 'Jueves', time: '15:30 – 17:30' },
-    ],
-    customPricing: [
-      { id: 'trial-1', plan: 'Clase de prueba', number_of_classes: 1, weekly_classes: 1, price: 7000, saturday_price: null, event_type: 'trial' },
-      { id: 'single', plan: 'Clase única', number_of_classes: 1, weekly_classes: 1, price: 12000, saturday_price: null, event_type: 'single' },
-      { id: 4, plan: '4 clases', number_of_classes: 4, weekly_classes: 1, price: 40000, saturday_price: null, event_type: null },
-      { id: 8, plan: '8 clases', number_of_classes: 8, weekly_classes: 2, price: 72000, saturday_price: null, event_type: null },
-      { id: 12, plan: '12 clases', number_of_classes: 12, weekly_classes: 3, price: 102000, saturday_price: null, event_type: null },
-      { id: 16, plan: '16 clases', number_of_classes: 16, weekly_classes: 4, price: 128000, saturday_price: null, event_type: null },
     ],
     category: 'Dibujo',
   },

@@ -123,7 +123,7 @@ const HorariosGrid = ({ onVerTarifas, onInscribirse, showActions = true }) => {
 
   const handleVerTarifas = () => {
     if (onVerTarifas) return onVerTarifas();
-    navigate('/precios');
+    navigate('/valores');
   };
 
   const handleInscribirse = () => {
@@ -155,7 +155,7 @@ const HorariosGrid = ({ onVerTarifas, onInscribirse, showActions = true }) => {
         {showActions && (
           <div className="horarios-actions">
             <button type="button" className="horarios-cta" onClick={handleVerTarifas}>
-              VER TARIFAS
+              VER VALORES
             </button>
             <button
               type="button"

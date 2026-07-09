@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import LandingPage from './pages/LandingPage';
 import WorkshopPage from './pages/WorkshopPage';
@@ -154,7 +154,8 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/talleres/:slug" element={<WorkshopPage />} />
-          <Route path="/precios" element={<PreciosPage />} />
+          <Route path="/valores" element={<PreciosPage />} />
+          <Route path="/precios" element={<Navigate to="/valores" replace />} />
           <Route path="/horario" element={<HorarioPage />} />
           <Route path="/enrollment" element={<EnrollmentPage />} />
           <Route path="/copy-enrollment" element={<CopyEnrollmentPage />} />

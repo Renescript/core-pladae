@@ -48,8 +48,8 @@ const Hero = ({ onInscripcionClick }) => {
           <a className="hero-cta" href="#courses">
             INFORMACIÓN TALLERES
           </a>
-          <a className="hero-cta" href="/precios">
-            PRECIOS DE TALLERES
+          <a className="hero-cta" href="/valores">
+            VALORES DE PLANES
           </a>
           <a className="hero-cta" href="/horario">
             HORARIO GENERAL

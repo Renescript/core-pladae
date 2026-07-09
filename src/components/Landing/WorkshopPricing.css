@@ -53,9 +53,21 @@
 
 .pricing-row {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
   align-items: center;
   border-bottom: 1px solid #e2e8f0;
+}
+
+.pricing-row--cols-2 {
+  grid-template-columns: 1.4fr 1fr;
+}
+
+.pricing-row--cols-3 {
+  grid-template-columns: 1.4fr 1fr 1fr;
+}
+
+.pricing-row--cols-4 {
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
 }
 
 .pricing-row:last-child {
@@ -102,6 +114,65 @@
 .pricing-cell-sub {
   font-size: 0.8rem;
   color: #6b7280;
+}
+
+.pricing-mixto-note__wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.pricing-mixto-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  max-width: 560px;
+  padding: 1rem 1.25rem;
+  background-color: color-mix(in srgb, var(--color-primary, #47a1bf) 6%, white);
+  border-radius: 14px;
+  font-family: 'Work Sans', sans-serif;
+  color: #4a5568;
+}
+
+.pricing-mixto-note__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background-color: var(--color-primary, #47a1bf);
+  color: white;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.pricing-mixto-note__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-align: left;
+}
+
+.pricing-mixto-note__title {
+  margin: 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.pricing-mixto-note__text {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: #4a5568;
+}
+
+.pricing-mixto-note__text strong {
+  color: #1a1a1a;
+  font-weight: 600;
 }
 
 .pricing-price {
@@ -167,6 +238,9 @@
   }
   .pricing-cell:nth-child(3)::before {
     content: 'Sábado';
+  }
+  .pricing-cell:nth-child(4)::before {
+    content: 'Mixto';
   }
   .pricing-cell--plan::before {
     content: '';

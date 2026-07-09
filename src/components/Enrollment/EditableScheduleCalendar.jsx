@@ -90,7 +90,7 @@ const EditableScheduleCalendar = ({
               className="edit-dates-btn"
               onClick={() => setIsEditing(!isEditing)}
             >
-              {isEditing ? 'Ocultar editor' : 'Editar fechas'}
+              {isEditing ? 'Ocultar editor' : 'Editar recuperaciones'}
             </button>
           </div>
           <div className="dates-grid">

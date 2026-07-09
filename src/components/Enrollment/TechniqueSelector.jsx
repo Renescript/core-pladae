@@ -87,7 +87,7 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
           className="technique-info-btn"
           onClick={() => setOpenDrawer('precios')}
         >
-          Ver Tarifas
+          Ver valores
         </button>
         <button
           type="button"
@@ -101,12 +101,13 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
       <InfoDrawer
         open={openDrawer === 'precios'}
         onClose={() => setOpenDrawer(null)}
-        title="Tarifas"
+        title="Valores de planes"
       >
         <WorkshopPricing
           showHeader={false}
           showActions={false}
           courseTitle={selectedTechnique?.name || null}
+          workshopSchedule={selectedTechnique?.schedules || null}
         />
       </InfoDrawer>
 
