@@ -1,7 +1,67 @@
 import { useState, useEffect } from 'react';
+import { getSectionCalendar } from '../../services/api';
 
-const EditableClassList = ({ classDates, availableDates, selectedSchedules, onClassDatesChange, onValidationChange }) => {
+const EditableClassList = ({
+  classDates,
+  originalClassDates,
+  availableDates,
+  selectedSchedules,
+  onClassDatesChange,
+  onValidationChange,
+  onClose
+}) => {
   const [expandedClass, setExpandedClass] = useState(null);
+  const [fallbackDates, setFallbackDates] = useState([]);
+
+  // Si availableDates viene vacío (ej. draft recargado), refetch desde las secciones
+  useEffect(() => {
+    if (availableDates && availableDates.length > 0) return;
+    if (!selectedSchedules || selectedSchedules.length === 0) return;
+
+    const sectionIds = [...new Set(selectedSchedules.map(s => s.sectionId).filter(Boolean))];
+    if (sectionIds.length === 0) return;
+
+    let cancelled = false;
+    Promise.all(sectionIds.map(id => getSectionCalendar(id).catch(() => [])))
+      .then(results => {
+        if (cancelled) return;
+        const seen = new Set();
+        const combined = [];
+        results.flat().forEach(entry => {
+          const dateStr = entry.date || entry;
+          if (dateStr && !seen.has(dateStr)) {
+            seen.add(dateStr);
+            combined.push({ date: dateStr });
+          }
+        });
+        setFallbackDates(combined);
+      });
+
+    return () => { cancelled = true; };
+  }, [availableDates, selectedSchedules]);
+
+  const effectiveAvailableDates = (availableDates && availableDates.length > 0)
+    ? availableDates
+    : fallbackDates;
+
+  const original = originalClassDates && originalClassDates.length > 0
+    ? originalClassDates
+    : classDates;
+
+  // Contador de recuperaciones: 1 recuperación cada 4 clases del plan
+  const maxRecoveries = Math.max(1, Math.floor(classDates.length / 4));
+  const usedRecoveries = classDates.reduce((acc, date, idx) => {
+    return acc + (original[idx] && original[idx] !== date ? 1 : 0);
+  }, 0);
+  const remainingRecoveries = Math.max(0, maxRecoveries - usedRecoveries);
+
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const isPastDate = (dateStr) => {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d < startOfToday;
+  };
 
   // Detectar fechas duplicadas
   const findDuplicates = () => {
@@ -25,17 +85,16 @@ const EditableClassList = ({ classDates, availableDates, selectedSchedules, onCl
   }, [hasDuplicates, onValidationChange]);
 
   const getAvailableDatesForDay = () => {
-    if (!availableDates || availableDates.length === 0) return [];
+    if (!effectiveAvailableDates || effectiveAvailableDates.length === 0) return [];
 
-    const today = new Date();
     const oneMonthFromNow = new Date();
     oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
 
-    return availableDates
+    return effectiveAvailableDates
       .map(d => d.date || d)
       .filter(dateStr => {
         const date = new Date(dateStr + 'T00:00:00');
-        return date >= today && date <= oneMonthFromNow;
+        return date >= startOfToday && date <= oneMonthFromNow;
       })
       .sort((a, b) => new Date(a) - new Date(b));
   };
@@ -60,13 +119,12 @@ const EditableClassList = ({ classDates, availableDates, selectedSchedules, onCl
   const getTimeSlotForDate = (dateStr) => {
     if (!selectedSchedules || selectedSchedules.length === 0) return null;
 
-    // Si solo hay un horario, usarlo para todas las fechas
     if (selectedSchedules.length === 1) {
       return selectedSchedules[0]?.timeSlot || null;
     }
 
     const dateObj = new Date(dateStr + 'T00:00:00');
-    const dayOfWeek = dateObj.getDay(); // 0=domingo, 1=lunes, etc.
+    const dayOfWeek = dateObj.getDay();
 
     const dayMap = {
       0: 'sunday', 1: 'monday', 2: 'tuesday', 3: 'wednesday',
@@ -78,60 +136,118 @@ const EditableClassList = ({ classDates, availableDates, selectedSchedules, onCl
       s.dayOfWeek?.toLowerCase() === dayName
     );
 
-    // Si no encuentra por día, devolver el primer horario disponible
     return schedule?.timeSlot || selectedSchedules[0]?.timeSlot || null;
   };
 
+  const noRecoveriesLeft = remainingRecoveries <= 0;
+
   return (
-    <div className="editable-list">
+    <div className="recovery-panel">
+      <header className="recovery-header">
+        {onClose && (
+          <button
+            type="button"
+            className="recovery-back"
+            onClick={onClose}
+            aria-label="Volver"
+          >
+            ←
+          </button>
+        )}
+        <h3 className="recovery-title">Recuperar clases</h3>
+        <span className="recovery-header-spacer" aria-hidden="true" />
+      </header>
+
+      <div className="recovery-info">
+        <span className="recovery-info__icon" aria-hidden="true">i</span>
+        <div className="recovery-info__body">
+          <strong>Los cambios de fecha son únicamente para recuperar clases perdidas.</strong>
+          <span>Solo puedes modificar clases futuras. Las clases pasadas no pueden modificarse.</span>
+        </div>
+      </div>
+
+      <div className="recovery-counter">
+        <span className="recovery-counter__icon" aria-hidden="true">⟳</span>
+        <div className="recovery-counter__body">
+          <strong>Recuperaciones disponibles</strong>
+          <span>Has utilizado {usedRecoveries} de {maxRecoveries} recuperaciones permitidas.</span>
+        </div>
+        <span className={`recovery-counter__pill ${noRecoveriesLeft ? 'recovery-counter__pill--full' : ''}`}>
+          {usedRecoveries} de {maxRecoveries}
+        </span>
+      </div>
+
       {hasDuplicates && (
         <div className="edit-warning">
           Hay fechas duplicadas. Por favor, ajústalas antes de continuar.
         </div>
       )}
 
-      <div className="edit-classes">
+      <p className="recovery-list-title">Selecciona la clase que deseas recuperar</p>
+
+      <div className="recovery-classes">
         {classDates.map((date, index) => {
           const isExpanded = expandedClass === index;
           const isDuplicate = duplicateIndices.has(index);
+          const past = isPastDate(date);
           const { day, month, weekday } = formatDateShort(date);
           const timeSlot = getTimeSlotForDate(date);
+          const isChanged = original[index] && original[index] !== date;
+          const canChange = !past && (!noRecoveriesLeft || isChanged);
 
           return (
-            <div key={index} className={`edit-class-row ${isDuplicate ? 'duplicate' : ''}`}>
-              <div className="edit-class-info">
-                <span className="edit-class-number">Clase {index + 1}</span>
-                <span className="edit-class-date">{weekday} {day} {month}</span>
-                {timeSlot && <span className="edit-class-time">{timeSlot}</span>}
+            <div
+              key={index}
+              className={`recovery-class ${past ? 'recovery-class--past' : ''} ${isDuplicate ? 'recovery-class--duplicate' : ''} ${!past ? 'recovery-class--active' : ''}`}
+            >
+              <div className="recovery-class__label">Clase {index + 1}</div>
+              <div className="recovery-class__date">
+                <span className="recovery-class__weekday">{weekday} {day}</span>
+                <span className="recovery-class__month">{month}</span>
               </div>
-              <button
-                type="button"
-                className="edit-class-btn"
-                onClick={() => setExpandedClass(isExpanded ? null : index)}
-              >
-                {isExpanded ? 'Cancelar' : 'Cambiar'}
-              </button>
+              <div className="recovery-class__time">
+                {timeSlot ? timeSlot.replace('-', '–') : '—'}
+              </div>
+              <div className="recovery-class__action">
+                {past ? (
+                  <span className="recovery-class__past-tag">
+                    <span aria-hidden="true">🔒</span>
+                    <span>Pasada<br />No disponible</span>
+                  </span>
+                ) : canChange ? (
+                  <button
+                    type="button"
+                    className="recovery-class__change-btn"
+                    onClick={() => setExpandedClass(isExpanded ? null : index)}
+                  >
+                    {isExpanded ? 'Cancelar' : 'Cambiar'} <span aria-hidden="true">›</span>
+                  </button>
+                ) : (
+                  <span className="recovery-class__disabled-tag" title="No te quedan recuperaciones disponibles">
+                    Sin cupo
+                  </span>
+                )}
+              </div>
 
               {isExpanded && (
-                <div className="edit-dates-options">
+                <div className="recovery-class__options">
                   {(() => {
                     const currentDateObj = new Date(date + 'T00:00:00');
                     const currentDayOfWeek = currentDateObj.getDay();
                     const isCurrentSaturday = currentDayOfWeek === 6;
 
-                    // Filtrar fechas según el tipo de día
                     const filteredDates = availableDatesForDay.filter(availableDate => {
                       const availableDateObj = new Date(availableDate + 'T00:00:00');
                       const availableDayOfWeek = availableDateObj.getDay();
-                      const isAvailableSaturday = availableDayOfWeek === 6;
+                      const isWeekday = availableDayOfWeek >= 1 && availableDayOfWeek <= 5;
+                      const isSaturday = availableDayOfWeek === 6;
 
-                      // Si es sábado, solo mostrar sábados
-                      // Si es día de semana, solo mostrar días de semana (lun-vie)
+                      // Si la clase actual es sábado → permitir sábado o días de semana
+                      // Si es día de semana → solo días de semana
                       if (isCurrentSaturday) {
-                        return isAvailableSaturday;
-                      } else {
-                        return availableDayOfWeek >= 1 && availableDayOfWeek <= 5;
+                        return isSaturday || isWeekday;
                       }
+                      return isWeekday;
                     });
 
                     if (filteredDates.length === 0) {
@@ -140,7 +256,7 @@ const EditableClassList = ({ classDates, availableDates, selectedSchedules, onCl
 
                     return filteredDates.map((availableDate) => {
                       const isCurrentDate = availableDate === date;
-                      const isPast = new Date(availableDate) < new Date(new Date().setHours(0, 0, 0, 0));
+                      const isPast = new Date(availableDate) < startOfToday;
                       const isAlreadySelected = !isCurrentDate && classDates.includes(availableDate);
                       const isDisabled = isPast || isAlreadySelected;
                       const { day: d, month: m, weekday: w } = formatDateShort(availableDate);
@@ -168,6 +284,17 @@ const EditableClassList = ({ classDates, availableDates, selectedSchedules, onCl
           );
         })}
       </div>
+
+      <div className="recovery-footer-note">
+        <span className="recovery-footer-note__icon" aria-hidden="true">★</span>
+        <span>Al cambiar, solo verás horarios con cupos disponibles.</span>
+      </div>
+
+      {onClose && (
+        <button type="button" className="recovery-close-btn" onClick={onClose}>
+          Volver
+        </button>
+      )}
     </div>
   );
 };

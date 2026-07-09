@@ -19,7 +19,14 @@ const computeDiscount = (basePricePerClass, planPrice, numClasses) => {
 const isNonMonthly = (plan) =>
   plan.event_type === 'trial' || plan.event_type === 'single';
 
-const WorkshopPricing = ({ customPlans = null, showHeader = true, showActions = true }) => {
+const normalizeName = (s) =>
+  (s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .trim();
+
+const WorkshopPricing = ({ customPlans = null, courseTitle = null, showHeader = true, showActions = true }) => {
   const navigate = useNavigate();
   const [plans, setPlans] = useState(customPlans || []);
   const [loading, setLoading] = useState(!customPlans);
@@ -47,7 +54,11 @@ const WorkshopPricing = ({ customPlans = null, showHeader = true, showActions = 
   }, [customPlans]);
 
   const { nonMonthly, monthlyPlans, baseWeekday, baseSaturday } = useMemo(() => {
-    const clean = plans.filter((p) => p.event_type !== 'special_event');
+    const titleKey = normalizeName(courseTitle);
+    const scoped = titleKey
+      ? plans.filter((p) => normalizeName(p.course_title) === titleKey)
+      : plans;
+    const clean = scoped.filter((p) => p.event_type !== 'special_event');
     const monthly = clean
       .filter((p) => !isNonMonthly(p))
       .sort((a, b) => a.number_of_classes - b.number_of_classes);
@@ -59,7 +70,7 @@ const WorkshopPricing = ({ customPlans = null, showHeader = true, showActions = 
       baseWeekday: base ? base.price / 4 : 0,
       baseSaturday: base ? base.saturday_price / 4 : 0,
     };
-  }, [plans]);
+  }, [plans, courseTitle]);
 
   if (loading) {
     return <p className="pricing-loading">Cargando planes…</p>;

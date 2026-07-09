@@ -8,6 +8,7 @@ const EditableScheduleCalendar = ({
   selectedSchedules,
   durationMonths,
   classDates,
+  originalClassDates,
   availableDates,
   onClassDatesChange,
   onValidationChange,
@@ -111,10 +112,12 @@ const EditableScheduleCalendar = ({
       {isEditing && (
         <EditableClassList
           classDates={classDates}
+          originalClassDates={originalClassDates}
           availableDates={availableDates}
           selectedSchedules={selectedSchedules}
           onClassDatesChange={onClassDatesChange}
           onValidationChange={onValidationChange}
+          onClose={() => setIsEditing(false)}
         />
       )}
 

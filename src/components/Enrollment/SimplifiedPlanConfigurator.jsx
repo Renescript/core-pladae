@@ -2,6 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { getWeeklyPlans } from '../../services/api';
 import './SimplifiedPlanConfigurator.css';
 
+const normalizeName = (s) =>
+  (s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .trim();
+
 const SimplifiedPlanConfigurator = ({
   technique,
   frequency,
@@ -37,8 +44,13 @@ const SimplifiedPlanConfigurator = ({
     ? new Set(technique.schedules.map(s => s.day)).size
     : Infinity;
 
-  const trialClass = weeklyPlans.find(plan => plan.event_type === 'trial');
-  const regularPlans = weeklyPlans
+  const techniqueKey = normalizeName(technique?.name);
+  const plansForTechnique = techniqueKey
+    ? weeklyPlans.filter(p => normalizeName(p.course_title) === techniqueKey)
+    : weeklyPlans;
+
+  const trialClass = plansForTechnique.find(plan => plan.event_type === 'trial');
+  const regularPlans = plansForTechnique
     .filter(plan => plan.event_type === null)
     .filter(plan => plan.weekly_classes <= maxWeeklyClasses)
     .sort((a, b) => a.weekly_classes - b.weekly_classes);

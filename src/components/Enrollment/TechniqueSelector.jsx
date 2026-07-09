@@ -70,6 +70,17 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
         ))}
       </div>
 
+      <div className="step-actions step-actions--primary">
+        <button
+          type="button"
+          className="btn-primary"
+          onClick={handleContinue}
+          disabled={!selectedTechnique}
+        >
+          Continuar
+        </button>
+      </div>
+
       <div className="technique-info-actions">
         <button
           type="button"
@@ -87,23 +98,16 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
         </button>
       </div>
 
-      <div className="step-actions">
-        <button
-          type="button"
-          className="btn-primary"
-          onClick={handleContinue}
-          disabled={!selectedTechnique}
-        >
-          Continuar
-        </button>
-      </div>
-
       <InfoDrawer
         open={openDrawer === 'precios'}
         onClose={() => setOpenDrawer(null)}
         title="Tarifas"
       >
-        <WorkshopPricing showHeader={false} showActions={false} />
+        <WorkshopPricing
+          showHeader={false}
+          showActions={false}
+          courseTitle={selectedTechnique?.name || null}
+        />
       </InfoDrawer>
 
       <InfoDrawer

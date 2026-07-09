@@ -76,7 +76,8 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
   const [selectedSchedules, setSelectedSchedules] = useState(savedDraft?.selectedSchedules || []);
   const [durationMonths, setDurationMonths] = useState(savedDraft?.durationMonths || null);
   const [classDates, setClassDates] = useState(savedDraft?.classDates || []);
-  const [availableDates, setAvailableDates] = useState([]);
+  const [originalClassDates, setOriginalClassDates] = useState(savedDraft?.originalClassDates || []);
+  const [availableDates, setAvailableDates] = useState(savedDraft?.availableDates || []);
   const [isCalendarValid, setIsCalendarValid] = useState(true);
   const [paymentPeriods, setPaymentPeriods] = useState([]);
   const [studentData, setStudentData] = useState(savedDraft?.studentData || {
@@ -224,6 +225,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
 
     console.log(`✅ Generadas ${allDates.length} fechas de clases:`, allDates);
     setClassDates(allDates);
+    setOriginalClassDates(allDates);
   };
 
   // Guardar draft con debounce para evitar escrituras frecuentes
@@ -243,6 +245,8 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
           selectedSchedules,
           durationMonths,
           classDates,
+          originalClassDates,
+          availableDates,
           studentData,
           paymentMethod
         });
@@ -655,6 +659,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
               selectedSchedules={selectedSchedules}
               durationMonths={durationMonths}
               classDates={classDates}
+              originalClassDates={originalClassDates}
               availableDates={availableDates}
               onClassDatesChange={setClassDates}
               onValidationChange={setIsCalendarValid}

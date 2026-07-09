@@ -43,40 +43,52 @@ html {
   }
 }
 
+/* CTA principal del paso 1 (elevado sobre los info-actions) */
+.step-actions.step-actions--primary {
+  justify-content: flex-end;
+  padding-top: 0;
+  margin-top: var(--space-6, 1.5rem);
+}
+
+.step-actions.step-actions--primary .btn-primary {
+  min-width: 220px;
+}
+
 /* Botones "Ver Tarifas" y "Ver Horario" */
 .technique-info-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-3, 0.75rem);
-  margin-top: var(--space-6, 1.5rem);
+  margin-top: var(--space-5, 1.25rem);
 }
 
 .technique-info-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.85rem 1rem;
+  padding: 0.7rem 1rem;
   border-radius: var(--radius-md, 10px);
-  background-color: var(--color-charcoal, #1f2933);
-  color: white;
+  background-color: color-mix(in srgb, var(--color-charcoal, #1f2933) 4%, white);
+  border: 1px solid color-mix(in srgb, var(--color-charcoal, #1f2933) 18%, transparent);
+  color: var(--color-charcoal, #1f2933);
   text-decoration: none;
   font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 550;
+  letter-spacing: 0.01em;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
 }
 
 .technique-info-btn:visited,
 .technique-info-btn:active,
 .technique-info-btn:focus {
-  color: white;
+  color: var(--color-charcoal, #1f2933);
 }
 
 .technique-info-btn:hover {
-  background-color: #2d3d4d;
-  color: white;
-  transform: translateY(-1px);
+  border-color: var(--color-primary, #47a1bf);
+  color: var(--color-primary, #47a1bf);
+  background-color: color-mix(in srgb, var(--color-primary, #47a1bf) 5%, transparent);
 }
 
 /* ========================================

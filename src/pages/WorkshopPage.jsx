@@ -211,7 +211,10 @@ const WorkshopPage = () => {
 
       </section>
 
-      <WorkshopPricing customPlans={workshop.customPricing || null} />
+      <WorkshopPricing
+        customPlans={workshop.customPricing || null}
+        courseTitle={workshop.customPricing ? null : workshop.name}
+      />
     </main>
   );
 };

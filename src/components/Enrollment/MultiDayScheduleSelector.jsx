@@ -84,14 +84,6 @@ const MultiDayScheduleSelector = ({
     setAvailableTimeSlots(slots);
   }, [tempSelectedDate, technique]);
 
-  // Determinar si ya se eligió sábado o día de semana en cualquier día
-  const lockedToSaturday = useMemo(() => {
-    if (frequency <= 1) return null;
-    const anyCompleted = selectedSchedules.find(s => s && s.dayOfWeek);
-    if (!anyCompleted) return null;
-    return anyCompleted.dayOfWeek === 'saturday';
-  }, [selectedSchedules, frequency]);
-
   // Días de la semana ya "gastados" por otros currentDayIndex (para bloquear en el calendario).
   // Cuando el plan es N×semana los N slots deben caer en días distintos.
   const usedDaysOfWeek = useMemo(() => {
@@ -195,10 +187,33 @@ const MultiDayScheduleSelector = ({
     saturday: 'Sáb'
   };
 
+  const dayLabelsLong = {
+    sunday: 'Domingo',
+    monday: 'Lunes',
+    tuesday: 'Martes',
+    wednesday: 'Miércoles',
+    thursday: 'Jueves',
+    friday: 'Viernes',
+    saturday: 'Sábado'
+  };
+
+  const ordinalsMasc = ['primer', 'segundo', 'tercer', 'cuarto', 'quinto', 'sexto', 'séptimo'];
+  const ordinalsMascFull = ['primero', 'segundo', 'tercero', 'cuarto', 'quinto', 'sexto', 'séptimo'];
+
   const formatShortDate = (dateStr) => {
     const date = new Date(dateStr + 'T00:00:00');
     return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
   };
+
+  const lastCompletedIndex = useMemo(() => {
+    let last = -1;
+    for (let i = 0; i < frequency; i++) {
+      if (selectedSchedules[i] && selectedSchedules[i].date && selectedSchedules[i].timeSlot) {
+        last = i;
+      }
+    }
+    return last;
+  }, [selectedSchedules, frequency]);
 
   if (loading) {
     return <div className="step-container"><p>Cargando fechas...</p></div>;
@@ -207,9 +222,11 @@ const MultiDayScheduleSelector = ({
   return (
     <div className="step-container">
       <div className="step-header">
-        <h2>¿Cuándo quieres empezar?</h2>
-        {frequency === 1 && (
+        <h2>{frequency > 1 ? 'Define tu horario' : '¿Cuándo quieres empezar?'}</h2>
+        {frequency === 1 ? (
           <p className="step-description">Elige la fecha en que quieres comenzar y el horario que más te acomode.</p>
+        ) : (
+          <p className="step-description">Selecciona los {frequency} horarios que asistirás cada semana.</p>
         )}
       </div>
 
@@ -234,7 +251,7 @@ const MultiDayScheduleSelector = ({
                     </span>
                   ) : (
                     <span className="day-tab-empty">
-                      Día {index + 1}
+                      Horario {index + 1}
                     </span>
                   )}
                 </button>
@@ -244,10 +261,40 @@ const MultiDayScheduleSelector = ({
         </div>
       )}
 
+      {frequency > 1 && lastCompletedIndex >= 0 && (() => {
+        const lastSchedule = selectedSchedules[lastCompletedIndex];
+        const allDone = lastCompletedIndex === frequency - 1;
+        const nextOrdinal = allDone ? null : ordinalsMascFull[lastCompletedIndex + 1];
+        return (
+          <div className="horario-confirmation" role="status" aria-live="polite">
+            <span className="horario-confirmation__icon" aria-hidden="true">✓</span>
+            <div className="horario-confirmation__body">
+              <strong className="horario-confirmation__title">
+                Ya definiste tu {ordinalsMasc[lastCompletedIndex]} horario: {dayLabelsLong[lastSchedule.dayOfWeek]} {lastSchedule.timeSlot.replace('-', ' – ')} hrs.
+              </strong>
+              {!allDone && (
+                <span className="horario-confirmation__hint">Ahora elige el {nextOrdinal}.</span>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
+      {frequency > 1 && (
+        <div className="horario-info-note">
+          <span className="horario-info-note__icon" aria-hidden="true">📅</span>
+          <p>
+            Este horario se repetirá automáticamente cada semana.
+            <br />
+            <strong>{frequency} clases por semana = {frequency * 4} clases mensuales.</strong>
+          </p>
+        </div>
+      )}
+
       <div className="datetime-grid">
         <div className="calendar-section">
           <h3>{frequency > 1
-            ? `Selecciona la fecha de tu ${currentDayIndex === 0 ? 'primera' : currentDayIndex === 1 ? 'segunda' : currentDayIndex === 2 ? 'tercera' : `${currentDayIndex + 1}ª`} clase semanal`
+            ? `Selecciona la fecha de tu ${currentDayIndex === 0 ? 'primer' : currentDayIndex === 1 ? 'segundo' : currentDayIndex === 2 ? 'tercer' : `${currentDayIndex + 1}º`} horario semanal`
             : '1. Selecciona fecha'
           }</h3>
           {frequency > 1 && (
@@ -256,20 +303,25 @@ const MultiDayScheduleSelector = ({
                 const s = selectedSchedules[idx];
                 const isCurrent = idx === currentDayIndex;
                 const isDone = s && s.dayOfWeek && s.timeSlot;
+                let statusLabel;
                 let statusText;
                 if (isDone) {
-                  statusText = `${dayLabels[s.dayOfWeek]} · ${s.timeSlot.replace('-', ' – ')} hrs elegido`;
+                  statusLabel = 'Fijado';
+                  statusText = `${dayLabelsLong[s.dayOfWeek]} ${s.timeSlot.replace('-', ' – ')} hrs.`;
                 } else if (isCurrent) {
-                  statusText = 'eligiendo…';
+                  statusLabel = 'Paso actual';
+                  statusText = 'Eligiendo en el calendario…';
                 } else {
-                  statusText = 'pendiente';
+                  statusLabel = 'Pendiente';
+                  statusText = null;
                 }
                 return (
                   <li
                     key={idx}
                     className={`calendar-summary-item ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''}`}
                   >
-                    <strong>Día {idx + 1}:</strong> {statusText}
+                    <strong>Horario {idx + 1} ({statusLabel}){statusText ? ':' : ''}</strong>
+                    {statusText && ` ${statusText}`}
                   </li>
                 );
               })}
@@ -292,12 +344,10 @@ const MultiDayScheduleSelector = ({
           <div className="calendar-days">
             {days.map((dayObj, index) => {
               const dateStr = dayObj.date.toISOString().split('T')[0];
-              const isSaturday = dayObj.date.getDay() === 6;
-              const isBlockedByType = lockedToSaturday !== null && (lockedToSaturday ? !isSaturday : isSaturday);
               const dayNameKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
               const dayName = dayNameKeys[dayObj.date.getDay()];
               const isBlockedByDuplicate = frequency > 1 && usedDaysOfWeek.has(dayName);
-              const isAvailable = dayObj.isCurrentMonth && availableDatesSet.has(dateStr) && !isBlockedByType && !isBlockedByDuplicate;
+              const isAvailable = dayObj.isCurrentMonth && availableDatesSet.has(dateStr) && !isBlockedByDuplicate;
               const isSelected = tempSelectedDate === dateStr;
               const isPast = dayObj.date < new Date(new Date().setHours(0, 0, 0, 0));
 
