@@ -11,6 +11,7 @@ const MultiDayScheduleSelector = ({
   onBack
 }) => {
   const [allAvailableDates, setAllAvailableDates] = useState([]);
+  const [availabilityMap, setAvailabilityMap] = useState({}); // { [sectionId]: { [date]: { available, total } } }
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -32,12 +33,21 @@ const MultiDayScheduleSelector = ({
 
         const allSectionDates = await Promise.all(allDatesPromises);
         const uniqueDates = new Set();
+        const availBySection = {};
         allSectionDates.forEach(section => {
-          section.dates.forEach(dateObj => uniqueDates.add(dateObj.date));
+          availBySection[section.sectionId] = {};
+          section.dates.forEach(dateObj => {
+            uniqueDates.add(dateObj.date);
+            availBySection[section.sectionId][dateObj.date] = {
+              available: dateObj.available_places,
+              total: dateObj.total_places
+            };
+          });
         });
 
         const datesList = Array.from(uniqueDates).map(date => ({ date }));
         setAllAvailableDates(datesList);
+        setAvailabilityMap(availBySection);
         onAvailableDatesChange && onAvailableDatesChange(datesList);
       } catch (err) {
         console.error('Error al cargar fechas:', err);
@@ -71,18 +81,22 @@ const MultiDayScheduleSelector = ({
     const dayName = dayNames[selectedDate.getDay()];
 
     const matchingSchedules = technique.schedules.filter(schedule => schedule.day === dayName);
-    const slots = matchingSchedules.map(schedule => ({
-      id: schedule.timeSlot,
-      display: schedule.timeSlot.replace('-', ' – '),
-      teacher: schedule.teacher,
-      places: schedule.places,
-      available: schedule.available,
-      section: schedule.section,
-      dayOfWeek: dayName
-    }));
+    const slots = matchingSchedules.map(schedule => {
+      // Cupos reales para la fecha elegida (no el dato genérico de la sección)
+      const perDate = availabilityMap[schedule.section?.id]?.[tempSelectedDate];
+      return {
+        id: schedule.timeSlot,
+        display: schedule.timeSlot.replace('-', ' – '),
+        teacher: schedule.teacher,
+        places: perDate ? perDate.total : schedule.places,
+        available: perDate ? perDate.available : schedule.available,
+        section: schedule.section,
+        dayOfWeek: dayName
+      };
+    });
 
     setAvailableTimeSlots(slots);
-  }, [tempSelectedDate, technique]);
+  }, [tempSelectedDate, technique, availabilityMap]);
 
   // Días de la semana ya "gastados" por otros currentDayIndex (para bloquear en el calendario).
   // Cuando el plan es N×semana los N slots deben caer en días distintos.
@@ -392,16 +406,23 @@ const MultiDayScheduleSelector = ({
           {tempSelectedDate && availableTimeSlots.length === 0 && <p>No hay horarios disponibles</p>}
           {tempSelectedDate && availableTimeSlots.length > 0 && (
             <div className="timeslots-list">
-              {availableTimeSlots.map(slot => (
-                <button
-                  key={slot.id}
-                  type="button"
-                  className={`timeslot-btn ${tempSelectedTimeSlot === slot.id ? 'selected' : ''}`}
-                  onClick={() => handleTimeSlotSelect(slot.id)}
-                >
-                  {slot.display} - {slot.teacher}
-                </button>
-              ))}
+              {availableTimeSlots.map(slot => {
+                const slotFull = slot.available === 0;
+                return (
+                  <button
+                    key={slot.id}
+                    type="button"
+                    className={`timeslot-btn ${tempSelectedTimeSlot === slot.id ? 'selected' : ''} ${slotFull ? 'full' : ''}`}
+                    onClick={() => { if (!slotFull) handleTimeSlotSelect(slot.id); }}
+                    disabled={slotFull}
+                  >
+                    <span className="timeslot-main">{slot.display} - {slot.teacher}</span>
+                    <span className={`timeslot-cupos ${!slotFull && slot.available <= 3 ? 'limited' : ''}`}>
+                      {slotFull ? 'Sin cupos' : `${slot.available}/${slot.places} cupos`}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
