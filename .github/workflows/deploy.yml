@@ -1,0 +1,25 @@
+name: Deploy to Render
+
+# El webhook nativo Render <- GitHub no está enganchado en este repo, así que
+# disparamos el deploy nosotros: en cada push a main (o manualmente) se llama
+# al Deploy Hook del static site front-academia en Render.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy Hook
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "::error::Falta el repo secret RENDER_DEPLOY_HOOK_URL (Settings -> Secrets and variables -> Actions)."
+            exit 1
+          fi
+          echo "Disparando deploy en Render..."
+          curl -fsS -X POST "$HOOK"
+          echo "Deploy solicitado a Render OK."
