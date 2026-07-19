@@ -236,9 +236,9 @@ const MultiDayScheduleSelector = ({
   return (
     <div className="step-container">
       <div className="step-header">
-        <h2>{frequency > 1 ? 'Define tu horario' : '¿Cuándo quieres empezar?'}</h2>
+        <h2>Define tu horario</h2>
         {frequency === 1 ? (
-          <p className="step-description">Elige la fecha en que quieres comenzar y el horario que más te acomode.</p>
+          <p className="step-description">Elige el día y el horario de tu clase.</p>
         ) : (
           <p className="step-description">Selecciona los {frequency} horarios que asistirás cada semana.</p>
         )}
@@ -309,7 +309,7 @@ const MultiDayScheduleSelector = ({
         <div className="calendar-section">
           <h3>{frequency > 1
             ? `Selecciona la fecha de tu ${currentDayIndex === 0 ? 'primer' : currentDayIndex === 1 ? 'segundo' : currentDayIndex === 2 ? 'tercer' : `${currentDayIndex + 1}º`} horario semanal`
-            : '1. Selecciona fecha'
+            : 'Selecciona la fecha'
           }</h3>
           {frequency > 1 && (
             <ul className="calendar-summary">
@@ -401,7 +401,7 @@ const MultiDayScheduleSelector = ({
         </div>
 
         <div className={`timeslots-section ${!tempSelectedDate ? 'disabled' : 'active'}`}>
-          <h3>{frequency > 1 ? 'Selecciona horario' : '2. Selecciona horario'}</h3>
+          <h3>Selecciona horario</h3>
           {!tempSelectedDate && <p className="timeslot-hint">Selecciona una fecha en el calendario para ver los horarios disponibles</p>}
           {tempSelectedDate && availableTimeSlots.length === 0 && <p>No hay horarios disponibles</p>}
           {tempSelectedDate && availableTimeSlots.length > 0 && (
