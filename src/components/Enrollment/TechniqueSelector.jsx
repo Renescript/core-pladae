@@ -28,6 +28,7 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
   }, []);
 
   const handleSelectTechnique = (technique) => {
+    if (technique.active === false) return; // curso cerrado: no seleccionable
     onSelectTechnique(technique);
   };
 
@@ -55,19 +56,25 @@ const TechniqueSelector = ({ selectedTechnique, onSelectTechnique, onContinue })
 
       {/* Grilla de técnicas */}
       <div className="techniques-grid">
-        {techniques.map(technique => (
-          <button
-            key={technique.id}
-            type="button"
-            className={`technique-card ${selectedTechnique?.id === technique.id ? 'selected' : ''}`}
-            onClick={() => handleSelectTechnique(technique)}
-            style={{
-              '--technique-color': technique.color
-            }}
-          >
-            <span className="technique-name">{technique.name}</span>
-          </button>
-        ))}
+        {techniques.map(technique => {
+          const isClosed = technique.active === false;
+          return (
+            <button
+              key={technique.id}
+              type="button"
+              className={`technique-card ${selectedTechnique?.id === technique.id ? 'selected' : ''} ${isClosed ? 'closed' : ''}`}
+              onClick={() => handleSelectTechnique(technique)}
+              disabled={isClosed}
+              title={isClosed ? 'Inscripciones cerradas' : undefined}
+              style={{
+                '--technique-color': technique.color
+              }}
+            >
+              <span className="technique-name">{technique.name}</span>
+              {isClosed && <span className="technique-closed-badge">Inscripciones cerradas</span>}
+            </button>
+          );
+        })}
       </div>
 
       <div className="step-actions step-actions--primary">

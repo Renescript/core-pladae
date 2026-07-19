@@ -747,6 +747,7 @@ export const getCoursesSchedulesGrid = async () => {
             id: course.id,
             name: course.title,
             color: courseColor,
+            active: course.active !== false, // curso inactivo => inscripción cerrada en el front
             category: course.category || 'General',
             price_per_class: course.price_per_class || course.price || 7000,
             schedules: course.sections.flatMap(section => {

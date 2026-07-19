@@ -36,6 +36,22 @@ html {
   box-shadow: 0 4px 14px 0 color-mix(in srgb, var(--technique-color, var(--color-primary)) 25%, transparent);
 }
 
+.technique-card.closed {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(0.35);
+}
+
+.technique-closed-badge {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-error, #ef4444);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
 /* Técnicas: 2 por fila en móvil */
 @media (max-width: 768px) {
   .techniques-grid {
