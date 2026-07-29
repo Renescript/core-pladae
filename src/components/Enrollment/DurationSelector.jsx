@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { getPaymentPeriods } from '../../services/api';
+import { useEffect } from 'react';
 
 const DurationSelector = ({
   selectedDuration,
@@ -7,49 +6,32 @@ const DurationSelector = ({
   frequency,
   monthlyPrice,
   weeklyPlan,
+  paymentPeriods = [],
   onContinue,
   onBack
 }) => {
-  const [durationOptions, setDurationOptions] = useState([]);
-  const [loading, setLoading] = useState(true);
-
   const isTrialClass = weeklyPlan?.weekly_classes === 1 && weeklyPlan?.number_of_classes === 1;
 
+  // Clase de prueba: duración fija de 1 mes (no aplica elección de meses).
   useEffect(() => {
-    const loadPaymentPeriods = async () => {
-      try {
-        setLoading(true);
-        if (isTrialClass) {
-          setDurationOptions([]);
-          onDurationChange(1);
-          return;
-        }
-        const periods = await getPaymentPeriods();
-        setDurationOptions(periods);
-      } catch (error) {
-        console.error('Error al cargar períodos:', error);
-      } finally {
-        setLoading(false);
-      }
+    if (isTrialClass) onDurationChange(1);
+  }, [isTrialClass]);
+
+  const options = isTrialClass ? [] : paymentPeriods;
+
+  // El precio y el descuento (por cantidad TOTAL de clases) los calcula el back en
+  // `period.pricing`. Si aún no llegó, cae a un estimado local para no quedar en blanco.
+  const priceInfoFor = (period) => {
+    const p = period.pricing;
+    if (p) {
+      return { finalPrice: p.total, totalClasses: p.total_classes, discount: p.discount_percentage || 0 };
+    }
+    const months = period.months;
+    return {
+      finalPrice: Math.round((monthlyPrice || 0) * months),
+      totalClasses: (weeklyPlan?.number_of_classes || frequency * 4) * months,
+      discount: 0
     };
-
-    loadPaymentPeriods();
-  }, [monthlyPrice, isTrialClass]);
-
-  // Descuento por frecuencia (ya incluido en el precio del plan). El descuento por
-  // período (meses) se SUMA a este. Reconstruimos el precio "sin descuento" y aplicamos
-  // (frecuencia + período) sobre esa base, igual que el back (WeeklyPlan#calculate_final_price).
-  const freqDiscount = Number(weeklyPlan?.discount_percentage) || 0;
-
-  const calculatePriceInfo = (months, periodDiscountRaw) => {
-    const periodDiscount = Number(periodDiscountRaw) || 0;
-    const base = monthlyPrice || 0;
-    const undiscountedMonthly = freqDiscount < 100 ? base / (1 - freqDiscount / 100) : base;
-    const totalDiscount = freqDiscount + periodDiscount;
-    const subtotal = Math.round(undiscountedMonthly * months);
-    const finalPrice = Math.round(undiscountedMonthly * months * (1 - totalDiscount / 100));
-    const totalClasses = frequency * 4 * months;
-    return { subtotal, finalPrice, totalClasses, freqDiscount, periodDiscount, totalDiscount };
   };
 
   const handleContinue = () => {
@@ -59,10 +41,6 @@ const DurationSelector = ({
     }
     onContinue();
   };
-
-  if (loading) {
-    return <div className="step-container"><p>Cargando opciones...</p></div>;
-  }
 
   return (
     <div className="step-container">
@@ -74,10 +52,12 @@ const DurationSelector = ({
         <div className="trial-info">
           <p className="price">${monthlyPrice?.toLocaleString('es-CL')}</p>
         </div>
+      ) : options.length === 0 ? (
+        <p>Cargando opciones...</p>
       ) : (
         <div className="duration-grid">
-          {durationOptions.map((period) => {
-            const priceInfo = calculatePriceInfo(period.months, period.discount_percentage);
+          {options.map((period) => {
+            const info = priceInfoFor(period);
             const isSelected = selectedDuration === period.months;
 
             return (
@@ -88,19 +68,11 @@ const DurationSelector = ({
                 onClick={() => onDurationChange(period.months)}
               >
                 <span className="duration-months">{period.months} {period.months === 1 ? 'mes' : 'meses'}</span>
-                {priceInfo.totalDiscount > 0 && (
-                  <span className="discount">{priceInfo.totalDiscount}% OFF</span>
+                {info.discount > 0 && (
+                  <span className="discount">{info.discount}% OFF</span>
                 )}
-                {(priceInfo.freqDiscount > 0 || priceInfo.periodDiscount > 0) && (
-                  <span className="discount-breakdown">
-                    {[
-                      priceInfo.freqDiscount > 0 ? `${priceInfo.freqDiscount}% frecuencia` : null,
-                      priceInfo.periodDiscount > 0 ? `${priceInfo.periodDiscount}% período` : null
-                    ].filter(Boolean).join(' + ')}
-                  </span>
-                )}
-                <span className="total-classes">{priceInfo.totalClasses} clases</span>
-                <span className="price">${priceInfo.finalPrice.toLocaleString('es-CL')}</span>
+                <span className="total-classes">{info.totalClasses} clases</span>
+                <span className="price">${(info.finalPrice || 0).toLocaleString('es-CL')}</span>
               </button>
             );
           })}

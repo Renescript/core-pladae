@@ -834,13 +834,20 @@ export const getWeeklyPlans = async () => {
  * Obtiene los períodos de pago (meses con descuentos) desde la API
  * @returns {Promise<Array>} Lista de períodos de pago
  */
-export const getPaymentPeriods = async () => {
-  const cacheKey = 'paymentPeriods';
+export const getPaymentPeriods = async (weeklyPlanId = null, saturday = false) => {
+  // El precio/descuento de cada duración lo calcula el back por cantidad de clases
+  // (modelo ClassDiscount). Se pide con el plan (y sábado) para traer `pricing` por período.
+  const cacheKey = `paymentPeriods:${weeklyPlanId || 'none'}:${saturday ? 'sat' : 'wd'}`;
   const cached = getCachedData(cacheKey);
   if (cached) return cached;
 
   try {
-    const response = await fetchWithTimeout(`${API_BASE_URL}/payment_periods`, {
+    const qs = new URLSearchParams();
+    if (weeklyPlanId) qs.set('weekly_plan_id', weeklyPlanId);
+    if (saturday) qs.set('saturday', 'true');
+    const suffix = qs.toString() ? `?${qs.toString()}` : '';
+
+    const response = await fetchWithTimeout(`${API_BASE_URL}/payment_periods${suffix}`, {
       method: 'GET',
       headers: CACHEABLE_HEADERS
     });
@@ -852,12 +859,8 @@ export const getPaymentPeriods = async () => {
     const result = await response.json();
 
     if (result.success) {
-      const data = result.data.map(period => ({
-        ...period,
-        discount_percentage: parseFloat(period.discount_percentage) || 0
-      }));
-      setCachedData(cacheKey, data);
-      return data;
+      setCachedData(cacheKey, result.data);
+      return result.data;
     } else {
       throw new Error('La respuesta de la API no fue exitosa');
     }

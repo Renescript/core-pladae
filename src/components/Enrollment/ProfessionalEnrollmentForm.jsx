@@ -93,16 +93,18 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
 
   // Cargar períodos de pago al montar el componente
   useEffect(() => {
+    const saturday = selectedSchedules.some(s => s?.dayOfWeek === 'saturday');
     const loadPaymentPeriods = async () => {
       try {
-        const periods = await getPaymentPeriods();
+        // Trae el precio ya calculado por el back (por cantidad de clases) para este plan.
+        const periods = await getPaymentPeriods(weeklyPlan?.id || null, saturday);
         setPaymentPeriods(periods);
       } catch (error) {
         console.error('Error al cargar períodos de pago:', error);
       }
     };
     loadPaymentPeriods();
-  }, []);
+  }, [weeklyPlan?.id, selectedSchedules]);
 
   // Detectar si algún horario seleccionado cae en sábado
   const hasSaturdaySchedule = selectedSchedules.some(s => s?.dayOfWeek === 'saturday');
@@ -127,19 +129,23 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
   };
 
   const getDiscountPercentage = (months) => {
-    // Buscar el descuento en los períodos de pago cargados desde la API
+    // El descuento (por cantidad de clases) viene calculado desde el back en pricing.
     const period = paymentPeriods.find(p => p.months === months);
-    return period ? period.discount_percentage : 0;
+    return period?.pricing?.discount_percentage ?? 0;
   };
 
   const calculateFinalPrice = () => {
     if (!durationMonths || !frequency) return { subtotal: 0, discountPercent: 0, discountAmount: 0, finalPrice: 0, monthlyPrice: 0 };
 
     const monthlyPrice = calculateMonthlyPrice();
-    const subtotal = monthlyPrice * durationMonths;
-    const discountPercent = getDiscountPercentage(durationMonths);
-    const discountAmount = Math.round(subtotal * (discountPercent / 100));
-    const finalPrice = subtotal - discountAmount;
+    const period = paymentPeriods.find(p => p.months === durationMonths);
+    const pricing = period?.pricing;
+
+    // Fuente de verdad = precio del back (mismo que se cobra). Fallback local si aún no carga.
+    const subtotal = pricing?.subtotal ?? monthlyPrice * durationMonths;
+    const finalPrice = pricing?.total ?? subtotal;
+    const discountPercent = pricing?.discount_percentage ?? getDiscountPercentage(durationMonths);
+    const discountAmount = pricing?.discount_amount ?? (subtotal - finalPrice);
 
     return { subtotal, discountPercent, discountAmount, finalPrice, monthlyPrice };
   };
@@ -641,6 +647,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
               frequency={frequency}
               monthlyPrice={calculateMonthlyPrice()}
               weeklyPlan={weeklyPlan}
+              paymentPeriods={paymentPeriods}
               onContinue={() => {
                 generateClassDates();
                 setCurrentStep(5);
