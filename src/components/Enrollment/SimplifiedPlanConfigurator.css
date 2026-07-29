@@ -11,6 +11,7 @@
 
 .frequency-option {
   flex: 1;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -23,6 +24,35 @@
   cursor: pointer;
   font-family: var(--font-body, 'Outfit', sans-serif);
   transition: all 0.2s ease;
+}
+
+/* Badge de descuento (el que el plan ya trae incluido) */
+.frequency-option .frequency-discount-badge {
+  position: absolute;
+  top: -10px;
+  right: 8px;
+  background-color: var(--color-accent, #e07a5f);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: var(--radius-full, 9999px);
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* Descripción del plan (editable desde el admin) */
+.frequency-option .frequency-description {
+  font-size: 0.75rem;
+  color: var(--text-medium, #4a5568);
+  text-align: center;
+  line-height: 1.25;
+  margin-top: var(--space-1, 0.25rem);
+}
+
+.frequency-option.selected .frequency-description {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .frequency-option:hover {

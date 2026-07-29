@@ -108,10 +108,16 @@ const SimplifiedPlanConfigurator = ({
             className={`frequency-option ${!isTrialSelected && frequency === plan.weekly_classes ? 'selected' : ''}`}
             onClick={() => handleRegularPlanClick(plan)}
           >
+            {plan.discount_percentage > 0 && (
+              <span className="frequency-discount-badge">{plan.discount_percentage}% dcto</span>
+            )}
             <span className="frequency-number">{plan.weekly_classes}</span>
             <span className="frequency-label">
               {plan.weekly_classes === 1 ? 'vez por semana' : 'veces por semana'}
             </span>
+            {plan.description && (
+              <span className="frequency-description">{plan.description}</span>
+            )}
           </button>
         ))}
 
