@@ -1777,6 +1777,17 @@
   font-weight: 600;
 }
 
+.discount-breakdown {
+  font-size: var(--font-size-xs, 0.7rem);
+  color: var(--text-medium, #4a5568);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.duration-card.selected .discount-breakdown {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .total-classes {
   font-size: var(--font-size-sm, 0.875rem);
   color: var(--text-medium, #4a5568);

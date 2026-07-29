@@ -36,12 +36,20 @@ const DurationSelector = ({
     loadPaymentPeriods();
   }, [monthlyPrice, isTrialClass]);
 
-  const calculatePriceInfo = (months, discount) => {
-    const subtotal = (monthlyPrice || 0) * months;
-    const discountAmount = Math.round(subtotal * (discount / 100));
-    const finalPrice = subtotal - discountAmount;
+  // Descuento por frecuencia (ya incluido en el precio del plan). El descuento por
+  // período (meses) se SUMA a este. Reconstruimos el precio "sin descuento" y aplicamos
+  // (frecuencia + período) sobre esa base, igual que el back (WeeklyPlan#calculate_final_price).
+  const freqDiscount = Number(weeklyPlan?.discount_percentage) || 0;
+
+  const calculatePriceInfo = (months, periodDiscountRaw) => {
+    const periodDiscount = Number(periodDiscountRaw) || 0;
+    const base = monthlyPrice || 0;
+    const undiscountedMonthly = freqDiscount < 100 ? base / (1 - freqDiscount / 100) : base;
+    const totalDiscount = freqDiscount + periodDiscount;
+    const subtotal = Math.round(undiscountedMonthly * months);
+    const finalPrice = Math.round(undiscountedMonthly * months * (1 - totalDiscount / 100));
     const totalClasses = frequency * 4 * months;
-    return { subtotal, discountAmount, finalPrice, totalClasses };
+    return { subtotal, finalPrice, totalClasses, freqDiscount, periodDiscount, totalDiscount };
   };
 
   const handleContinue = () => {
@@ -80,8 +88,16 @@ const DurationSelector = ({
                 onClick={() => onDurationChange(period.months)}
               >
                 <span className="duration-months">{period.months} {period.months === 1 ? 'mes' : 'meses'}</span>
-                {period.discount_percentage > 0 && (
-                  <span className="discount">{period.discount_percentage}% OFF</span>
+                {priceInfo.totalDiscount > 0 && (
+                  <span className="discount">{priceInfo.totalDiscount}% OFF</span>
+                )}
+                {(priceInfo.freqDiscount > 0 || priceInfo.periodDiscount > 0) && (
+                  <span className="discount-breakdown">
+                    {[
+                      priceInfo.freqDiscount > 0 ? `${priceInfo.freqDiscount}% frecuencia` : null,
+                      priceInfo.periodDiscount > 0 ? `${priceInfo.periodDiscount}% período` : null
+                    ].filter(Boolean).join(' + ')}
+                  </span>
                 )}
                 <span className="total-classes">{priceInfo.totalClasses} clases</span>
                 <span className="price">${priceInfo.finalPrice.toLocaleString('es-CL')}</span>
