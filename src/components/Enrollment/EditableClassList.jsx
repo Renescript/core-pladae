@@ -3,46 +3,54 @@ import { getSectionCalendar } from '../../services/api';
 
 const EditableClassList = ({
   classDates,
+  classSectionIds = [],
   originalClassDates,
-  availableDates,
   selectedSchedules,
   onClassDatesChange,
   onValidationChange,
   onClose
 }) => {
   const [expandedClass, setExpandedClass] = useState(null);
-  const [fallbackDates, setFallbackDates] = useState([]);
+  const [datesBySection, setDatesBySection] = useState({});
 
-  // Si availableDates viene vacío (ej. draft recargado), refetch desde las secciones
+  const lastClassDate = classDates.length > 0 ? classDates[classDates.length - 1] : null;
+
+  // Alternativas de reprogramación POR SECCIÓN y cubriendo todo el plan.
+  // Hay que pedirlas por sección (no la lista plana del paso 3) porque cada clase
+  // sólo se puede mover a una fecha de SU sección; y con la ventana completa del
+  // plan, porque el default del back son 3 meses y un plan de 4 no cabe.
   useEffect(() => {
-    if (availableDates && availableDates.length > 0) return;
     if (!selectedSchedules || selectedSchedules.length === 0) return;
 
     const sectionIds = [...new Set(selectedSchedules.map(s => s.sectionId).filter(Boolean))];
     if (sectionIds.length === 0) return;
 
+    const to = new Date(`${lastClassDate || new Date().toISOString().split('T')[0]}T00:00:00`);
+    to.setMonth(to.getMonth() + 1); // un mes de colchón después de la última clase
+
+    const range = {
+      from: new Date().toISOString().split('T')[0],
+      to: to.toISOString().split('T')[0]
+    };
+
     let cancelled = false;
-    Promise.all(sectionIds.map(id => getSectionCalendar(id).catch(() => [])))
-      .then(results => {
-        if (cancelled) return;
-        const seen = new Set();
-        const combined = [];
-        results.flat().forEach(entry => {
-          const dateStr = entry.date || entry;
-          if (dateStr && !seen.has(dateStr)) {
-            seen.add(dateStr);
-            combined.push({ date: dateStr });
-          }
-        });
-        setFallbackDates(combined);
+    Promise.all(
+      sectionIds.map(id =>
+        getSectionCalendar(id, range)
+          .then(dates => ({ id, dates }))
+          .catch(() => ({ id, dates: [] }))
+      )
+    ).then(results => {
+      if (cancelled) return;
+      const map = {};
+      results.forEach(({ id, dates }) => {
+        map[id] = dates.map(entry => entry.date || entry).filter(Boolean);
       });
+      setDatesBySection(map);
+    });
 
     return () => { cancelled = true; };
-  }, [availableDates, selectedSchedules]);
-
-  const effectiveAvailableDates = (availableDates && availableDates.length > 0)
-    ? availableDates
-    : fallbackDates;
+  }, [selectedSchedules, lastClassDate]);
 
   const original = originalClassDates && originalClassDates.length > 0
     ? originalClassDates
@@ -84,22 +92,18 @@ const EditableClassList = ({
     if (onValidationChange) onValidationChange(!hasDuplicates);
   }, [hasDuplicates, onValidationChange]);
 
-  const getAvailableDatesForDay = () => {
-    if (!effectiveAvailableDates || effectiveAvailableDates.length === 0) return [];
+  // Fechas a las que se puede mover la clase `classIndex`: las de su propia sección,
+  // desde hoy en adelante. Si todavía no cargó el calendario de esa sección, no
+  // ofrecemos nada (mejor eso que ofrecer una fecha de otro horario).
+  const getAvailableDatesForClass = (classIndex) => {
+    const sectionId = classSectionIds[classIndex];
+    const dates = sectionId != null ? datesBySection[sectionId] : null;
+    if (!dates || dates.length === 0) return [];
 
-    const oneMonthFromNow = new Date();
-    oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
-
-    return effectiveAvailableDates
-      .map(d => d.date || d)
-      .filter(dateStr => {
-        const date = new Date(dateStr + 'T00:00:00');
-        return date >= startOfToday && date <= oneMonthFromNow;
-      })
+    return dates
+      .filter(dateStr => new Date(dateStr + 'T00:00:00') >= startOfToday)
       .sort((a, b) => new Date(a) - new Date(b));
   };
-
-  const availableDatesForDay = getAvailableDatesForDay();
 
   const handleDateChange = (classIndex, newDate) => {
     const updatedDates = [...classDates];
@@ -232,23 +236,11 @@ const EditableClassList = ({
               {isExpanded && (
                 <div className="recovery-class__options">
                   {(() => {
-                    const currentDateObj = new Date(date + 'T00:00:00');
-                    const currentDayOfWeek = currentDateObj.getDay();
-                    const isCurrentSaturday = currentDayOfWeek === 6;
-
-                    const filteredDates = availableDatesForDay.filter(availableDate => {
-                      const availableDateObj = new Date(availableDate + 'T00:00:00');
-                      const availableDayOfWeek = availableDateObj.getDay();
-                      const isWeekday = availableDayOfWeek >= 1 && availableDayOfWeek <= 5;
-                      const isSaturday = availableDayOfWeek === 6;
-
-                      // Si la clase actual es sábado → permitir sábado o días de semana
-                      // Si es día de semana → solo días de semana
-                      if (isCurrentSaturday) {
-                        return isSaturday || isWeekday;
-                      }
-                      return isWeekday;
-                    });
+                    // Alternativas de la MISMA sección de esta clase: ya vienen todas
+                    // en el día de la semana correcto, así que no hay que filtrar por día
+                    // (mover una clase a otro día la dejaría fuera de su sección y el
+                    // back rechazaría la inscripción).
+                    const filteredDates = getAvailableDatesForClass(index);
 
                     if (filteredDates.length === 0) {
                       return <span className="no-dates">No hay fechas disponibles</span>;

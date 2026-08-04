@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { createEnrollment, getPaymentPeriods } from '../../services/api';
+import { createEnrollment, getPaymentPeriods, getPreviewClassDates } from '../../services/api';
 import TechniqueSelector from './TechniqueSelector';
 import SimplifiedPlanConfigurator from './SimplifiedPlanConfigurator';
 import MultiDayScheduleSelector from './MultiDayScheduleSelector';
@@ -23,6 +23,10 @@ const saveDraft = (data) => {
       selectedSchedules: data.selectedSchedules,
       durationMonths: data.durationMonths,
       classDates: data.classDates,
+      // classSectionIds va alineado por índice con classDates: si se pierde,
+      // el payload no sabe a qué sección pertenece cada fecha.
+      classSectionIds: data.classSectionIds,
+      originalClassDates: data.originalClassDates,
       studentData: {
         firstName: data.studentData?.firstName || '',
         lastName: data.studentData?.lastName || '',
@@ -76,8 +80,16 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
   const [selectedSchedules, setSelectedSchedules] = useState(savedDraft?.selectedSchedules || []);
   const [durationMonths, setDurationMonths] = useState(savedDraft?.durationMonths || null);
   const [classDates, setClassDates] = useState(savedDraft?.classDates || []);
+  // Sección de cada clase, alineada por índice con classDates. Es lo que define
+  // el section_dates del payload (antes se deducía por día de la semana, que se
+  // desincronizaba de las fechas reales).
+  const [classSectionIds, setClassSectionIds] = useState(savedDraft?.classSectionIds || []);
   const [originalClassDates, setOriginalClassDates] = useState(savedDraft?.originalClassDates || []);
   const [availableDates, setAvailableDates] = useState(savedDraft?.availableDates || []);
+  // Fechas que el back saltó por falta de cupos (informativo para la alumna).
+  const [skippedDates, setSkippedDates] = useState([]);
+  const [generatingDates, setGeneratingDates] = useState(false);
+  const [datesError, setDatesError] = useState(null);
   const [isCalendarValid, setIsCalendarValid] = useState(true);
   const [paymentPeriods, setPaymentPeriods] = useState([]);
   const [studentData, setStudentData] = useState(savedDraft?.studentData || {
@@ -150,88 +162,107 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
     return { subtotal, discountPercent, discountAmount, finalPrice, monthlyPrice };
   };
 
-  const calculateTotalClasses = () => {
-    if (!durationMonths) return 0;
+  // Clase de prueba / evento: planes de 1 sola clase, no siguen la regla de 4 clases por mes.
+  const isTrialPlan = () =>
+    weeklyPlan?.weekly_classes === 1 && weeklyPlan?.number_of_classes === 1;
+
+  // Cantidad de clases del plan. Es la MISMA cuenta que usa el back para cobrar
+  // (plan × meses), así que es la que tiene que cuadrar con las fechas enviadas.
+  const calculateTotalClasses = (months = durationMonths) => {
+    if (!months) return 0;
 
     // Si es clase de prueba, usar number_of_classes del plan
-    if (weeklyPlan?.number_of_classes && weeklyPlan.weekly_classes === 1 && weeklyPlan.number_of_classes === 1) {
+    if (weeklyPlan?.number_of_classes && isTrialPlan()) {
       console.log('🎨 Clase de prueba detectada, total: 1 clase');
       return 1;
     }
 
-    // Para planes regulares, usar number_of_classes * durationMonths
+    // Para planes regulares, usar number_of_classes * meses
     if (weeklyPlan?.number_of_classes) {
-      const total = weeklyPlan.number_of_classes * durationMonths;
-      console.log(`📊 Plan regular: ${weeklyPlan.number_of_classes} clases/mes × ${durationMonths} meses = ${total} clases`);
+      const total = weeklyPlan.number_of_classes * months;
+      console.log(`📊 Plan regular: ${weeklyPlan.number_of_classes} clases/mes × ${months} meses = ${total} clases`);
       return total;
     }
 
     // Fallback
     if (!frequency) return 0;
-    return frequency * 4 * durationMonths;
+    return frequency * 4 * months;
   };
 
-  // Función para generar fechas de clases
-  const generateClassDates = () => {
-    if (!selectedSchedules || selectedSchedules.length === 0 || !durationMonths) {
+  // Pide al BACK las fechas de clase de cada sección elegida.
+  //
+  // Antes esto se calculaba acá en el front recorriendo el calendario que traía el
+  // paso 3, que sólo cubre 3 meses: un plan de 4 meses viajaba con 13 fechas en vez
+  // de 16, el back cobraba por 16 y después no podía crear la matrícula. Ahora manda
+  // el back (mismo cálculo que usa al matricular: día de la sección y salto de las
+  // fechas sin cupo), así que lo que ve la alumna es lo que se crea.
+  //
+  // Devuelve true sólo si las fechas cuadran con el plan; si no, deja el error a la vista.
+  const generateClassDates = async (months = durationMonths) => {
+    if (!selectedSchedules || selectedSchedules.length === 0 || !months || !weeklyPlan?.id) {
       console.error('Faltan datos para generar fechas de clases');
-      return;
+      setDatesError('Faltan datos para armar tu calendario. Revisa el curso, el horario y la duración.');
+      return false;
     }
 
-    // Calcular total de clases usando el plan semanal
-    const totalClasses = calculateTotalClasses();
-    console.log(`📅 Generando ${totalClasses} fechas de clase`);
+    const totalClasses = calculateTotalClasses(months);
+    console.log(`📅 Pidiendo al back ${totalClasses} fechas de clase`);
 
-    // Calcular cuántas clases por día (distribuir equitativamente entre los días seleccionados)
-    const totalClassesPerDay = Math.ceil(totalClasses / selectedSchedules.length);
-    console.log(`📅 ${totalClassesPerDay} clases por día de la semana`);
+    setGeneratingDates(true);
+    setDatesError(null);
 
-    const allDates = [];
+    try {
+      // Las clases de prueba/eventos son de 1 clase: no llevan months (el back
+      // usaría meses × 4 y devolvería 4 fechas para un plan de una sola clase).
+      const monthsParam = isTrialPlan() ? undefined : months;
 
-    const dayMap = {
-      'sunday': 0, 'monday': 1, 'tuesday': 2, 'wednesday': 3,
-      'thursday': 4, 'friday': 5, 'saturday': 6
-    };
+      const perSection = await Promise.all(
+        selectedSchedules.map(async schedule => {
+          const { assigned, skipped } = await getPreviewClassDates(
+            schedule.sectionId,
+            schedule.date,
+            weeklyPlan.id,
+            monthsParam
+          );
+          return { sectionId: schedule.sectionId, assigned, skipped };
+        })
+      );
 
-    // Para cada día de la semana seleccionado
-    selectedSchedules.forEach(schedule => {
-      const startDate = schedule.date;
-      const targetDayNumber = dayMap[schedule.dayOfWeek];
-      const dates = [];
-      let currentDate = new Date(startDate + 'T00:00:00');
+      // Pares (fecha, sección) ordenados por fecha. Los dos arreglos quedan
+      // alineados por índice: reprogramar una clase reemplaza sólo su fecha.
+      const pairs = perSection
+        .flatMap(({ sectionId, assigned }) => assigned.map(date => ({ date, sectionId })))
+        .sort((a, b) => a.date.localeCompare(b.date));
 
-      // Generar fechas para este día de la semana
-      while (dates.length < totalClassesPerDay) {
-        const dayOfWeek = currentDate.getDay();
-
-        if (dayOfWeek === targetDayNumber) {
-          const dateStr = currentDate.toISOString().split('T')[0];
-
-          if (availableDates.length === 0 || availableDates.some(d => (d.date || d) === dateStr)) {
-            dates.push(dateStr);
-          } else {
-            console.warn(`Fecha ${dateStr} no disponible en calendario, saltando...`);
-          }
-        }
-
-        currentDate.setDate(currentDate.getDate() + 1);
-
-        if (dates.length < totalClassesPerDay &&
-          currentDate > new Date(startDate).setMonth(new Date(startDate).getMonth() + durationMonths + 1)) {
-          console.error(`No se pudieron generar todas las fechas para ${schedule.dayOfWeek}`);
-          break;
-        }
+      if (pairs.length !== totalClasses) {
+        throw new Error(
+          `El calendario devolvió ${pairs.length} fechas y tu plan es de ${totalClasses} clases. ` +
+          'No podemos continuar hasta que cuadren.'
+        );
       }
 
-      allDates.push(...dates);
-    });
+      const dates = pairs.map(p => p.date);
+      console.log(`✅ ${dates.length} fechas de clase:`, dates);
 
-    // Ordenar todas las fechas
-    allDates.sort();
-
-    console.log(`✅ Generadas ${allDates.length} fechas de clases:`, allDates);
-    setClassDates(allDates);
-    setOriginalClassDates(allDates);
+      setClassDates(dates);
+      setClassSectionIds(pairs.map(p => p.sectionId));
+      setOriginalClassDates(dates);
+      setSkippedDates(perSection.flatMap(s => s.skipped));
+      return true;
+    } catch (error) {
+      console.error('❌ Error al obtener las fechas de clase:', error);
+      resetGeneratedDates();
+      setClassSectionIds([]);
+      setOriginalClassDates([]);
+      setSkippedDates([]);
+      setDatesError(
+        `No pudimos armar tu calendario: ${error.message} ` +
+        'Escríbenos al WhatsApp +56 9 2371 8373 y lo resolvemos.'
+      );
+      return false;
+    } finally {
+      setGeneratingDates(false);
+    }
   };
 
   // Guardar draft con debounce para evitar escrituras frecuentes
@@ -251,6 +282,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
           selectedSchedules,
           durationMonths,
           classDates,
+          classSectionIds,
           originalClassDates,
           availableDates,
           studentData,
@@ -264,7 +296,17 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [currentStep, technique, frequency, weeklyPlan, selectedSchedules, durationMonths, classDates, studentData, paymentMethod]);
+  }, [currentStep, technique, frequency, weeklyPlan, selectedSchedules, durationMonths, classDates, classSectionIds, studentData, paymentMethod]);
+
+  // Botar el calendario generado. Va todo junto a propósito: classDates y
+  // classSectionIds tienen que ir siempre alineados.
+  const resetGeneratedDates = () => {
+    setClassDates([]);
+    setClassSectionIds([]);
+    setOriginalClassDates([]);
+    setSkippedDates([]);
+    setDatesError(null);
+  };
 
   const handleClose = () => {
     clearDraft();
@@ -280,7 +322,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
       setWeeklyPlan(null);
       setSelectedSchedules([]);
       setDurationMonths(null);
-      setClassDates([]);
+      resetGeneratedDates();
       setAvailableDates([]);
       setIsCalendarValid(true);
       setStudentData({ firstName: '', lastName: '', email: '', phone: '' });
@@ -303,7 +345,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
       setWeeklyPlan(null); // También resetear el plan semanal
       setSelectedSchedules([]);
       setDurationMonths(null);
-      setClassDates([]);
+      resetGeneratedDates();
       setAvailableDates([]);
       setIsCalendarValid(true);
 
@@ -326,7 +368,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
       // y no queremos perder el plan que acabamos de setear
       setSelectedSchedules([]);
       setDurationMonths(null);
-      setClassDates([]);
+      resetGeneratedDates();
 
       // Si no estamos en el paso 2, volver al paso 3
       if (currentStep > 3) {
@@ -357,7 +399,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
       console.log('🔄 Horarios cambiaron, reseteando duración y fechas...');
 
       setDurationMonths(null);
-      setClassDates([]);
+      resetGeneratedDates();
 
       // Si no estamos en el paso 3, volver al paso 4
       if (currentStep > 4) {
@@ -368,40 +410,35 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
     setSelectedSchedules(newSchedules);
   };
 
-  // Crear el objeto de enrollment del curso actual
-  const buildCurrentEnrollment = () => {
-    // Extraer section_ids únicos de los horarios seleccionados
-    const sectionIds = selectedSchedules
-      .map(s => s.sectionId)
-      .filter(id => id != null);
+  // Secciones y fechas tal como las espera el back: section_ids (sin repetir, porque
+  // el back suma las fechas por cada id de la lista) y section_dates agrupadas según
+  // la sección de cada clase (classSectionIds), no según su día de la semana.
+  const buildSectionPayload = () => {
+    const sectionIds = [
+      ...new Set(selectedSchedules.map(s => s.sectionId).filter(id => id != null))
+    ];
 
-    // Agrupar fechas por section_id
     const sectionDates = {};
+    sectionIds.forEach(id => { sectionDates[id] = []; });
 
-    selectedSchedules.forEach(schedule => {
-      const sectionId = schedule.sectionId;
-      if (!sectionId) return;
-
-      // Filtrar fechas que corresponden a este día de la semana
-      const dayMap = {
-        'sunday': 0, 'monday': 1, 'tuesday': 2, 'wednesday': 3,
-        'thursday': 4, 'friday': 5, 'saturday': 6
-      };
-      const targetDay = dayMap[schedule.dayOfWeek];
-
-      const datesForThisSection = classDates.filter(dateStr => {
-        const date = new Date(dateStr + 'T00:00:00');
-        return date.getDay() === targetDay;
-      });
-
-      sectionDates[sectionId] = datesForThisSection;
+    classDates.forEach((date, index) => {
+      const sectionId = classSectionIds[index];
+      if (sectionId == null) return;
+      if (!sectionDates[sectionId]) sectionDates[sectionId] = [];
+      sectionDates[sectionId].push(date);
     });
 
-    // Obtener la primera fecha de inicio
-    const startDate = classDates.length > 0 ? classDates[0] : null;
+    return {
+      sectionIds,
+      sectionDates,
+      startDate: classDates.length > 0 ? classDates[0] : null,
+      paymentPeriod: paymentPeriods.find(p => p.months === durationMonths)
+    };
+  };
 
-    // Buscar el payment_period_id según durationMonths
-    const paymentPeriod = paymentPeriods.find(p => p.months === durationMonths);
+  // Crear el objeto de enrollment del curso actual
+  const buildCurrentEnrollment = () => {
+    const { sectionIds, sectionDates, startDate, paymentPeriod } = buildSectionPayload();
 
     return {
       name: `${studentData.firstName} ${studentData.lastName}`,
@@ -418,38 +455,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
 
   // Manejar cuando el usuario quiere agregar otro curso
   const handleAddAnotherCourse = () => {
-    // Extraer section_ids únicos de los horarios seleccionados
-    const sectionIds = selectedSchedules
-      .map(s => s.sectionId)
-      .filter(id => id != null);
-
-    // Agrupar fechas por section_id
-    const sectionDates = {};
-
-    selectedSchedules.forEach(schedule => {
-      const sectionId = schedule.sectionId;
-      if (!sectionId) return;
-
-      // Filtrar fechas que corresponden a este día de la semana
-      const dayMap = {
-        'sunday': 0, 'monday': 1, 'tuesday': 2, 'wednesday': 3,
-        'thursday': 4, 'friday': 5, 'saturday': 6
-      };
-      const targetDay = dayMap[schedule.dayOfWeek];
-
-      const datesForThisSection = classDates.filter(dateStr => {
-        const date = new Date(dateStr + 'T00:00:00');
-        return date.getDay() === targetDay;
-      });
-
-      sectionDates[sectionId] = datesForThisSection;
-    });
-
-    // Obtener la primera fecha de inicio
-    const startDate = classDates.length > 0 ? classDates[0] : null;
-
-    // Buscar el payment_period_id según durationMonths
-    const paymentPeriod = paymentPeriods.find(p => p.months === durationMonths);
+    const { sectionIds, sectionDates, startDate, paymentPeriod } = buildSectionPayload();
 
     // Calcular el precio de este curso
     const priceInfo = calculateFinalPrice();
@@ -462,6 +468,9 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
       start_date: startDate,
       section_ids: sectionIds,
       section_dates: sectionDates,
+      // Para revalidar el carrito completo justo antes de pagar (las claves con _
+      // son sólo del front, no viajan en el payload).
+      _expectedClasses: calculateTotalClasses(),
       _displayInfo: {
         technique: technique?.name,
         frequency,
@@ -487,7 +496,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
     setWeeklyPlan(null);
     setSelectedSchedules([]);
     setDurationMonths(null);
-    setClassDates([]);
+    resetGeneratedDates();
     setAvailableDates([]);
     setIsCalendarValid(true);
 
@@ -504,6 +513,31 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
   const handleEnrollmentComplete = async () => {
     // Construir el enrollment actual
     const currentEnrollment = buildCurrentEnrollment();
+
+    // CANDADO: el back cobra por plan × meses y después exige esa misma cantidad de
+    // fechas para crear la matrícula. Si no cuadran, no se manda nada: preferimos una
+    // venta bloqueada a una alumna cobrada y sin curso (lo que pasó el 3-ago-2026).
+    const expectedClasses = calculateTotalClasses();
+    const sentClasses = Object.values(currentEnrollment.section_dates || {})
+      .reduce((total, dates) => total + dates.length, 0);
+
+    const cartMismatch = completedEnrollments.find(enrollment => {
+      const sent = Object.values(enrollment.section_dates || {})
+        .reduce((total, dates) => total + dates.length, 0);
+      return enrollment._expectedClasses && sent !== enrollment._expectedClasses;
+    });
+
+    if (sentClasses !== expectedClasses || cartMismatch) {
+      console.error('⛔ Las fechas no cuadran con el plan', {
+        expectedClasses, sentClasses, cartMismatch
+      });
+      alert(
+        'No podemos continuar: las fechas de tus clases no cuadran con el plan que elegiste. ' +
+        'Vuelve al paso del calendario y revísalo, o escríbenos al WhatsApp +56 9 2371 8373 ' +
+        'y lo resolvemos contigo. No te vamos a cobrar hasta que esté correcto.'
+      );
+      return;
+    }
 
     // Datos comunes para todos los enrollments (nombre, email, teléfono, método de pago)
     const commonData = {
@@ -606,31 +640,17 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
               selectedSchedules={selectedSchedules}
               onSchedulesChange={handleSchedulesChange}
               onAvailableDatesChange={setAvailableDates}
-              onContinue={() => {
-                const isTrial = weeklyPlan?.weekly_classes === 1 && weeklyPlan?.number_of_classes === 1;
-                if (isTrial) {
+              onContinue={async () => {
+                if (isTrialPlan()) {
+                  // Clase de prueba: 1 sola clase, se salta el paso de duración.
+                  // Le pasamos los meses explícitos porque el state todavía no se actualizó.
                   setDurationMonths(1);
-                  // generateClassDates usa durationMonths del state, pero aún no se actualizó,
-                  // así que generamos las fechas inline
-                  const totalClasses = 1;
-                  const dayMap = { 'sunday': 0, 'monday': 1, 'tuesday': 2, 'wednesday': 3, 'thursday': 4, 'friday': 5, 'saturday': 6 };
-                  const allDates = [];
-                  selectedSchedules.forEach(schedule => {
-                    const startDate = schedule.date;
-                    const targetDayNumber = dayMap[schedule.dayOfWeek];
-                    let currentDate = new Date(startDate + 'T00:00:00');
-                    let count = 0;
-                    while (count < totalClasses) {
-                      if (currentDate.getDay() === targetDayNumber) {
-                        allDates.push(currentDate.toISOString().split('T')[0]);
-                        count++;
-                      }
-                      currentDate.setDate(currentDate.getDate() + 1);
-                    }
-                  });
-                  allDates.sort();
-                  setClassDates(allDates);
-                  setCurrentStep(6);
+                  const ok = await generateClassDates(1);
+                  if (ok) {
+                    setCurrentStep(6);
+                  } else {
+                    alert('No pudimos armar tu calendario. Escríbenos al WhatsApp +56 9 2371 8373 y lo resolvemos.');
+                  }
                 } else {
                   setCurrentStep(4);
                 }
@@ -648,10 +668,13 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
               monthlyPrice={calculateMonthlyPrice()}
               weeklyPlan={weeklyPlan}
               paymentPeriods={paymentPeriods}
-              onContinue={() => {
-                generateClassDates();
-                setCurrentStep(5);
+              onContinue={async () => {
+                // Sólo avanzamos si el back devolvió las fechas completas.
+                const ok = await generateClassDates();
+                if (ok) setCurrentStep(5);
               }}
+              loadingDates={generatingDates}
+              datesError={datesError}
               onBack={() => setCurrentStep(3)}
             />
           )}
@@ -666,8 +689,10 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
               selectedSchedules={selectedSchedules}
               durationMonths={durationMonths}
               classDates={classDates}
+              classSectionIds={classSectionIds}
               originalClassDates={originalClassDates}
-              availableDates={availableDates}
+              skippedDates={skippedDates}
+              canContinue={isCalendarValid}
               onClassDatesChange={setClassDates}
               onValidationChange={setIsCalendarValid}
               onContinue={() => {

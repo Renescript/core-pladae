@@ -8,6 +8,8 @@ const DurationSelector = ({
   weeklyPlan,
   paymentPeriods = [],
   onContinue,
+  loadingDates = false,
+  datesError = null,
   onBack
 }) => {
   const isTrialClass = weeklyPlan?.weekly_classes === 1 && weeklyPlan?.number_of_classes === 1;
@@ -79,10 +81,28 @@ const DurationSelector = ({
         </div>
       )}
 
+      {datesError && (
+        <div className="dates-error" role="alert" style={{
+          margin: 'var(--space-4) 0',
+          padding: 'var(--space-3)',
+          borderRadius: 'var(--radius-sm)',
+          background: '#fdecea',
+          color: '#8a1c13',
+          border: '1px solid #f5c6c2'
+        }}>
+          {datesError}
+        </div>
+      )}
+
       <div className="step-actions">
-        <button type="button" className="btn-secondary" onClick={onBack}>Volver</button>
-        <button type="button" className="btn-primary" onClick={handleContinue} disabled={!selectedDuration}>
-          Continuar
+        <button type="button" className="btn-secondary" onClick={onBack} disabled={loadingDates}>Volver</button>
+        <button
+          type="button"
+          className="btn-primary"
+          onClick={handleContinue}
+          disabled={!selectedDuration || loadingDates}
+        >
+          {loadingDates ? 'Armando tu calendario…' : 'Continuar'}
         </button>
       </div>
     </div>

@@ -8,8 +8,10 @@ const EditableScheduleCalendar = ({
   selectedSchedules,
   durationMonths,
   classDates,
+  classSectionIds = [],
   originalClassDates,
-  availableDates,
+  skippedDates = [],
+  canContinue = true,
   onClassDatesChange,
   onValidationChange,
   onContinue,
@@ -112,8 +114,8 @@ const EditableScheduleCalendar = ({
       {isEditing && (
         <EditableClassList
           classDates={classDates}
+          classSectionIds={classSectionIds}
           originalClassDates={originalClassDates}
-          availableDates={availableDates}
           selectedSchedules={selectedSchedules}
           onClassDatesChange={onClassDatesChange}
           onValidationChange={onValidationChange}
@@ -121,10 +123,25 @@ const EditableScheduleCalendar = ({
         />
       )}
 
+      {skippedDates.length > 0 && (
+        <p className="schedule-skipped-note" style={{ fontSize: '0.9rem', opacity: 0.8 }}>
+          Saltamos {skippedDates.length === 1 ? 'la clase del' : 'las clases del'}{' '}
+          {skippedDates.map(d => new Date(d + 'T00:00:00').toLocaleDateString('es-CL', { day: 'numeric', month: 'short' })).join(', ')}
+          {' '}porque ya no había cupos, y corrimos {skippedDates.length === 1 ? 'esa clase' : 'esas clases'} a la siguiente fecha disponible.
+        </p>
+      )}
+
       <div className="step-actions">
         <button type="button" className="btn-secondary" onClick={onBack}>Volver</button>
-        <button type="button" className="btn-primary" onClick={onContinue}>Continuar</button>
+        <button type="button" className="btn-primary" onClick={onContinue} disabled={!canContinue}>
+          Continuar
+        </button>
       </div>
+      {!canContinue && (
+        <p className="schedule-invalid-note" role="alert" style={{ color: '#8a1c13', fontSize: '0.9rem' }}>
+          Tienes dos clases en la misma fecha. Cámbialas para poder continuar.
+        </p>
+      )}
     </div>
   );
 };

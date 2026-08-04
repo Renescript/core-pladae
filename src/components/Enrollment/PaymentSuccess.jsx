@@ -21,6 +21,9 @@ const PaymentSuccess = () => {
   const authCode = searchParams.get('authorization_code');
   const transactionDate = searchParams.get('transaction_date');
   const paymentType = searchParams.get('payment_type_code');
+  // El back manda enrollment_pending=1 cuando el pago SÍ se cobró pero la matrícula
+  // quedó en revisión. Nunca hay que mostrar "pago fallido" con la plata cobrada.
+  const enrollmentPending = searchParams.get('enrollment_pending') === '1';
 
   const getPaymentTypeName = (code) => {
     const types = { VD: 'Débito', VN: 'Crédito', VC: 'Crédito en cuotas', SI: 'Sin interés', S2: 'Sin interés 2' };
@@ -38,8 +41,21 @@ const PaymentSuccess = () => {
           </svg>
         </div>
 
-        <h1 className="ps-title">¡Pago exitoso!</h1>
-        <p className="ps-subtitle">Tu inscripción ha sido confirmada</p>
+        <h1 className="ps-title">{enrollmentPending ? '¡Pago recibido!' : '¡Pago exitoso!'}</h1>
+        <p className="ps-subtitle">
+          {enrollmentPending
+            ? 'Estamos terminando de confirmar tu matrícula y te escribimos hoy mismo'
+            : 'Tu inscripción ha sido confirmada'}
+        </p>
+
+        {enrollmentPending && (
+          <div className="ps-info" role="alert">
+            Tu pago quedó registrado correctamente. Nos falta un último paso para dejar tus clases
+            agendadas y nuestro equipo ya está avisado. Guarda este comprobante: si quieres apurarnos,
+            escríbenos al WhatsApp <a href="https://wa.me/56923718373">+56 9 2371 8373</a> con tu
+            número de orden.
+          </div>
+        )}
 
         <div className="ps-details">
           {amount && (

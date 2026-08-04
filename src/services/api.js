@@ -385,7 +385,18 @@ export const createEnrollment = async (data) => {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('🌐 Error response:', errorText);
-      throw new Error(`Error HTTP: ${response.status}`);
+
+      // El back responde 422 con { success: false, error: "..." } cuando la inscripción
+      // no se puede crear (fechas que no cuadran, sin cupos, curso cerrado). Ese mensaje
+      // es para mostrárselo a la alumna: si lo perdemos queda un "Error HTTP: 422" inútil.
+      let serverMessage = null;
+      try {
+        serverMessage = JSON.parse(errorText)?.error;
+      } catch {
+        serverMessage = null;
+      }
+
+      throw new Error(serverMessage || `Error HTTP: ${response.status}`);
     }
 
     const result = await response.json();
@@ -403,14 +414,22 @@ export const createEnrollment = async (data) => {
 };
 
 /**
- * Obtiene el calendario de disponibilidad de una sección
- * El backend automáticamente devuelve los próximos 3 meses
+ * Obtiene el calendario de disponibilidad de una sección.
+ * Sin from/to el backend devuelve los próximos 3 meses, que alcanzan para elegir
+ * la fecha de inicio pero NO para cubrir un plan largo: para eso hay que pedir la
+ * ventana explícita (o usar getPreviewClassDates, que ya calcula las fechas).
  * @param {number} sectionId - ID de la sección
+ * @param {{from?: string, to?: string}} [range] - Rango YYYY-MM-DD
  * @returns {Promise<Array>} Array de fechas disponibles
  */
-export const getSectionCalendar = async (sectionId) => {
+export const getSectionCalendar = async (sectionId, range = {}) => {
   try {
-    const url = `${API_BASE_URL}/sections/${sectionId}/calendar`;
+    const params = new URLSearchParams();
+    if (range.from) params.set('from', range.from);
+    if (range.to) params.set('to', range.to);
+    const query = params.toString();
+
+    const url = `${API_BASE_URL}/sections/${sectionId}/calendar${query ? `?${query}` : ''}`;
     console.log('📅 Llamando a URL:', url);
 
     // Usar fetchWithRetry para manejar fallos intermitentes
@@ -452,16 +471,31 @@ export const getSectionCalendar = async (sectionId) => {
 };
 
 /**
- * Obtiene vista previa de fechas de clases según plan seleccionado
+ * Fechas de clase de una sección, calculadas POR EL BACK.
+ *
+ * Es la única fuente de verdad de las fechas: el back usa la misma lógica que
+ * EnrollmentCreator al momento de matricular (día de la semana de la sección y
+ * salto de las fechas sin cupo), así que lo que se muestra es lo que se crea.
+ * No replicar esta lógica en el front: eso fue lo que provocó que un plan de
+ * 4 meses viajara con 13 fechas en vez de 16 y el cobro quedara sin matrícula.
+ *
  * @param {number} sectionId - ID de la sección
- * @param {string} startDate - Fecha de inicio (YYYY-MM-DD)
- * @param {number} paymentPlanId - ID del plan de pago
- * @returns {Promise<Array>} Array de fechas de clases previstas
+ * @param {string} startDate - Fecha de inicio (YYYY-MM-DD), debe caer en el día de la sección
+ * @param {number} weeklyPlanId - ID del weekly_plan
+ * @param {number} [months] - Meses del período. Omitir en clases de prueba/eventos
+ *                            (esos planes son de 1 clase, no de 4 por mes).
+ * @returns {Promise<{assigned: string[], skipped: string[]}>}
  */
-export const getPreviewClassDates = async (sectionId, startDate, paymentPlanId) => {
+export const getPreviewClassDates = async (sectionId, startDate, weeklyPlanId, months) => {
   try {
-    const url = `${API_BASE_URL}/sections/${sectionId}/preview_class_dates?start_date=${startDate}&payment_plan_id=${paymentPlanId}`;
-    console.log('📆 Obteniendo vista previa de fechas:', url);
+    const params = new URLSearchParams({
+      start_date: startDate,
+      weekly_plan_id: weeklyPlanId
+    });
+    if (months) params.set('months', months);
+
+    const url = `${API_BASE_URL}/sections/${sectionId}/preview_class_dates?${params}`;
+    console.log('📆 Obteniendo fechas de clase del back:', url);
 
     const response = await fetchWithTimeout(url, {
       method: 'GET',
@@ -471,27 +505,31 @@ export const getPreviewClassDates = async (sectionId, startDate, paymentPlanId) 
     console.log('📆 Response status:', response.status, response.ok);
 
     if (!response.ok) {
-      throw new Error(`Error HTTP: ${response.status}`);
+      const errorText = await response.text();
+      let serverMessage = null;
+      try {
+        serverMessage = JSON.parse(errorText)?.error;
+      } catch {
+        serverMessage = null;
+      }
+      throw new Error(serverMessage || `Error HTTP: ${response.status}`);
     }
 
     const result = await response.json();
-    console.log('📆 Vista previa de fechas recibida:', result);
+    console.log('📆 Fechas recibidas:', result);
 
-    // El backend devuelve { success: true, data: { assigned_dates: [...] } }
-    if (result.success && result.data && result.data.assigned_dates) {
-      console.log('✅ Retornando fechas asignadas:', result.data.assigned_dates);
-      return result.data.assigned_dates.map(item => item.date);
-    }
-
-    // Fallback si viene directamente como array
-    if (Array.isArray(result)) {
-      return result;
+    // El backend devuelve { success: true, data: { assigned_dates: [...], skipped_dates: [...] } }
+    if (result.success && result.data && Array.isArray(result.data.assigned_dates)) {
+      return {
+        assigned: result.data.assigned_dates.map(item => item.date),
+        skipped: (result.data.skipped_dates || []).map(item => item.date)
+      };
     }
 
     console.error('❌ Formato inesperado de vista previa:', result);
-    return [];
+    throw new Error('El servidor devolvió las fechas en un formato inesperado');
   } catch (error) {
-    console.error('Error al obtener vista previa de fechas:', error);
+    console.error('Error al obtener las fechas de clase:', error);
     throw error;
   }
 };
