@@ -13,7 +13,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://back-academia.onrender.com',
+        target: 'https://academy-mgmt-ye8h.onrender.com',
         changeOrigin: true,
         secure: false,
       }

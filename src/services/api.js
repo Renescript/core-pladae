@@ -1,6 +1,7 @@
 // Use full backend URL in production, proxy in development
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'https://academy-mgmt-ye8h.onrender.com';
 const API_BASE_URL = import.meta.env.MODE === 'production'
-  ? 'https://back-academia.onrender.com/api/v1'
+  ? `${BACKEND_URL}/api/v1`
   : '/api/v1';
 
 /**

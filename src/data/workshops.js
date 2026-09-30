@@ -1,6 +1,6 @@
 // Datos de los talleres de Gustarte — fuente única para páginas de detalle, chips del hero y navbar dropdown.
 // Nombres, descripciones, profesores y horarios reflejan la unificación del back
-// (back-academia.onrender.com/api/v1/courses): al 2026-07-02 hay 5 talleres.
+// (academy-mgmt-ye8h.onrender.com/api/v1/courses): al 2026-07-02 hay 5 talleres.
 // Los campos editoriales (tagline, highlights) son propios del front.
 
 export const workshops = [
