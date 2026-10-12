@@ -130,11 +130,13 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null })
         ]);
         if (cancelled) return;
 
+        // El link solo trae el nombre; correo y teléfono vienen enmascarados y
+        // ella los escribe (así un link reenviado no expone sus datos).
         setStudentData({
           firstName: data.student.first_name || '',
           lastName: data.student.last_name || '',
-          email: data.student.email || '',
-          phone: data.student.phone || ''
+          email: '',
+          phone: ''
         });
 
         const course = courses.find(c => c.id === data.course_id);
@@ -656,7 +658,10 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null })
       onSuccess && onSuccess(successData);
     } catch (error) {
       console.error('❌ Error al crear inscripción:', error);
-      alert(`Hubo un error al procesar tu inscripción: ${error.message}`);
+      const renewalTip = renewal && /cupo/i.test(error.message)
+        ? `\n\nSi estás renovando, usa el mismo correo con que te inscribiste (${renewal.student.email_hint}): así reconocemos tu cupo guardado.`
+        : '';
+      alert(`Hubo un error al procesar tu inscripción: ${error.message}${renewalTip}`);
     }
   };
 
@@ -832,6 +837,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null })
                 schedules: selectedSchedules,
                 priceInfo: calculateFinalPrice()
               }}
+              renewalHints={renewal ? { email: renewal.student.email_hint, phone: renewal.student.phone_hint } : null}
               onComplete={handleEnrollmentComplete}
               onBack={() => setCurrentStep(6)}
             />

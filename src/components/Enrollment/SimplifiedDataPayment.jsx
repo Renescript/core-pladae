@@ -5,6 +5,9 @@ const SimplifiedDataPayment = ({
   onStudentDataChange,
   completedEnrollments = [],
   currentEnrollment,
+  // Al renovar con link: correo y teléfono enmascarados de su inscripción, como pista
+  // (el link no entrega los datos completos).
+  renewalHints = null,
   onComplete,
   onBack
 }) => {
@@ -90,6 +93,9 @@ const SimplifiedDataPayment = ({
               className={errors.email ? 'error' : ''}
             />
             {errors.email && <span className="error-msg">{errors.email}</span>}
+            {renewalHints?.email && !errors.email && (
+              <span className="field-hint">Usa el correo con que te inscribiste ({renewalHints.email}) para conservar tu cupo.</span>
+            )}
           </div>
           <div className="form-field">
             <label>Teléfono</label>
@@ -100,6 +106,9 @@ const SimplifiedDataPayment = ({
               className={errors.phone ? 'error' : ''}
             />
             {errors.phone && <span className="error-msg">{errors.phone}</span>}
+            {renewalHints?.phone && !errors.phone && (
+              <span className="field-hint">El que tenemos registrado termina en {renewalHints.phone}.</span>
+            )}
           </div>
         </div>
       </div>
