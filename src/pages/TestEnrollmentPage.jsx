@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import ProfessionalEnrollmentForm from '../components/Enrollment/ProfessionalEnrollmentForm';
 import SuccessMessage from '../components/Enrollment/SuccessMessage';
 import '../components/Enrollment/enrollment-global.css';
 
 const TestEnrollmentPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const renewalToken = searchParams.get('renovar');
   const [enrollmentData, setEnrollmentData] = useState(null);
 
   const handleCloseEnrollment = () => {
@@ -25,6 +27,7 @@ const TestEnrollmentPage = () => {
     <div className="enrollment-page">
       {!enrollmentData ? (
         <ProfessionalEnrollmentForm
+          renewalToken={renewalToken}
           onClose={handleCloseEnrollment}
           onSuccess={handleEnrollmentSuccess}
         />

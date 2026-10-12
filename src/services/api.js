@@ -415,6 +415,24 @@ export const createEnrollment = async (data) => {
 };
 
 /**
+ * Datos de la última compra de una alumna para prellenar su renovación
+ * (link /inscripcion?renovar=TOKEN que se manda desde el admin).
+ * @param {string} token
+ * @returns {Promise<object>} data del back: student, weekly_plan_id, sections, ...
+ */
+export const getRenewal = async (token) => {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/renewals/${encodeURIComponent(token)}`, {
+    method: 'GET',
+    headers: NO_CACHE_HEADERS
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || !result.success) {
+    throw new Error(result.error || 'No pudimos cargar tu renovación.');
+  }
+  return result.data;
+};
+
+/**
  * Obtiene el calendario de disponibilidad de una sección.
  * Sin from/to el backend devuelve los próximos 3 meses, que alcanzan para elegir
  * la fecha de inicio pero NO para cubrir un plan largo: para eso hay que pedir la
@@ -495,13 +513,15 @@ export const getSectionCalendar = async (sectionId, range = {}) => {
  *                            (esos planes son de 1 clase, no de 4 por mes).
  * @returns {Promise<{assigned: string[], skipped: string[]}>}
  */
-export const getPreviewClassDates = async (sectionId, startDate, weeklyPlanId, months) => {
+export const getPreviewClassDates = async (sectionId, startDate, weeklyPlanId, months, renewalToken = null) => {
   try {
     const params = new URLSearchParams({
       start_date: startDate,
       weekly_plan_id: weeklyPlanId
     });
     if (months) params.set('months', months);
+    // Al renovar con el link, el back no cuenta el cupo reservado de la propia alumna.
+    if (renewalToken) params.set('renewal_token', renewalToken);
 
     const url = `${API_BASE_URL}/sections/${sectionId}/preview_class_dates?${params}`;
     console.log('📆 Obteniendo fechas de clase del back:', url);

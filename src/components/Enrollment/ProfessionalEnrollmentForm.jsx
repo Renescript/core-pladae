@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { createEnrollment, getPaymentPeriods, getPreviewClassDates } from '../../services/api';
+import { createEnrollment, getPaymentPeriods, getPreviewClassDates, getRenewal, getCoursesSchedulesGrid, getWeeklyPlans } from '../../services/api';
 import TechniqueSelector from './TechniqueSelector';
 import SimplifiedPlanConfigurator from './SimplifiedPlanConfigurator';
 import MultiDayScheduleSelector from './MultiDayScheduleSelector';
@@ -69,8 +69,15 @@ const clearDraft = () => {
   }
 };
 
-const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
-  const savedDraft = loadDraft();
+// "2026-10-28" -> "28/10" (sin pasar por Date para no correr el día por zona horaria).
+const formatRenewalDate = (iso) => {
+  const [, month, day] = String(iso).split('-');
+  return `${day}/${month}`;
+};
+
+const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null }) => {
+  // Con link de renovación se parte de cero (el borrador de otra visita no aplica).
+  const savedDraft = renewalToken ? null : loadDraft();
   const saveTimeoutRef = useRef(null);
 
   const [currentStep, setCurrentStep] = useState(savedDraft?.currentStep || 1);
@@ -102,6 +109,64 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
 
   // Estado para manejar múltiples enrollments
   const [completedEnrollments, setCompletedEnrollments] = useState([]);
+
+  // Renovación (?renovar=TOKEN): se prellena con la última compra de la alumna y
+  // se parte en el paso de duración. renewal = datos del back; renewalNotice = aviso.
+  const [renewal, setRenewal] = useState(null);
+  const [renewalLoading, setRenewalLoading] = useState(Boolean(renewalToken));
+  const [renewalNotice, setRenewalNotice] = useState(null);
+
+  useEffect(() => {
+    if (!renewalToken) return;
+    let cancelled = false;
+
+    const loadRenewal = async () => {
+      try {
+        clearDraft();
+        const [data, courses, plans] = await Promise.all([
+          getRenewal(renewalToken),
+          getCoursesSchedulesGrid(),
+          getWeeklyPlans()
+        ]);
+        if (cancelled) return;
+
+        setStudentData({
+          firstName: data.student.first_name || '',
+          lastName: data.student.last_name || '',
+          email: data.student.email || '',
+          phone: data.student.phone || ''
+        });
+
+        const course = courses.find(c => c.id === data.course_id);
+        const plan = plans.find(p => p.id === data.weekly_plan_id);
+        if (!course || !plan || data.course_active === false) {
+          setRenewalNotice(`Tu curso ${data.course_title} no tiene inscripciones abiertas por ahora. Ya cargamos tus datos: elige otro curso o escríbenos por WhatsApp.`);
+          return;
+        }
+
+        setTechnique(course);
+        setWeeklyPlan(plan);
+        setFrequency(plan.weekly_classes);
+        setSelectedSchedules(data.sections.map((section, index) => ({
+          dayIndex: index,
+          date: section.next_date,
+          timeSlot: section.time_slot,
+          dayOfWeek: section.day,
+          sectionId: section.section_id,
+          teacher: section.teacher
+        })));
+        setRenewal(data);
+        setCurrentStep(4);
+      } catch (error) {
+        if (!cancelled) setRenewalNotice(`${error.message} Puedes inscribirte desde aquí.`);
+      } finally {
+        if (!cancelled) setRenewalLoading(false);
+      }
+    };
+
+    loadRenewal();
+    return () => { cancelled = true; };
+  }, [renewalToken]);
 
   // Cargar períodos de pago al montar el componente
   useEffect(() => {
@@ -222,7 +287,8 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
             schedule.sectionId,
             schedule.date,
             weeklyPlan.id,
-            monthsParam
+            monthsParam,
+            renewal ? renewalToken : null
           );
           return { sectionId: schedule.sectionId, assigned, skipped };
         })
@@ -601,6 +667,26 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
           <div className="enrollment-header">
             <img src="/logo-gustarte-letras.png" alt="Gustarte" className="enrollment-logo" />
           </div>
+          {renewalLoading && (
+            <div className="enrollment-course-indicator">
+              <span className="course-indicator-text">Cargando tu renovación…</span>
+            </div>
+          )}
+          {renewal && currentStep <= 5 && (
+            <div className="enrollment-course-indicator">
+              <span className="course-indicator-badge">Renovación</span>
+              <span className="course-indicator-text">
+                Hola {studentData.firstName}: dejamos listo tu curso <strong>{renewal.course_title}</strong> en tus mismos horarios,
+                partiendo la semana siguiente a tu última clase. Tu cupo está guardado hasta el {formatRenewalDate(renewal.hold_until)}.
+                Solo elige la duración.
+              </span>
+            </div>
+          )}
+          {renewalNotice && (
+            <div className="enrollment-course-indicator">
+              <span className="course-indicator-text">{renewalNotice}</span>
+            </div>
+          )}
           {completedEnrollments.length > 0 && currentStep <= 5 && (
             <div className="enrollment-course-indicator">
               <span className="course-indicator-badge">Curso {completedEnrollments.length + 1}</span>
@@ -610,7 +696,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess }) => {
             </div>
           )}
           {/* Paso 1: Selección de técnica */}
-          {currentStep === 1 && (
+          {!renewalLoading && currentStep === 1 && (
             <TechniqueSelector
               selectedTechnique={technique}
               onSelectTechnique={handleTechniqueChange}
