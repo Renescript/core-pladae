@@ -420,6 +420,9 @@ export const createEnrollment = async (data) => {
  * la fecha de inicio pero NO para cubrir un plan largo: para eso hay que pedir la
  * ventana explícita (o usar getPreviewClassDates, que ya calcula las fechas).
  * @param {number} sectionId - ID de la sección
+ * Sin rango se usa para ELEGIR la fecha de inicio, así que se quitan las fechas
+ * posteriores a `max_start_date` (regla del admin: no vender planes que empiecen
+ * demasiado lejos). Con rango se devuelven todas, porque son clases de un plan.
  * @param {{from?: string, to?: string}} [range] - Rango YYYY-MM-DD
  * @returns {Promise<Array>} Array de fechas disponibles
  */
@@ -453,6 +456,11 @@ export const getSectionCalendar = async (sectionId, range = {}) => {
 
     // El backend envuelve la respuesta en { success: true, data: { dates: [...] } }
     if (result.success && result.data && result.data.dates && Array.isArray(result.data.dates)) {
+      const maxStart = result.data.max_start_date;
+      if (!query && maxStart) {
+        // Fechas YYYY-MM-DD: la comparación de strings respeta el orden.
+        return result.data.dates.filter(d => String(d.date).slice(0, 10) <= maxStart);
+      }
       console.log('✅ Retornando array de fechas desde result.data.dates:', result.data.dates);
       return result.data.dates;
     }
