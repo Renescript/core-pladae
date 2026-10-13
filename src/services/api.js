@@ -415,6 +415,37 @@ export const createEnrollment = async (data) => {
 };
 
 /**
+ * Sesiones especiales (talleres/webinars de fechas fijas). Van aparte de los cursos.
+ */
+const jsonOrThrow = async (response, fallback) => {
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || result.success === false) throw new Error(result.error || fallback);
+  return result;
+};
+
+export const getSpecialSessions = async () => {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/special_sessions`, { method: 'GET', headers: NO_CACHE_HEADERS });
+  return (await jsonOrThrow(response, 'No pudimos cargar las sesiones.')).data;
+};
+
+export const getSpecialSession = async (slug) => {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/special_sessions/${encodeURIComponent(slug)}`, {
+    method: 'GET', headers: NO_CACHE_HEADERS
+  });
+  return (await jsonOrThrow(response, 'No encontramos esta sesión.')).data;
+};
+
+/** Inicia el pago en Webpay. Devuelve { full_url, amount, buy_order }. */
+export const checkoutSpecialSession = async (slug, { name, email, phone }) => {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/special_sessions/${encodeURIComponent(slug)}/checkout`, {
+    method: 'POST',
+    headers: { ...NO_CACHE_HEADERS, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, phone })
+  });
+  return (await jsonOrThrow(response, 'No pudimos iniciar el pago.')).transbank_payment;
+};
+
+/**
  * Datos de la última compra de una alumna para prellenar su renovación
  * (link /inscripcion?renovar=TOKEN que se manda desde el admin).
  * @param {string} token

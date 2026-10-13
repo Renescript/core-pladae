@@ -8,6 +8,8 @@ const PaymentFailure = () => {
   const reason = searchParams.get('reason') || 'No especificado';
   const buyOrder = searchParams.get('buy_order');
   const errorCode = searchParams.get('error_code');
+  // Si venía de una sesión especial, reintentar vuelve a esa sesión (no al formulario de cursos).
+  const sessionSlug = searchParams.get('session_slug');
 
   const getErrorMessage = (code) => {
     const errorMessages = {
@@ -68,7 +70,7 @@ const PaymentFailure = () => {
           <button className="ps-btn ps-btn--secondary" onClick={() => navigate('/')}>
             Volver al inicio
           </button>
-          <button className="ps-btn ps-btn--primary" onClick={() => navigate('/inscripcion')}>
+          <button className="ps-btn ps-btn--primary" onClick={() => navigate(sessionSlug ? `/sesiones/${sessionSlug}` : '/inscripcion')}>
             Intentar nuevamente
           </button>
         </div>

@@ -10,6 +10,7 @@ import TestEnrollmentPage from './pages/TestEnrollmentPage';
 import CalendarTestPage from './pages/CalendarTestPage';
 import PaymentSuccess from './components/Enrollment/PaymentSuccess';
 import PaymentFailure from './components/Enrollment/PaymentFailure';
+import SpecialSessionPage from './pages/SpecialSessionPage';
 import { workshops } from './data/workshops';
 import './App.css';
 
@@ -154,6 +155,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/talleres/:slug" element={<WorkshopPage />} />
+          <Route path="/sesiones/:slug" element={<SpecialSessionPage />} />
           <Route path="/valores" element={<PreciosPage />} />
           <Route path="/precios" element={<Navigate to="/valores" replace />} />
           <Route path="/horario" element={<HorarioPage />} />

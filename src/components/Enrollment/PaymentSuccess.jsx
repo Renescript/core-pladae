@@ -24,6 +24,8 @@ const PaymentSuccess = () => {
   // El back manda enrollment_pending=1 cuando el pago SÍ se cobró pero la matrícula
   // quedó en revisión. Nunca hay que mostrar "pago fallido" con la plata cobrada.
   const enrollmentPending = searchParams.get('enrollment_pending') === '1';
+  // Pago de una sesión especial (no un curso): el back manda kind y el nombre.
+  const sessionTitle = searchParams.get('kind') === 'special_session' ? searchParams.get('session') : null;
 
   const getPaymentTypeName = (code) => {
     const types = { VD: 'Débito', VN: 'Crédito', VC: 'Crédito en cuotas', SI: 'Sin interés', S2: 'Sin interés 2' };
@@ -44,8 +46,10 @@ const PaymentSuccess = () => {
         <h1 className="ps-title">{enrollmentPending ? '¡Pago recibido!' : '¡Pago exitoso!'}</h1>
         <p className="ps-subtitle">
           {enrollmentPending
-            ? 'Estamos terminando de confirmar tu matrícula y te escribimos hoy mismo'
-            : 'Tu inscripción ha sido confirmada'}
+            ? 'Estamos terminando de confirmar tu inscripción y te escribimos hoy mismo'
+            : sessionTitle
+              ? `Tu lugar en ${sessionTitle} está confirmado. Te enviamos los detalles por correo.`
+              : 'Tu inscripción ha sido confirmada'}
         </p>
 
         {enrollmentPending && (

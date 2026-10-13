@@ -6,6 +6,7 @@ import Mission from '../components/Landing/Mission';
 import CoursesShowcase from '../components/Landing/CoursesShowcase';
 import HorariosGrid from '../components/Landing/HorariosGrid';
 import Location from '../components/Landing/Location';
+import SpecialSessionsSection from '../components/SpecialSessions/SpecialSessionsSection';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const LandingPage = () => {
         <div id="courses">
           <CoursesShowcase />
         </div>
+        <SpecialSessionsSection />
         <div id="mission">
           <Mission />
         </div>
