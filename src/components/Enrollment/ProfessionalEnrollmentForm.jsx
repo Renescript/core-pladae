@@ -75,9 +75,9 @@ const formatRenewalDate = (iso) => {
   return `${day}/${month}`;
 };
 
-const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null }) => {
-  // Con link de renovación se parte de cero (el borrador de otra visita no aplica).
-  const savedDraft = renewalToken ? null : loadDraft();
+const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, initialCourseId = null }) => {
+  // Con link de renovación o de taller se parte de cero (el borrador de otra visita no aplica).
+  const savedDraft = renewalToken || initialCourseId ? null : loadDraft();
   const saveTimeoutRef = useRef(null);
 
   const [currentStep, setCurrentStep] = useState(savedDraft?.currentStep || 1);
@@ -169,6 +169,22 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null })
     loadRenewal();
     return () => { cancelled = true; };
   }, [renewalToken]);
+
+  // Link con ?curso=<id>: parte con ese taller elegido, en el paso de frecuencia.
+  useEffect(() => {
+    if (!initialCourseId || renewalToken) return;
+    let cancelled = false;
+    clearDraft();
+    getCoursesSchedulesGrid()
+      .then((courses) => {
+        const course = courses.find(c => c.id === initialCourseId);
+        if (cancelled || !course) return;
+        setTechnique(course);
+        setCurrentStep(2);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [initialCourseId, renewalToken]);
 
   // Cargar períodos de pago al montar el componente
   useEffect(() => {

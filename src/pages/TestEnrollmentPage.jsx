@@ -8,6 +8,8 @@ const TestEnrollmentPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const renewalToken = searchParams.get('renovar');
+  // ?curso=<id>: deja el taller elegido (link de la invitación después de la clase de prueba).
+  const initialCourseId = parseInt(searchParams.get('curso'), 10) || null;
   const [enrollmentData, setEnrollmentData] = useState(null);
 
   const handleCloseEnrollment = () => {
@@ -28,6 +30,7 @@ const TestEnrollmentPage = () => {
       {!enrollmentData ? (
         <ProfessionalEnrollmentForm
           renewalToken={renewalToken}
+          initialCourseId={initialCourseId}
           onClose={handleCloseEnrollment}
           onSuccess={handleEnrollmentSuccess}
         />
