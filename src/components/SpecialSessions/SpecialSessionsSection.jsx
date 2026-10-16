@@ -21,7 +21,7 @@ const SpecialSessionsSection = () => {
       <div className="ss-container">
         <p className="ss-label">SESIONES ESPECIALES</p>
         <h2 className="ss-title">Talleres con fecha</h2>
-        <p className="ss-intro">Sesiones de uno o varios días, con fechas fijas y un solo valor. No necesitas estar inscrita en un curso.</p>
+        <p className="ss-intro">Sesiones de uno o varios días, con fechas fijas y un solo valor. No necesitas estar inscrito en un curso.</p>
 
         <div className="ss-grid">
           {sessions.map(session => {
