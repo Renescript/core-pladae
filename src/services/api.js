@@ -451,6 +451,20 @@ export const checkoutSpecialSession = async (slug, { name, email, phone }) => {
  * @param {string} token
  * @returns {Promise<object>} data del back: student, weekly_plan_id, sections, ...
  */
+/**
+ * Mensaje de WhatsApp para el último paso de la inscripción (página de pago exitoso).
+ * El token lo agrega el back al volver de Webpay.
+ */
+export const getPaymentSummary = async (token) => {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/payment_summaries/${encodeURIComponent(token)}`, {
+    method: 'GET',
+    headers: NO_CACHE_HEADERS
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || !result.success) throw new Error('No pudimos cargar el resumen del pago.');
+  return result.data;
+};
+
 export const getRenewal = async (token) => {
   const response = await fetchWithTimeout(`${API_BASE_URL}/renewals/${encodeURIComponent(token)}`, {
     method: 'GET',

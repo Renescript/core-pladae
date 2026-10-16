@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { getPaymentSummary } from '../../services/api';
 import './PaymentStatus.css';
 
 const PaymentSuccess = () => {
@@ -26,6 +27,23 @@ const PaymentSuccess = () => {
   const enrollmentPending = searchParams.get('enrollment_pending') === '1';
   // Pago de una sesión especial (no un curso): el back manda kind y el nombre.
   const sessionTitle = searchParams.get('kind') === 'special_session' ? searchParams.get('session') : null;
+  const summaryToken = searchParams.get('summary');
+
+  // Último paso: escribir a Gustarte por WhatsApp para entrar al grupo del taller.
+  // El back arma el mensaje con nombre, taller y horario; si falla, va uno genérico.
+  const fallbackText = `Hola, acabo de inscribirme en Gustarte${buyOrder ? ` (orden ${buyOrder})` : ''}. ¿Me pueden agregar al grupo de WhatsApp?`;
+  const [whatsappUrl, setWhatsappUrl] = useState(
+    `https://wa.me/56923718373?text=${encodeURIComponent(fallbackText)}`
+  );
+
+  useEffect(() => {
+    if (!summaryToken) return;
+    let cancelled = false;
+    getPaymentSummary(summaryToken)
+      .then((data) => { if (!cancelled && data?.whatsapp_url) setWhatsappUrl(data.whatsapp_url); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [summaryToken]);
 
   const getPaymentTypeName = (code) => {
     const types = { VD: 'Débito', VN: 'Crédito', VC: 'Crédito en cuotas', SI: 'Sin interés', S2: 'Sin interés 2' };
@@ -60,6 +78,17 @@ const PaymentSuccess = () => {
             número de orden.
           </div>
         )}
+
+        <div className="ps-whatsapp-step">
+          <p className="ps-whatsapp-kicker">Último paso para completar tu inscripción</p>
+          <p className="ps-whatsapp-text">
+            Envíanos un mensaje por WhatsApp para agregarte al grupo de tu taller. El mensaje ya
+            va escrito con tus datos: solo tienes que enviarlo.
+          </p>
+          <a className="ps-btn ps-btn--whatsapp" href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+            Enviar mensaje por WhatsApp
+          </a>
+        </div>
 
         <div className="ps-details">
           {amount && (

@@ -133,6 +133,43 @@
   text-align: left;
 }
 
+/* Último paso: WhatsApp para entrar al grupo del taller */
+.ps-whatsapp-step {
+  width: 100%;
+  background: rgba(37, 211, 102, 0.08);
+  border: 1px solid rgba(37, 211, 102, 0.35);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: left;
+  font-family: var(--font-body, 'Outfit', sans-serif);
+}
+
+.ps-whatsapp-kicker {
+  margin: 0 0 0.35rem 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-charcoal, #1f2933);
+}
+
+.ps-whatsapp-text {
+  margin: 0 0 0.85rem 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-medium, #4a5568);
+}
+
+.ps-btn--whatsapp {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  background-color: #25d366;
+  color: #fff;
+}
+
+.ps-btn--whatsapp:hover {
+  background-color: #1ebe5b;
+}
+
 /* Help section (failure) */
 .ps-help {
   width: 100%;
@@ -251,6 +288,7 @@
     max-width: 100%;
   }
 
+  .ps-whatsapp-step,
   .ps-actions,
   .ps-footer-text {
     display: none;
