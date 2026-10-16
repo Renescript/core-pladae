@@ -1,0 +1,36 @@
+.privacidad-page {
+  max-width: 760px;
+  font-family: 'Work Sans', sans-serif;
+  color: #2d3748;
+  line-height: 1.65;
+}
+
+.privacidad-page section {
+  margin-bottom: 2.25rem;
+}
+
+.privacidad-page h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1.2rem, 1.05rem + 0.5vw, 1.45rem);
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.75rem 0;
+}
+
+.privacidad-page p {
+  margin: 0 0 0.85rem 0;
+}
+
+.privacidad-page ul {
+  margin: 0 0 0.85rem 0;
+  padding-left: 1.25rem;
+}
+
+.privacidad-page li {
+  margin-bottom: 0.5rem;
+}
+
+.privacidad-page a {
+  color: var(--color-primary);
+  overflow-wrap: anywhere;
+}

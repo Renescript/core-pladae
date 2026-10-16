@@ -11,6 +11,7 @@ import CalendarTestPage from './pages/CalendarTestPage';
 import PaymentSuccess from './components/Enrollment/PaymentSuccess';
 import PaymentFailure from './components/Enrollment/PaymentFailure';
 import SpecialSessionPage from './pages/SpecialSessionPage';
+import PrivacidadPage from './pages/PrivacidadPage';
 import { workshops } from './data/workshops';
 import './App.css';
 
@@ -141,6 +142,7 @@ function AppFooter() {
         </div>
         <div className="footer-bottom">
           <p>&copy; 2024 GUSTARTE. Todos los derechos reservados.</p>
+          <p><a href="/privacidad">Política de privacidad</a></p>
         </div>
       </div>
     </footer>
@@ -159,6 +161,7 @@ function App() {
           <Route path="/valores" element={<PreciosPage />} />
           <Route path="/precios" element={<Navigate to="/valores" replace />} />
           <Route path="/horario" element={<HorarioPage />} />
+          <Route path="/privacidad" element={<PrivacidadPage />} />
           <Route path="/enrollment" element={<EnrollmentPage />} />
           <Route path="/copy-enrollment" element={<CopyEnrollmentPage />} />
           <Route path="/inscripcion" element={<TestEnrollmentPage />} />
