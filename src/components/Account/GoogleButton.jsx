@@ -6,11 +6,11 @@ const GoogleButton = ({ returnPath = '/mi-cuenta', label = 'Continuar con Google
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleClick = async () => {
+  const handleClick = () => {
     setBusy(true);
     setError(null);
     try {
-      await startGoogleLogin(returnPath);
+      startGoogleLogin(returnPath);
     } catch {
       setError('No pudimos abrir Google. Intenta de nuevo o pide un link por correo.');
       setBusy(false);

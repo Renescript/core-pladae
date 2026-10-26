@@ -1119,22 +1119,14 @@ export const requestLoginLink = (email) => accountFetch('/login_link', { method:
 export const logoutAccount = () => accountFetch('/session', { method: 'DELETE' });
 
 /**
- * "Continuar con Google": un POST normal (no fetch) al back con el token de la
- * sesión, como exige omniauth-rails_csrf_protection. Al volver, Google deja al
- * alumno en `returnPath` de esta web.
+ * "Continuar con Google": va a admin.gustarte.cl/alumnos/google, que hace el POST
+ * a Google desde su propio dominio (Rails rechaza un POST con token que venga de
+ * www.gustarte.cl). Al volver, Google deja al alumno en `returnPath` de esta web.
  */
-export const startGoogleLogin = async (returnPath = '/mi-cuenta') => {
-  const { csrf_token: token, google_url: url } = await getAccount();
-  const form = document.createElement('form');
-  form.method = 'POST';
-  form.action = url;
-  [['authenticity_token', token], ['origin', `${window.location.origin}${returnPath}`]].forEach(([name, value]) => {
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = name;
-    input.value = value;
-    form.appendChild(input);
-  });
-  document.body.appendChild(form);
-  form.submit();
+export const startGoogleLogin = (returnPath = '/mi-cuenta') => {
+  const backend = import.meta.env.MODE === 'production'
+    ? (import.meta.env.VITE_ACCOUNT_API_URL || 'https://admin.gustarte.cl')
+    : '';
+  const origin = `${window.location.origin}${returnPath}`;
+  window.location.assign(`${backend}/alumnos/google?origin=${encodeURIComponent(origin)}`);
 };
