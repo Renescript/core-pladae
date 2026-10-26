@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import GoogleButton from '../Account/GoogleButton';
+import '../Account/account.css';
 
 const SimplifiedDataPayment = ({
   studentData,
@@ -8,10 +10,17 @@ const SimplifiedDataPayment = ({
   // Al renovar con link: correo y teléfono enmascarados de su inscripción, como pista
   // (el link no entrega los datos completos).
   renewalHints = null,
+  // Sesión de Mi cuenta: si hay, se muestra con quién se inscribe; si no, el
+  // botón opcional de Google para alumnos que ya tienen cuenta.
+  accountUser = null,
+  onAccountLogout,
+  showGoogleLogin = false,
   onComplete,
   onBack
 }) => {
   const [errors, setErrors] = useState({});
+  // Al volver de Google sin poder entrar, el back agrega ?login_error= a la URL.
+  const loginError = new URLSearchParams(window.location.search).get('login_error');
 
   const handleInputChange = (field, value) => {
     onStudentDataChange({ ...studentData, [field]: value });
@@ -68,6 +77,25 @@ const SimplifiedDataPayment = ({
       <div className="step-header">
         <h2>Datos y pago</h2>
       </div>
+
+      {accountUser ? (
+        <div className="acc-enroll-banner">
+          <span>Te estás inscribiendo como <strong>{accountUser.name}</strong> ({accountUser.email}).</span>
+          <button type="button" onClick={onAccountLogout}>¿No eres tú?</button>
+        </div>
+      ) : showGoogleLogin && (
+        <div className="acc-enroll-google">
+          <p>¿Ya eres alumno de Gustarte? Entra y llenamos tus datos.</p>
+          <GoogleButton returnPath="/inscripcion" />
+          {loginError && (
+            <p className="acc-error" role="alert">
+              {loginError === 'no_student'
+                ? 'Esa cuenta de Google no tiene inscripciones todavía. No pasa nada: completa tus datos abajo y tu cuenta se crea al pagar.'
+                : 'No pudimos entrar con Google. Completa tus datos abajo para seguir.'}
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="form-section">
         <h3>Tus datos</h3>

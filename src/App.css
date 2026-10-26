@@ -3,7 +3,7 @@
    ======================================== */
 
 /* Import Google Fonts for Atelier Design */
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&family=Roboto:wght@500&display=swap');
 
 @font-face {
   font-family: 'Gill Sans MT Condensed';
@@ -504,4 +504,40 @@ main {
   margin: 0;
   color: rgba(247, 243, 238, 0.5);
   font-size: 0.875rem;
+}
+
+.footer-bottom p + p { margin-top: 0.4rem; }
+.footer-bottom a { color: rgba(247, 243, 238, 0.75); }
+.footer-bottom a:hover { color: #fff; }
+
+/* Mi cuenta en el menú y menú de celular */
+.nav-account-link { background: none; border: 0; padding: 0; cursor: pointer; }
+
+.nav-mobile-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 1.25rem 1.25rem;
+  background: #1f2933;
+}
+
+.nav-mobile-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0.7rem 0;
+  color: #fff;
+  font: 500 1rem 'Outfit', sans-serif;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+}
+
+.nav-mobile-sub { padding-left: 1rem; font-weight: 400; font-size: 0.95rem; color: rgba(255, 255, 255, 0.8); }
+.nav-mobile-cta { margin-top: 0.75rem; width: 100%; }
+
+@media (min-width: 768px) {
+  .nav-mobile-menu { display: none; }
 }

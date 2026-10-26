@@ -12,6 +12,8 @@ import PaymentSuccess from './components/Enrollment/PaymentSuccess';
 import PaymentFailure from './components/Enrollment/PaymentFailure';
 import SpecialSessionPage from './pages/SpecialSessionPage';
 import PrivacidadPage from './pages/PrivacidadPage';
+import MiCuentaPage from './pages/MiCuentaPage';
+import RecuperarClasePage from './pages/RecuperarClasePage';
 import { workshops } from './data/workshops';
 import './App.css';
 
@@ -81,6 +83,9 @@ function AppHeader() {
           <a href="#contact" className="nav-link">
             Contacto
           </a>
+          <button className="nav-link nav-account-link" onClick={() => navigate('/mi-cuenta')}>
+            Mi cuenta
+          </button>
           <button className="nav-cta-btn" onClick={() => navigate('/inscripcion')}>
             Inscríbete
           </button>
@@ -89,6 +94,8 @@ function AppHeader() {
         <button
           className="nav-mobile-toggle"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-expanded={mobileMenuOpen}
+          aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="3" y1="6" x2="21" y2="6"/>
@@ -97,6 +104,20 @@ function AppHeader() {
           </svg>
         </button>
       </div>
+
+      {mobileMenuOpen && (
+        <div className="nav-mobile-menu">
+          <a href="/#about" className="nav-mobile-item" onClick={() => setMobileMenuOpen(false)}>Quiénes somos</a>
+          {workshops.map((w) => (
+            <button key={w.slug} className="nav-mobile-item nav-mobile-sub" onClick={() => { handleWorkshopClick(w.slug); setMobileMenuOpen(false); }}>
+              {w.name}
+            </button>
+          ))}
+          <a href="/#contact" className="nav-mobile-item" onClick={() => setMobileMenuOpen(false)}>Contacto</a>
+          <button className="nav-mobile-item" onClick={() => { navigate('/mi-cuenta'); setMobileMenuOpen(false); }}>Mi cuenta</button>
+          <button className="nav-cta-btn nav-mobile-cta" onClick={() => { navigate('/inscripcion'); setMobileMenuOpen(false); }}>Inscríbete</button>
+        </div>
+      )}
     </nav>
   );
 }
@@ -142,7 +163,7 @@ function AppFooter() {
         </div>
         <div className="footer-bottom">
           <p>&copy; 2024 GUSTARTE. Todos los derechos reservados.</p>
-          <p><a href="https://admin.gustarte.cl/alumnos">Mis clases (alumnos)</a> · <a href="/privacidad">Política de privacidad</a></p>
+          <p><a href="/mi-cuenta">Mi cuenta</a> · <a href="/privacidad">Política de privacidad</a></p>
         </div>
       </div>
     </footer>
@@ -162,6 +183,8 @@ function App() {
           <Route path="/precios" element={<Navigate to="/valores" replace />} />
           <Route path="/horario" element={<HorarioPage />} />
           <Route path="/privacidad" element={<PrivacidadPage />} />
+          <Route path="/mi-cuenta" element={<MiCuentaPage />} />
+          <Route path="/mi-cuenta/recuperar/:id" element={<RecuperarClasePage />} />
           <Route path="/enrollment" element={<EnrollmentPage />} />
           <Route path="/copy-enrollment" element={<CopyEnrollmentPage />} />
           <Route path="/inscripcion" element={<TestEnrollmentPage />} />

@@ -11,13 +11,15 @@ export default defineConfig({
     }),
   ],
   server: {
-    proxy: {
-      '/api': {
-        target: 'https://academy-mgmt-ye8h.onrender.com',
+    // VITE_PROXY_TARGET=http://127.0.0.1:3000 apunta a un back local; también se
+    // pasan /alumnos y /users para poder iniciar sesión (Mi cuenta) en desarrollo.
+    proxy: Object.fromEntries(
+      (process.env.VITE_PROXY_TARGET ? ['/api', '/alumnos', '/users'] : ['/api']).map((prefix) => [prefix, {
+        target: process.env.VITE_PROXY_TARGET || 'https://academy-mgmt-ye8h.onrender.com',
         changeOrigin: true,
         secure: false,
-      }
-    }
+      }])
+    )
   },
   optimizeDeps: {
     include: [

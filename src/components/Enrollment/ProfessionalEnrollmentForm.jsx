@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { createEnrollment, getPaymentPeriods, getPreviewClassDates, getRenewal, getCoursesSchedulesGrid, getWeeklyPlans } from '../../services/api';
+import { createEnrollment, getPaymentPeriods, getPreviewClassDates, getRenewal, getCoursesSchedulesGrid, getWeeklyPlans, getAccount, logoutAccount } from '../../services/api';
 import TechniqueSelector from './TechniqueSelector';
 import SimplifiedPlanConfigurator from './SimplifiedPlanConfigurator';
 import MultiDayScheduleSelector from './MultiDayScheduleSelector';
@@ -169,6 +169,35 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
     loadRenewal();
     return () => { cancelled = true; };
   }, [renewalToken]);
+
+  // Sesión iniciada en Mi cuenta: los datos del alumno vienen puestos (se pueden
+  // cambiar). Sin sesión se inscribe igual que siempre; la cuenta se crea al pagar.
+  const [accountUser, setAccountUser] = useState(null);
+  useEffect(() => {
+    if (renewalToken) return;
+    let cancelled = false;
+    getAccount()
+      .then((acc) => {
+        if (cancelled || !acc.signed_in) return;
+        const u = acc.user;
+        setAccountUser(u);
+        setStudentData((prev) => ({
+          ...prev,
+          firstName: prev.firstName || u.first_name || '',
+          lastName: prev.lastName || u.last_name || '',
+          email: prev.email || u.email || '',
+          phone: prev.phone || u.phone || ''
+        }));
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [renewalToken]);
+
+  const handleAccountLogout = async () => {
+    try { await logoutAccount(); } catch { /* igual se limpia */ }
+    setAccountUser(null);
+    setStudentData((prev) => ({ ...prev, firstName: '', lastName: '', email: '', phone: '' }));
+  };
 
   // Link con ?curso=<id>: parte con ese taller elegido, en el paso de frecuencia.
   useEffect(() => {
@@ -851,6 +880,9 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
             <SimplifiedDataPayment
               studentData={studentData}
               onStudentDataChange={setStudentData}
+              accountUser={accountUser}
+              onAccountLogout={handleAccountLogout}
+              showGoogleLogin={!renewal}
               paymentMethod={paymentMethod}
               onPaymentMethodChange={setPaymentMethod}
               completedEnrollments={completedEnrollments}

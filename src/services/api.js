@@ -1082,3 +1082,59 @@ export const getDummyGridCalendarData = () => {
     }
   ];
 };
+
+// ============================================================
+// Mi cuenta (www.gustarte.cl/mi-cuenta)
+// ============================================================
+// Va a admin.gustarte.cl (no a la URL de onrender): la sesión es una cookie de
+// .gustarte.cl y solo viaja a ese dominio. En desarrollo pasa por el proxy de Vite.
+const ACCOUNT_API = import.meta.env.MODE === 'production'
+  ? `${import.meta.env.VITE_ACCOUNT_API_URL || 'https://admin.gustarte.cl'}/api/v1/account`
+  : '/api/v1/account';
+
+const accountFetch = async (path, { method = 'GET', body } = {}) => {
+  const response = await fetchWithTimeout(`${ACCOUNT_API}${path}`, {
+    method,
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || result.success === false) {
+    const error = new Error(result.error || 'No pudimos conectarnos. Intenta de nuevo.');
+    error.status = response.status;
+    throw error;
+  }
+  return result;
+};
+
+/** Sesión actual: { signed_in, user, csrf_token, google_url } */
+export const getAccount = () => accountFetch('');
+export const getAccountClasses = () => accountFetch('/classes');
+export const getMakeupOptions = (absenceId) => accountFetch(`/absences/${absenceId}/makeup_options`);
+export const createMakeup = (absenceId, sectionId, date) =>
+  accountFetch(`/absences/${absenceId}/makeup`, { method: 'POST', body: { section_id: sectionId, date } });
+export const updateAccount = (data) => accountFetch('', { method: 'PATCH', body: data });
+export const requestLoginLink = (email) => accountFetch('/login_link', { method: 'POST', body: { email } });
+export const logoutAccount = () => accountFetch('/session', { method: 'DELETE' });
+
+/**
+ * "Continuar con Google": un POST normal (no fetch) al back con el token de la
+ * sesión, como exige omniauth-rails_csrf_protection. Al volver, Google deja al
+ * alumno en `returnPath` de esta web.
+ */
+export const startGoogleLogin = async (returnPath = '/mi-cuenta') => {
+  const { csrf_token: token, google_url: url } = await getAccount();
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = url;
+  [['authenticity_token', token], ['origin', `${window.location.origin}${returnPath}`]].forEach(([name, value]) => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = name;
+    input.value = value;
+    form.appendChild(input);
+  });
+  document.body.appendChild(form);
+  form.submit();
+};

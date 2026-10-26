@@ -1,0 +1,237 @@
+/* Mi cuenta y Recuperar clase (www.gustarte.cl/mi-cuenta) */
+.acc-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 1rem + 2vw, 3rem) 16px 4rem;
+  font-family: 'Outfit', sans-serif;
+  color: var(--color-charcoal, #1f2933);
+  min-height: 60vh;
+}
+
+.acc-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin: 0 0 1rem;
+  box-shadow: 0 1px 3px rgba(31, 41, 51, 0.08);
+}
+
+.acc-login {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 24px rgba(31, 41, 51, 0.08);
+}
+
+.acc-login form { text-align: left; }
+
+.acc-title {
+  font-size: clamp(1.5rem, 1.3rem + 0.8vw, 1.9rem);
+  font-weight: 600;
+  margin: 0 0 0.3rem;
+  line-height: 1.2;
+}
+
+.acc-lead {
+  color: var(--text-medium, #4a5568);
+  margin: 0 0 1.25rem;
+  line-height: 1.5;
+}
+
+.acc-loading { color: var(--text-light, #718096); }
+
+.acc-hello {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.acc-btn {
+  display: inline-block;
+  background: var(--color-primary, #47a1bf);
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.65rem 1.25rem;
+  font: 600 0.95rem 'Outfit', sans-serif;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.acc-btn:hover { background: var(--primary-dark, #3b8da8); color: #fff; }
+.acc-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.acc-btn--block { display: block; width: 100%; padding: 0.8rem 1rem; font-size: 1rem; }
+.acc-btn--small { padding: 0.4rem 0.9rem; font-size: 0.85rem; white-space: nowrap; }
+.acc-btn--ghost { background: transparent; color: var(--text-medium, #4a5568); border: 1px solid var(--border-color, #cbd5e0); }
+.acc-btn--ghost:hover { background: #fff; color: var(--color-charcoal, #1f2933); }
+
+/* Botón de Google según sus pautas de marca */
+.acc-google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  background: #fff;
+  border: 1px solid #747775;
+  border-radius: 22px;
+  color: #1f1f1f;
+  font-family: 'Roboto', arial, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.acc-google-btn:hover { background: #f8f9fa; box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15); }
+.acc-google-btn:disabled { opacity: 0.7; cursor: wait; }
+.acc-google-btn svg { width: 20px; height: 20px; margin-right: 12px; flex-shrink: 0; }
+
+.acc-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-light, #718096);
+  font-size: 0.85rem;
+  margin: 1.4rem 0 0.4rem;
+}
+
+.acc-divider::before,
+.acc-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-light, #e2e8f0); }
+
+.acc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0.75rem 0;
+  font-weight: 500;
+  font-size: 0.92rem;
+  color: var(--text-medium, #4a5568);
+}
+
+.acc-field input {
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--border-color, #cbd5e0);
+  border-radius: 10px;
+  font: 400 1rem 'Outfit', sans-serif;
+  color: var(--color-charcoal, #1f2933);
+}
+
+.acc-field input:focus { outline: none; border-color: var(--color-primary, #47a1bf); box-shadow: 0 0 0 3px #d9f2f7; }
+
+.acc-subhead { margin: 1.25rem 0 0; font-weight: 600; font-size: 0.95rem; }
+.acc-note { font-size: 0.85rem; color: var(--text-light, #718096); margin: 0.9rem 0 0; }
+.acc-note a { color: var(--primary-dark, #3b8da8); }
+.acc-error { color: #b91c1c; background: #fdecec; border-radius: 10px; padding: 0.6rem 0.8rem; font-size: 0.9rem; margin: 0.75rem 0; text-align: left; }
+.acc-ok { color: #15803d; background: #e8f6ee; border-radius: 10px; padding: 0.6rem 0.8rem; font-size: 0.9rem; margin: 0.75rem 0; }
+
+.acc-tabs {
+  display: flex;
+  gap: 0.35rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border-light, #e2e8f0);
+}
+
+.acc-tab {
+  background: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  padding: 0.6rem 0.85rem;
+  font: 500 0.95rem 'Outfit', sans-serif;
+  color: var(--text-light, #718096);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.acc-tab.is-active { color: var(--color-charcoal, #1f2933); border-bottom-color: var(--color-primary, #47a1bf); }
+
+.acc-plan-title { font-size: 1.1rem; font-weight: 600; margin: 0; padding: 0; }
+.acc-plan-meta { color: var(--text-light, #718096); font-size: 0.86rem; margin: 0.2rem 0 0.75rem; }
+
+.acc-classes { list-style: none; margin: 0; padding: 0; }
+
+.acc-class,
+.acc-history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0;
+  border-top: 1px solid var(--bg-subtle, #f0ebe5);
+}
+
+.acc-class-date { font-weight: 600; }
+.acc-class-slot { color: var(--text-light, #718096); font-size: 0.85rem; }
+
+.acc-tag {
+  font-size: 0.78rem;
+  border-radius: 999px;
+  padding: 0.18rem 0.65rem;
+  white-space: nowrap;
+  background: #f1f5f9;
+  color: var(--text-medium, #4a5568);
+}
+
+.acc-tag--ok { background: #e8f6ee; color: #15803d; }
+.acc-tag--bad { background: #fdecec; color: #b91c1c; }
+.acc-tag--makeup { background: #e6f3f8; color: var(--primary-dark, #3b8da8); }
+
+.acc-back { display: inline-block; margin-bottom: 0.75rem; color: var(--primary-dark, #3b8da8); font-size: 0.92rem; }
+
+.acc-usage {
+  background: #fff7e6;
+  border-radius: 10px;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.acc-option { border: 0; }
+.acc-option legend { float: left; width: 100%; }
+.acc-option .acc-plan-meta { clear: both; }
+
+.acc-dates { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.acc-date { position: relative; }
+.acc-date input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+
+.acc-date span {
+  display: inline-block;
+  border: 1px solid var(--border-color, #cbd5e0);
+  border-radius: 10px;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.9rem;
+  background: #fff;
+}
+
+.acc-date.is-selected span { background: var(--color-primary, #47a1bf); border-color: var(--color-primary, #47a1bf); color: #fff; }
+.acc-date input:focus-visible + span { outline: 2px solid var(--primary-dark, #3b8da8); outline-offset: 2px; }
+
+.acc-done { text-align: center; padding: 2rem 1.5rem; }
+
+/* Banner "inscribiéndote como" en el formulario de inscripción */
+.acc-enroll-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  background: #e6f3f8;
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.acc-enroll-banner button { background: none; border: 0; color: var(--primary-dark, #3b8da8); text-decoration: underline; cursor: pointer; font: inherit; }
+
+.acc-enroll-google { margin-bottom: 1.25rem; }
+.acc-enroll-google p { font-size: 0.85rem; color: var(--text-light, #718096); margin: 0 0 0.5rem; }
