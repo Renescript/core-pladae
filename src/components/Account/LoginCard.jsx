@@ -4,7 +4,8 @@ import GoogleButton from './GoogleButton';
 
 const LOGIN_ERRORS = {
   no_student: 'No encontramos una inscripción con esa cuenta de Google. Entra con el correo con que te inscribiste o pide un link por correo.',
-  google: 'No pudimos entrar con Google. Intenta de nuevo o pide un link por correo.'
+  google: 'No pudimos entrar con Google. Intenta de nuevo o pide un link por correo.',
+  link: 'Ese link venció o ya se usó. Pide uno nuevo abajo.'
 };
 
 const LoginCard = ({ loginError }) => {
