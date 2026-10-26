@@ -142,7 +142,7 @@ function AppFooter() {
         </div>
         <div className="footer-bottom">
           <p>&copy; 2024 GUSTARTE. Todos los derechos reservados.</p>
-          <p><a href="/privacidad">Política de privacidad</a></p>
+          <p><a href="https://admin.gustarte.cl/alumnos">Mis clases (alumnos)</a> · <a href="/privacidad">Política de privacidad</a></p>
         </div>
       </div>
     </footer>
