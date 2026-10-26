@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getSpecialSession, checkoutSpecialSession } from '../services/api';
+import PhoneInput from '../components/Common/PhoneInput';
+import { isValidPhone, normalizePhone } from '../utils/phone';
 import { formatLongDay, formatPrice, placesLabel } from '../components/SpecialSessions/format';
 import '../components/Landing/landing.css';
 import '../components/SpecialSessions/special-sessions.css';
@@ -24,9 +26,13 @@ const SpecialSessionPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setPayError(null);
+    if (!isValidPhone(form.phone)) {
+      setPayError('Revisa el teléfono (ej: +56 9 1234 5678).');
+      return;
+    }
     setPaying(true);
     try {
-      const payment = await checkoutSpecialSession(slug, form);
+      const payment = await checkoutSpecialSession(slug, { ...form, phone: normalizePhone(form.phone) });
       window.location.href = payment.full_url;
     } catch (error) {
       setPayError(error.message);
@@ -89,7 +95,7 @@ const SpecialSessionPage = () => {
               <form className="ss-form" onSubmit={handleSubmit}>
                 <label>Nombre y apellido<input required value={form.name} onChange={handleChange('name')} autoComplete="name" /></label>
                 <label>Correo<input required type="email" value={form.email} onChange={handleChange('email')} autoComplete="email" /></label>
-                <label>Teléfono<input required type="tel" value={form.phone} onChange={handleChange('phone')} autoComplete="tel" /></label>
+                <label>Teléfono<PhoneInput required value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} /></label>
                 <label className="ss-check">
                   <input required type="checkbox" checked={form.acceptsPrivacy} onChange={handleCheck('acceptsPrivacy')} />
                   <span>Acepto la <a href="/privacidad" target="_blank" rel="noopener noreferrer">política de privacidad</a> de Gustarte.</span>

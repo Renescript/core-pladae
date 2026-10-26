@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { getAccount, getAccountClasses, logoutAccount, updateAccount } from '../services/api';
 import LoginCard from '../components/Account/LoginCard';
+import PhoneInput from '../components/Common/PhoneInput';
+import { formatPhone, isValidPhone, normalizePhone } from '../utils/phone';
 import { dayMonth, longDate } from '../components/Account/dates';
 import '../components/Account/account.css';
 
@@ -65,16 +67,24 @@ const HistoryRow = ({ plan }) => {
 
 const ProfileForm = ({ user, onSaved }) => {
   const [form, setForm] = useState({
-    phone: user.phone || '', guardian_email: user.guardian_email || '', guardian_phone: user.guardian_phone || ''
+    phone: formatPhone(user.phone), guardian_email: user.guardian_email || '', guardian_phone: formatPhone(user.guardian_phone)
   });
   const [state, setState] = useState({ busy: false, message: null, error: null });
   const change = (field) => (e) => setForm({ ...form, [field]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if ((form.phone && !isValidPhone(form.phone)) || (form.guardian_phone && !isValidPhone(form.guardian_phone))) {
+      setState({ busy: false, message: null, error: 'Revisa los teléfonos (ej: +56 9 1234 5678).' });
+      return;
+    }
     setState({ busy: true, message: null, error: null });
     try {
-      const result = await updateAccount(form);
+      const result = await updateAccount({
+        ...form,
+        phone: normalizePhone(form.phone) || '',
+        guardian_phone: normalizePhone(form.guardian_phone) || ''
+      });
       onSaved(result.user);
       setState({ busy: false, message: 'Datos guardados.', error: null });
     } catch (err) {
@@ -86,10 +96,10 @@ const ProfileForm = ({ user, onSaved }) => {
     <form className="acc-card" onSubmit={handleSubmit}>
       <h2 className="acc-plan-title">Mis datos</h2>
       <p className="acc-plan-meta">{user.name} · {user.email}</p>
-      <label className="acc-field">Teléfono<input type="tel" value={form.phone} onChange={change('phone')} /></label>
+      <label className="acc-field">Teléfono<PhoneInput value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} /></label>
       <p className="acc-subhead">Apoderado (si eres menor de edad)</p>
       <label className="acc-field">Email del apoderado<input type="email" value={form.guardian_email} onChange={change('guardian_email')} /></label>
-      <label className="acc-field">Teléfono del apoderado<input type="tel" value={form.guardian_phone} onChange={change('guardian_phone')} /></label>
+      <label className="acc-field">Teléfono del apoderado<PhoneInput value={form.guardian_phone} onChange={(v) => setForm({ ...form, guardian_phone: v })} /></label>
       {state.error && <p className="acc-error" role="alert">{state.error}</p>}
       {state.message && <p className="acc-ok" role="status">{state.message}</p>}
       <button type="submit" className="acc-btn" disabled={state.busy}>{state.busy ? 'Guardando…' : 'Guardar'}</button>

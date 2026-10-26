@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { formatPhone, normalizePhone } from '../../utils/phone';
 import { createEnrollment, getPaymentPeriods, getPreviewClassDates, getRenewal, getCoursesSchedulesGrid, getWeeklyPlans, getAccount, logoutAccount } from '../../services/api';
 import TechniqueSelector from './TechniqueSelector';
 import SimplifiedPlanConfigurator from './SimplifiedPlanConfigurator';
@@ -186,7 +187,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
           firstName: prev.firstName || u.first_name || '',
           lastName: prev.lastName || u.last_name || '',
           email: prev.email || u.email || '',
-          phone: prev.phone || u.phone || ''
+          phone: prev.phone || formatPhone(u.phone) || ''
         }));
       })
       .catch(() => {});
@@ -556,7 +557,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
     return {
       name: `${studentData.firstName} ${studentData.lastName}`,
       email: studentData.email,
-      phone: studentData.phone,
+      phone: normalizePhone(studentData.phone) || studentData.phone,
       weekly_plan_id: weeklyPlan?.id,
       payment_method_id: paymentMethod,
       payment_period_id: paymentPeriod?.id || null,
@@ -656,7 +657,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
     const commonData = {
       name: `${studentData.firstName} ${studentData.lastName}`,
       email: studentData.email,
-      phone: studentData.phone,
+      phone: normalizePhone(studentData.phone) || studentData.phone,
       payment_method_id: paymentMethod
     };
 
@@ -681,7 +682,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
       image_consent: Boolean(studentData.imageConsent),
       is_minor: Boolean(studentData.isMinor),
       guardian_email: studentData.isMinor ? (studentData.guardianEmail || '').trim() : '',
-      guardian_phone: studentData.isMinor ? (studentData.guardianPhone || '').trim() : ''
+      guardian_phone: studentData.isMinor ? (normalizePhone(studentData.guardianPhone) || (studentData.guardianPhone || '').trim()) : ''
     };
 
     const payload = {

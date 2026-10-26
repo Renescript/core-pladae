@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import GoogleButton from '../Account/GoogleButton';
+import PhoneInput from '../Common/PhoneInput';
+import { isValidPhone } from '../../utils/phone';
 import '../Account/account.css';
 
 const SimplifiedDataPayment = ({
@@ -36,10 +38,12 @@ const SimplifiedDataPayment = ({
     if (!studentData.email?.trim()) newErrors.email = 'Requerido';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(studentData.email)) newErrors.email = 'Email inválido';
     if (!studentData.phone?.trim()) newErrors.phone = 'Requerido';
+    else if (!isValidPhone(studentData.phone)) newErrors.phone = 'Revisa el número (ej: +56 9 1234 5678)';
     if (studentData.isMinor) {
       if (!studentData.guardianEmail?.trim()) newErrors.guardianEmail = 'Requerido';
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(studentData.guardianEmail)) newErrors.guardianEmail = 'Email inválido';
       if (!studentData.guardianPhone?.trim()) newErrors.guardianPhone = 'Requerido';
+      else if (!isValidPhone(studentData.guardianPhone)) newErrors.guardianPhone = 'Revisa el número (ej: +56 9 1234 5678)';
     }
     if (!studentData.acceptsPrivacy) newErrors.acceptsPrivacy = 'Debes aceptar la política de privacidad para inscribirte';
     setErrors(newErrors);
@@ -135,10 +139,9 @@ const SimplifiedDataPayment = ({
           </div>
           <div className="form-field">
             <label>Teléfono</label>
-            <input
-              type="tel"
-              value={studentData.phone || ''}
-              onChange={(e) => handleInputChange('phone', e.target.value)}
+            <PhoneInput
+              value={studentData.phone}
+              onChange={(v) => handleInputChange('phone', v)}
               className={errors.phone ? 'error' : ''}
             />
             {errors.phone && <span className="error-msg">{errors.phone}</span>}
@@ -176,10 +179,9 @@ const SimplifiedDataPayment = ({
               </div>
               <div className="form-field">
                 <label>Teléfono del apoderado</label>
-                <input
-                  type="tel"
-                  value={studentData.guardianPhone || ''}
-                  onChange={(e) => handleInputChange('guardianPhone', e.target.value)}
+                <PhoneInput
+                  value={studentData.guardianPhone}
+                  onChange={(v) => handleInputChange('guardianPhone', v)}
                   className={errors.guardianPhone ? 'error' : ''}
                 />
                 {errors.guardianPhone && <span className="error-msg">{errors.guardianPhone}</span>}
