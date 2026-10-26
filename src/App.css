@@ -541,3 +541,6 @@ main {
 @media (min-width: 768px) {
   .nav-mobile-menu { display: none; }
 }
+
+/* Aviso del campo de teléfono (PhoneInput) en cualquier formulario */
+.phone-error { display: block; color: #b91c1c; font-size: 13px; font-weight: 400; margin-top: 4px; }
