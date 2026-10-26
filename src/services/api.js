@@ -436,11 +436,15 @@ export const getSpecialSession = async (slug) => {
 };
 
 /** Inicia el pago en Webpay. Devuelve { full_url, amount, buy_order }. */
-export const checkoutSpecialSession = async (slug, { name, email, phone }) => {
+export const checkoutSpecialSession = async (slug, { name, email, phone, acceptsPrivacy, imageConsent }) => {
   const response = await fetchWithTimeout(`${API_BASE_URL}/special_sessions/${encodeURIComponent(slug)}/checkout`, {
     method: 'POST',
     headers: { ...NO_CACHE_HEADERS, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, phone })
+    body: JSON.stringify({
+      name, email, phone,
+      accepts_privacy: Boolean(acceptsPrivacy),
+      image_consent: Boolean(imageConsent)
+    })
   });
   return (await jsonOrThrow(response, 'No pudimos iniciar el pago.')).transbank_payment;
 };

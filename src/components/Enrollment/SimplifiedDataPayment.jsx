@@ -27,6 +27,12 @@ const SimplifiedDataPayment = ({
     if (!studentData.email?.trim()) newErrors.email = 'Requerido';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(studentData.email)) newErrors.email = 'Email inválido';
     if (!studentData.phone?.trim()) newErrors.phone = 'Requerido';
+    if (studentData.isMinor) {
+      if (!studentData.guardianEmail?.trim()) newErrors.guardianEmail = 'Requerido';
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(studentData.guardianEmail)) newErrors.guardianEmail = 'Email inválido';
+      if (!studentData.guardianPhone?.trim()) newErrors.guardianPhone = 'Requerido';
+    }
+    if (!studentData.acceptsPrivacy) newErrors.acceptsPrivacy = 'Debes aceptar la política de privacidad para inscribirte';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -51,7 +57,9 @@ const SimplifiedDataPayment = ({
       studentData.firstName?.trim() &&
       studentData.lastName?.trim() &&
       studentData.email?.trim() &&
-      studentData.phone?.trim()
+      studentData.phone?.trim() &&
+      (!studentData.isMinor || (studentData.guardianEmail?.trim() && studentData.guardianPhone?.trim())) &&
+      studentData.acceptsPrivacy
     );
   };
 
@@ -111,6 +119,72 @@ const SimplifiedDataPayment = ({
             )}
           </div>
         </div>
+      </div>
+
+      <div className="form-section">
+        <label className="consent-check">
+          <input
+            type="checkbox"
+            checked={Boolean(studentData.isMinor)}
+            onChange={(e) => handleInputChange('isMinor', e.target.checked)}
+          />
+          <span>La persona que se inscribe es menor de edad</span>
+        </label>
+
+        {studentData.isMinor && (
+          <div className="guardian-fields">
+            <h3>Datos del apoderado</h3>
+            <p className="field-hint">Le enviaremos una copia de la confirmación de la inscripción.</p>
+            <div className="form-grid">
+              <div className="form-field">
+                <label>Email del apoderado</label>
+                <input
+                  type="email"
+                  value={studentData.guardianEmail || ''}
+                  onChange={(e) => handleInputChange('guardianEmail', e.target.value)}
+                  className={errors.guardianEmail ? 'error' : ''}
+                />
+                {errors.guardianEmail && <span className="error-msg">{errors.guardianEmail}</span>}
+              </div>
+              <div className="form-field">
+                <label>Teléfono del apoderado</label>
+                <input
+                  type="tel"
+                  value={studentData.guardianPhone || ''}
+                  onChange={(e) => handleInputChange('guardianPhone', e.target.value)}
+                  className={errors.guardianPhone ? 'error' : ''}
+                />
+                {errors.guardianPhone && <span className="error-msg">{errors.guardianPhone}</span>}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="form-section consent-section">
+        <label className="consent-check">
+          <input
+            type="checkbox"
+            checked={Boolean(studentData.acceptsPrivacy)}
+            onChange={(e) => handleInputChange('acceptsPrivacy', e.target.checked)}
+          />
+          <span>
+            Acepto la <a href="/privacidad" target="_blank" rel="noopener noreferrer">política de privacidad</a> de Gustarte.
+          </span>
+        </label>
+        {errors.acceptsPrivacy && <span className="error-msg">{errors.acceptsPrivacy}</span>}
+
+        <label className="consent-check">
+          <input
+            type="checkbox"
+            checked={Boolean(studentData.imageConsent)}
+            onChange={(e) => handleInputChange('imageConsent', e.target.checked)}
+          />
+          <span>
+            Autorizo a Gustarte a publicar fotos o videos de las clases en que aparezca, en sus redes sociales
+            y sitio web. <em>(Opcional, puedes retirarla cuando quieras.)</em>
+          </span>
+        </label>
       </div>
 
       <div className="form-section">

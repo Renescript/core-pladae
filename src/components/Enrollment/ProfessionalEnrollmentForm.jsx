@@ -646,8 +646,17 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
       currentEnrollment
     ];
 
+    // Autorizaciones y apoderado: iguales para todo el carrito (es una sola persona).
+    const consentData = {
+      accepts_privacy: Boolean(studentData.acceptsPrivacy),
+      image_consent: Boolean(studentData.imageConsent),
+      is_minor: Boolean(studentData.isMinor),
+      guardian_email: studentData.isMinor ? (studentData.guardianEmail || '').trim() : '',
+      guardian_phone: studentData.isMinor ? (studentData.guardianPhone || '').trim() : ''
+    };
+
     const payload = {
-      enrollments: allEnrollments
+      enrollments: allEnrollments.map(enrollment => ({ ...enrollment, ...consentData }))
     };
 
     try {

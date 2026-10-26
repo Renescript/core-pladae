@@ -10,7 +10,7 @@ const SpecialSessionPage = () => {
   const { slug } = useParams();
   const [session, setSession] = useState(null);
   const [loadError, setLoadError] = useState(null);
-  const [form, setForm] = useState({ name: '', email: '', phone: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', acceptsPrivacy: false, imageConsent: false });
   const [paying, setPaying] = useState(false);
   const [payError, setPayError] = useState(null);
 
@@ -19,6 +19,7 @@ const SpecialSessionPage = () => {
   }, [slug]);
 
   const handleChange = (field) => (e) => setForm({ ...form, [field]: e.target.value });
+  const handleCheck = (field) => (e) => setForm({ ...form, [field]: e.target.checked });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,6 +90,14 @@ const SpecialSessionPage = () => {
                 <label>Nombre y apellido<input required value={form.name} onChange={handleChange('name')} autoComplete="name" /></label>
                 <label>Correo<input required type="email" value={form.email} onChange={handleChange('email')} autoComplete="email" /></label>
                 <label>Teléfono<input required type="tel" value={form.phone} onChange={handleChange('phone')} autoComplete="tel" /></label>
+                <label className="ss-check">
+                  <input required type="checkbox" checked={form.acceptsPrivacy} onChange={handleCheck('acceptsPrivacy')} />
+                  <span>Acepto la <a href="/privacidad" target="_blank" rel="noopener noreferrer">política de privacidad</a> de Gustarte.</span>
+                </label>
+                <label className="ss-check">
+                  <input type="checkbox" checked={form.imageConsent} onChange={handleCheck('imageConsent')} />
+                  <span>Autorizo a Gustarte a publicar fotos o videos de la sesión en que aparezca, en sus redes y sitio web. <em>(Opcional.)</em></span>
+                </label>
                 {payError && <p className="ss-error" role="alert">{payError}</p>}
                 <button type="submit" className="ss-cta" disabled={paying}>
                   {paying ? 'Abriendo Webpay…' : `Pagar ${formatPrice(session.price)}`}
