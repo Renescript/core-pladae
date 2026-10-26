@@ -100,6 +100,41 @@ const ProfileForm = ({ user, onSaved }) => {
 
 const TABS = [['clases', 'Mis clases'], ['historial', 'Historial'], ['datos', 'Mis datos']];
 
+const todayStr = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+// Próxima clase y recuperaciones disponibles, para el resumen de arriba.
+const summarize = (plans) => {
+  const today = todayStr();
+  const upcoming = plans
+    .flatMap((p) => p.classes.map((c) => ({ ...c, course: p.course })))
+    .filter((c) => String(c.date) >= today && c.status !== 'absent')
+    .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  const recoverable = plans.flatMap((p) => p.classes).filter((c) => c.can_recover).length;
+  return { next: upcoming[0] || null, recoverable };
+};
+
+const initials = (user) =>
+  [user.first_name, user.last_name].map((n) => (n || '').trim().charAt(0)).join('').toUpperCase() || '?';
+
+const EmptyClasses = () => (
+  <div className="acc-card acc-empty">
+    <svg className="acc-empty-icon" viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="22" fill="#e6f3f8" />
+      <path d="M15 31c3-1 4-4 6-7l9-11c1-1 3-1 4 0s1 3 0 4L23 26c-2 2-4 4-6 5" fill="none" stroke="#3b8da8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M15 31c-1 2-1 4-3 5 3 1 7 0 8-3" fill="#47a1bf" />
+    </svg>
+    <h2 className="acc-empty-title">Todavía no tienes clases activas</h2>
+    <p className="acc-empty-text">Cuando te inscribas en un taller, acá vas a ver tus clases, tu asistencia y vas a poder recuperar las que te pierdas.</p>
+    <div className="acc-empty-actions">
+      <Link to="/inscripcion" className="acc-btn">Inscribirme</Link>
+      <Link to="/valores" className="acc-btn acc-btn--ghost">Ver valores y planes</Link>
+    </div>
+  </div>
+);
+
 const MiCuentaPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [account, setAccount] = useState(null);
@@ -144,15 +179,34 @@ const MiCuentaPage = () => {
     content = <LoginCard loginError={loginError} />;
   } else {
     const user = account.user;
+    const { next, recoverable } = summarize(classes.current);
     content = (
       <>
-        <div className="acc-hello">
-          <div>
+        <header className="acc-profile">
+          <div className="acc-avatar" aria-hidden="true">{initials(user)}</div>
+          <div className="acc-profile-text">
             <h1 className="acc-title">Hola, {user.first_name}</h1>
-            <p className="acc-lead">Tus clases en Gustarte.</p>
+            <p className="acc-profile-email">{user.email}</p>
           </div>
           <button type="button" className="acc-btn acc-btn--ghost acc-btn--small" onClick={handleLogout}>Cerrar sesión</button>
-        </div>
+        </header>
+
+        {(next || recoverable > 0) && (
+          <div className="acc-summary">
+            {next && (
+              <div className="acc-stat">
+                <span className="acc-stat-label">Próxima clase</span>
+                <span className="acc-stat-value">{longDate(next.date)}</span>
+                <span className="acc-stat-sub">{next.course} · {next.weekday} {next.schedule}</span>
+              </div>
+            )}
+            <div className="acc-stat">
+              <span className="acc-stat-label">Recuperaciones disponibles</span>
+              <span className="acc-stat-value">{recoverable}</span>
+              <span className="acc-stat-sub">{recoverable > 0 ? 'Toca Recuperar en la clase que faltaste' : 'Sin faltas por recuperar'}</span>
+            </div>
+          </div>
+        )}
 
         <nav className="acc-tabs" aria-label="Secciones de mi cuenta">
           {TABS.map(([key, label]) => (
@@ -165,12 +219,7 @@ const MiCuentaPage = () => {
         </nav>
 
         {tab === 'clases' && (
-          classes.current.length ? classes.current.map((p) => <PlanCard key={p.enrollment_id} plan={p} />) : (
-            <div className="acc-card">
-              <p>No tienes clases recientes.</p>
-              <Link to="/inscripcion" className="acc-btn">Inscribirme</Link>
-            </div>
-          )
+          classes.current.length ? classes.current.map((p) => <PlanCard key={p.enrollment_id} plan={p} />) : <EmptyClasses />
         )}
         {tab === 'clases' && classes.current.length > 0 && (
           <p className="acc-note">Si faltaste, el botón Recuperar aparece cuando el profe marca la asistencia.</p>
@@ -179,7 +228,7 @@ const MiCuentaPage = () => {
         {tab === 'historial' && (
           <section className="acc-card">
             <h2 className="acc-plan-title">Historial</h2>
-            {classes.history.length + classes.current.length === 0 ? <p>Todavía no tienes planes.</p> : (
+            {classes.history.length + classes.current.length === 0 ? <p className="acc-muted">Todavía no tienes planes. Cuando te inscribas, acá quedará el registro de cada uno.</p> : (
               <ul className="acc-classes">
                 {[...classes.current, ...classes.history].map((p) => <HistoryRow key={p.enrollment_id} plan={p} />)}
               </ul>
