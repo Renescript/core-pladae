@@ -38,10 +38,10 @@ const SimplifiedPlanConfigurator = ({
     loadWeeklyPlans();
   }, []);
 
-  // Cantidad máxima de veces/semana que el taller elegido permite: días únicos con clase.
-  // Si el taller tiene solo 1 día con clases, no ofrecemos planes de 2+ veces/semana.
+  // Cantidad máxima de veces/semana que el taller elegido permite: horarios distintos
+  // (dos horarios el mismo día cuentan como dos). Con 1 solo horario no ofrecemos 2+.
   const maxWeeklyClasses = technique?.schedules
-    ? new Set(technique.schedules.map(s => s.day)).size
+    ? new Set(technique.schedules.map(s => s.section?.id ?? `${s.day}-${s.timeSlot}`)).size
     : Infinity;
 
   const techniqueKey = normalizeName(technique?.name);

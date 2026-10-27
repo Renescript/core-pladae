@@ -71,13 +71,18 @@ const EditableClassList = ({
     return d < startOfToday;
   };
 
-  // Detectar fechas duplicadas
+  // Clave de una clase: fecha + sección. El mismo día puede tener dos clases si son
+  // de horarios distintos (ej. viernes 10:00 y viernes 12:30).
+  const classKey = (date, index) => `${date}|${classSectionIds[index] ?? ''}`;
+
+  // Detectar clases duplicadas (misma fecha en el mismo horario)
   const findDuplicates = () => {
     const dateCount = {};
     const duplicates = new Set();
     classDates.forEach((date, index) => {
-      if (!dateCount[date]) dateCount[date] = [];
-      dateCount[date].push(index);
+      const key = classKey(date, index);
+      if (!dateCount[key]) dateCount[key] = [];
+      dateCount[key].push(index);
     });
     Object.entries(dateCount).forEach(([, indices]) => {
       if (indices.length > 1) indices.forEach(idx => duplicates.add(idx));
@@ -120,12 +125,17 @@ const EditableClassList = ({
     return { day, month, weekday };
   };
 
-  const getTimeSlotForDate = (dateStr) => {
+  const getTimeSlotForClass = (dateStr, classIndex) => {
     if (!selectedSchedules || selectedSchedules.length === 0) return null;
 
     if (selectedSchedules.length === 1) {
       return selectedSchedules[0]?.timeSlot || null;
     }
+
+    const bySection = selectedSchedules.find(s =>
+      s.sectionId != null && s.sectionId === classSectionIds[classIndex]
+    );
+    if (bySection) return bySection.timeSlot || null;
 
     const dateObj = new Date(dateStr + 'T00:00:00');
     const dayOfWeek = dateObj.getDay();
@@ -195,7 +205,7 @@ const EditableClassList = ({
           const isDuplicate = duplicateIndices.has(index);
           const past = isPastDate(date);
           const { day, month, weekday } = formatDateShort(date);
-          const timeSlot = getTimeSlotForDate(date);
+          const timeSlot = getTimeSlotForClass(date, index);
           const isChanged = original[index] && original[index] !== date;
           const canChange = !past && (!noRecoveriesLeft || isChanged);
 
@@ -249,10 +259,11 @@ const EditableClassList = ({
                     return filteredDates.map((availableDate) => {
                       const isCurrentDate = availableDate === date;
                       const isPast = new Date(availableDate) < startOfToday;
-                      const isAlreadySelected = !isCurrentDate && classDates.includes(availableDate);
+                      const isAlreadySelected = !isCurrentDate &&
+                        classDates.some((d, i) => i !== index && classKey(d, i) === classKey(availableDate, index));
                       const isDisabled = isPast || isAlreadySelected;
                       const { day: d, month: m, weekday: w } = formatDateShort(availableDate);
-                      const timeSlotOption = getTimeSlotForDate(availableDate);
+                      const timeSlotOption = getTimeSlotForClass(availableDate, index);
 
                       return (
                         <button

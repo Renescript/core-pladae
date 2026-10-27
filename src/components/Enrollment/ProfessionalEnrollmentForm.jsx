@@ -342,11 +342,17 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
         })
       );
 
+      // Con dos horarios el mismo día, el de más temprano va primero.
+      const timeSlotBySection = Object.fromEntries(
+        selectedSchedules.map(s => [s.sectionId, (s.timeSlot || '').padStart(11, '0')])
+      );
+
       // Pares (fecha, sección) ordenados por fecha. Los dos arreglos quedan
       // alineados por índice: reprogramar una clase reemplaza sólo su fecha.
       const pairs = perSection
         .flatMap(({ sectionId, assigned }) => assigned.map(date => ({ date, sectionId })))
-        .sort((a, b) => a.date.localeCompare(b.date));
+        .sort((a, b) => a.date.localeCompare(b.date) ||
+          (timeSlotBySection[a.sectionId] || '').localeCompare(timeSlotBySection[b.sectionId] || ''));
 
       if (pairs.length !== totalClasses) {
         throw new Error(

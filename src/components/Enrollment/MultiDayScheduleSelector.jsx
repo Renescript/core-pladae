@@ -1,6 +1,19 @@
 import { useState, useEffect, useMemo } from 'react';
 import { getSectionCalendar } from '../../services/api';
 
+// "10:00-12:00" → minutos desde medianoche; null si no se entiende.
+const slotRange = (timeSlot) => {
+  const m = /(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/.exec(timeSlot || '');
+  return m ? [m[1] * 60 + +m[2], m[3] * 60 + +m[4]] : null;
+};
+
+const timeSlotsOverlap = (a, b) => {
+  const ra = slotRange(a);
+  const rb = slotRange(b);
+  if (!ra || !rb) return a === b;
+  return ra[0] < rb[1] && rb[0] < ra[1];
+};
+
 const MultiDayScheduleSelector = ({
   technique,
   frequency,
@@ -98,17 +111,23 @@ const MultiDayScheduleSelector = ({
     setAvailableTimeSlots(slots);
   }, [tempSelectedDate, technique, availabilityMap]);
 
-  // Días de la semana ya "gastados" por otros currentDayIndex (para bloquear en el calendario).
-  // Cuando el plan es N×semana los N slots deben caer en días distintos.
-  const usedDaysOfWeek = useMemo(() => {
-    const days = new Set();
-    selectedSchedules.forEach((s, idx) => {
-      if (idx !== currentDayIndex && s && s.dayOfWeek && s.timeSlot) {
-        days.add(s.dayOfWeek);
-      }
-    });
-    return days;
-  }, [selectedSchedules, currentDayIndex]);
+  // Horarios ya elegidos en los otros currentDayIndex. Se puede repetir día (ej. viernes
+  // 10:00 y viernes 12:30), pero no el mismo horario ni dos que se topen.
+  const otherSchedules = useMemo(
+    () => selectedSchedules.filter((s, idx) => idx !== currentDayIndex && s && s.dayOfWeek && s.timeSlot),
+    [selectedSchedules, currentDayIndex]
+  );
+
+  const slotConflict = (dayName, sectionId, timeSlot) => otherSchedules.some(s =>
+    (s.sectionId != null && s.sectionId === sectionId) || (s.dayOfWeek === dayName && timeSlotsOverlap(s.timeSlot, timeSlot))
+  );
+
+  // Un día del calendario queda bloqueado sólo si TODOS sus horarios ya están tomados.
+  const isDayFullyUsed = (dayName) => {
+    const daySchedules = (technique?.schedules || []).filter(s => s.day === dayName);
+    return daySchedules.length > 0 &&
+      daySchedules.every(s => slotConflict(dayName, s.section?.id, s.timeSlot));
+  };
 
   const availableDatesSet = useMemo(() => {
     return new Set(allAvailableDates.map(d => d.date));
@@ -360,7 +379,7 @@ const MultiDayScheduleSelector = ({
               const dateStr = dayObj.date.toISOString().split('T')[0];
               const dayNameKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
               const dayName = dayNameKeys[dayObj.date.getDay()];
-              const isBlockedByDuplicate = frequency > 1 && usedDaysOfWeek.has(dayName);
+              const isBlockedByDuplicate = frequency > 1 && isDayFullyUsed(dayName);
               const isAvailable = dayObj.isCurrentMonth && availableDatesSet.has(dateStr) && !isBlockedByDuplicate;
               const isSelected = tempSelectedDate === dateStr;
               const isPast = dayObj.date < new Date(new Date().setHours(0, 0, 0, 0));
@@ -370,7 +389,7 @@ const MultiDayScheduleSelector = ({
                   key={index}
                   type="button"
                   className={`calendar-day ${!dayObj.isCurrentMonth ? 'other-month' : ''} ${isAvailable ? 'available' : ''} ${isSelected ? 'selected' : ''}`}
-                  title={isBlockedByDuplicate ? 'Ya elegiste este día en otra clase semanal' : undefined}
+                  title={isBlockedByDuplicate ? 'Ya elegiste todos los horarios de este día' : undefined}
                   onClick={() => {
                     if (!isAvailable || isPast) return;
                     setTempSelectedDate(dateStr);
@@ -408,17 +427,19 @@ const MultiDayScheduleSelector = ({
             <div className="timeslots-list">
               {availableTimeSlots.map(slot => {
                 const slotFull = slot.available === 0;
+                const slotTaken = frequency > 1 && slotConflict(slot.dayOfWeek, slot.section?.id, slot.id);
+                const slotDisabled = slotFull || slotTaken;
                 return (
                   <button
                     key={slot.id}
                     type="button"
-                    className={`timeslot-btn ${tempSelectedTimeSlot === slot.id ? 'selected' : ''} ${slotFull ? 'full' : ''}`}
-                    onClick={() => { if (!slotFull) handleTimeSlotSelect(slot.id); }}
-                    disabled={slotFull}
+                    className={`timeslot-btn ${tempSelectedTimeSlot === slot.id ? 'selected' : ''} ${slotDisabled ? 'full' : ''}`}
+                    onClick={() => { if (!slotDisabled) handleTimeSlotSelect(slot.id); }}
+                    disabled={slotDisabled}
                   >
                     <span className="timeslot-main">{slot.display} - {slot.teacher}</span>
                     <span className={`timeslot-cupos ${!slotFull && slot.available <= 3 ? 'limited' : ''}`}>
-                      {slotFull ? 'Sin cupos' : `${slot.available}/${slot.places} cupos`}
+                      {slotTaken ? 'Ya elegido' : slotFull ? 'Sin cupos' : `${slot.available}/${slot.places} cupos`}
                     </span>
                   </button>
                 );
