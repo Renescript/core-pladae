@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getWorkshopBySlug, legacySlugRedirects } from '../data/workshops';
+import { getCourses } from '../services/api';
 import WorkshopPricing from '../components/Landing/WorkshopPricing';
 import './WorkshopPage.css';
 
@@ -55,6 +56,30 @@ const IconUsers = () => (
 
 const HIGHLIGHT_ICONS = [IconPencil, IconEye, IconPalette];
 
+const WEEKDAY_ORDER = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+const normalizeName = (s) =>
+  (s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+
+// Horarios del taller leídos del admin (/api/v1/courses), igual que /horario e /inscripcion.
+// Los horarios cerrados en el admin no vienen en la API, así que desaparecen solos de la página.
+// Devuelve null si el curso no se encuentra (se usan los horarios fijos de workshops.js).
+const scheduleFromCourse = (course) =>
+  (course.sections || [])
+    .flatMap((section) =>
+      (section.schedule || []).map((item) => ({
+        day: section.weekday,
+        start: item.start_time,
+        time: `${item.start_time} – ${item.end_time}`,
+      })),
+    )
+    .sort((a, b) => WEEKDAY_ORDER.indexOf(a.day) - WEEKDAY_ORDER.indexOf(b.day) || a.start.localeCompare(b.start))
+    .map(({ day, time }) => ({ day, time }));
+
 const WorkshopPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -66,8 +91,31 @@ const WorkshopPage = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [slug]);
 
+  // 'loading' mientras se consulta el admin; null si falla o no se encuentra el curso
+  const [liveSchedule, setLiveSchedule] = useState('loading');
+  const workshopName = workshop?.name;
+  useEffect(() => {
+    if (!workshopName) return undefined;
+    let cancelled = false;
+    setLiveSchedule('loading');
+    getCourses()
+      .then((courses) => {
+        const course = courses.find((c) => normalizeName(c.title) === normalizeName(workshopName));
+        if (!cancelled) setLiveSchedule(course ? scheduleFromCourse(course) : null);
+      })
+      .catch(() => {
+        if (!cancelled) setLiveSchedule(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [workshopName]);
+
   if (redirectSlug) return <Navigate to={`/talleres/${redirectSlug}`} replace />;
   if (!workshop) return <Navigate to="/" replace />;
+
+  const scheduleLoading = liveSchedule === 'loading';
+  const schedule = Array.isArray(liveSchedule) ? liveSchedule : scheduleLoading ? [] : workshop.schedule;
 
   return (
     <main className="workshop-page">
@@ -177,7 +225,7 @@ const WorkshopPage = () => {
 
         <div className="workshop-meta-card">
           <h3 className="workshop-meta-title">Horarios</h3>
-          <div className="workshop-weekcal">
+          <div className="workshop-weekcal" aria-busy={scheduleLoading} style={scheduleLoading ? { opacity: 0.5 } : undefined}>
             {[
               { name: 'Lunes', short: 'Lun' },
               { name: 'Martes', short: 'Mar' },
@@ -186,7 +234,7 @@ const WorkshopPage = () => {
               { name: 'Viernes', short: 'Vie' },
               { name: 'Sábado', short: 'Sáb' },
             ].map(({ name, short }) => {
-              const dayTimes = workshop.schedule.filter((s) => s.day === name);
+              const dayTimes = schedule.filter((s) => s.day === name);
               const active = dayTimes.length > 0;
               return (
                 <div
@@ -211,7 +259,7 @@ const WorkshopPage = () => {
 
       </section>
 
-      <WorkshopPricing courseTitle={workshop.name} workshopSchedule={workshop.schedule} />
+      <WorkshopPricing courseTitle={workshop.name} workshopSchedule={scheduleLoading ? workshop.schedule : schedule} />
     </main>
   );
 };
