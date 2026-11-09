@@ -257,7 +257,7 @@ const MultiDayScheduleSelector = ({
       <div className="step-header">
         <h2>Define tu horario</h2>
         {frequency === 1 ? (
-          <p className="step-description">Elige el día y el horario de tu clase.</p>
+          <p className="step-description">Marca solo el día de tu <strong>primera clase</strong> y su horario. Las demás se agendan solas, el mismo día cada semana (en el paso siguiente las ves todas).</p>
         ) : (
           <p className="step-description">Selecciona los {frequency} horarios que asistirás cada semana.</p>
         )}
@@ -328,7 +328,7 @@ const MultiDayScheduleSelector = ({
         <div className="calendar-section">
           <h3>{frequency > 1
             ? `Selecciona la fecha de tu ${currentDayIndex === 0 ? 'primer' : currentDayIndex === 1 ? 'segundo' : currentDayIndex === 2 ? 'tercer' : `${currentDayIndex + 1}º`} horario semanal`
-            : 'Selecciona la fecha'
+            : '¿Qué día es tu primera clase?'
           }</h3>
           {frequency > 1 && (
             <ul className="calendar-summary">
