@@ -12,6 +12,7 @@ const normalizeName = (s) =>
 const SimplifiedPlanConfigurator = ({
   technique,
   frequency,
+  selectedPlanId,
   onFrequencyChange,
   onPlanSelect,
   onContinue,
@@ -20,6 +21,7 @@ const SimplifiedPlanConfigurator = ({
   const [weeklyPlans, setWeeklyPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isTrialSelected, setIsTrialSelected] = useState(false);
+  const [isSingleSelected, setIsSingleSelected] = useState(false);
   const actionsRef = useRef(null);
 
   useEffect(() => {
@@ -50,6 +52,14 @@ const SimplifiedPlanConfigurator = ({
     : weeklyPlans;
 
   const trialClass = plansForTechnique.find(plan => plan.event_type === 'trial');
+  const singlePlan = plansForTechnique.find(plan => plan.event_type === 'single');
+
+  // Al volver a este paso se marca el plan que ya estaba elegido.
+  useEffect(() => {
+    if (!selectedPlanId) return;
+    setIsTrialSelected(trialClass?.id === selectedPlanId);
+    setIsSingleSelected(singlePlan?.id === selectedPlanId);
+  }, [selectedPlanId, trialClass?.id, singlePlan?.id]);
   const regularPlans = plansForTechnique
     .filter(plan => plan.event_type === null)
     .filter(plan => plan.weekly_classes <= maxWeeklyClasses)
@@ -66,6 +76,7 @@ const SimplifiedPlanConfigurator = ({
       onFrequencyChange(trialClass.weekly_classes);
       onPlanSelect && onPlanSelect(trialClass);
       setIsTrialSelected(true);
+      setIsSingleSelected(false);
       scrollToActions();
     }
   };
@@ -74,6 +85,14 @@ const SimplifiedPlanConfigurator = ({
     onFrequencyChange(plan.weekly_classes);
     onPlanSelect && onPlanSelect(plan);
     setIsTrialSelected(false);
+    setIsSingleSelected(false);
+    scrollToActions();
+  };
+
+  const handleSingleClick = () => {
+    onPlanSelect && onPlanSelect(singlePlan);
+    setIsTrialSelected(false);
+    setIsSingleSelected(true);
     scrollToActions();
   };
 
@@ -96,7 +115,7 @@ const SimplifiedPlanConfigurator = ({
   return (
     <div className="step-container">
       <div className="step-header">
-        <h2>¿Cuántas veces a la semana quieres venir?</h2>
+        <h2>{singlePlan ? '¿Cómo quieres venir?' : '¿Cuántas veces a la semana quieres venir?'}</h2>
       </div>
 
       {/* Opciones de frecuencia en línea */}
@@ -105,7 +124,7 @@ const SimplifiedPlanConfigurator = ({
           <button
             key={plan.id}
             type="button"
-            className={`frequency-option ${!isTrialSelected && frequency === plan.weekly_classes ? 'selected' : ''}`}
+            className={`frequency-option ${!isTrialSelected && !isSingleSelected && frequency === plan.weekly_classes ? 'selected' : ''}`}
             onClick={() => handleRegularPlanClick(plan)}
           >
             {plan.discount_percentage > 0 && (
@@ -130,6 +149,19 @@ const SimplifiedPlanConfigurator = ({
           >
             <span className="frequency-number">1</span>
             <span className="frequency-label">clase de prueba</span>
+          </button>
+        )}
+
+        {/* Clases sueltas: días a libre elección, precio por clase */}
+        {singlePlan && (
+          <button
+            type="button"
+            className={`frequency-option single ${isSingleSelected ? 'selected' : ''}`}
+            onClick={handleSingleClick}
+          >
+            <span className="frequency-number frequency-number--price">${Number(singlePlan.price).toLocaleString('es-CL')}</span>
+            <span className="frequency-label">por clase suelta</span>
+            <span className="frequency-description">Eliges tú los días, sin plan mensual</span>
           </button>
         )}
       </div>

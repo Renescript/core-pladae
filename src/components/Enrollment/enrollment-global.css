@@ -3899,3 +3899,56 @@
   font-size: 0.8rem;
   color: #6b7280;
 }
+
+/* ===== Clases sueltas (SingleClassPicker) ===== */
+.single-picker .calendar-day.single-active {
+  outline: 2px solid var(--color-accent, #e07a5f);
+  outline-offset: 1px;
+}
+.single-summary {
+  margin-top: var(--space-4, 1rem);
+  padding: var(--space-4, 1rem);
+  border: 1px solid var(--border-light, #e5e0d8);
+  border-radius: var(--radius-md, 10px);
+  background: #fff;
+}
+.single-summary-head strong {
+  font-size: 1.05rem;
+}
+.single-list {
+  list-style: none;
+  margin: var(--space-3, 0.75rem) 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.single-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--color-paper, #f7f3ee);
+  font-size: 0.92rem;
+  text-transform: none;
+}
+.single-list li span:first-letter {
+  text-transform: uppercase;
+}
+.single-remove {
+  border: 1px solid #d9d2c7;
+  background: #fff;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.single-remove:hover { border-color: var(--color-accent, #e07a5f); color: var(--color-accent, #e07a5f); }
+.single-note {
+  margin: var(--space-3, 0.75rem) 0 0;
+  font-size: 0.82rem;
+  color: var(--text-medium, #4a5568);
+}
+.single-picker .timeslots-section h3::first-letter { text-transform: uppercase; }

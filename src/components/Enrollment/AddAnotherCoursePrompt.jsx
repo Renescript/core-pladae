@@ -8,7 +8,7 @@ const formatPrice = (price) => {
   return '$' + price.toLocaleString('es-CL');
 };
 
-const CourseSummaryCard = ({ name, frequency, isTrialClass, durationMonths, schedules, priceInfo, totalClasses }) => (
+const CourseSummaryCard = ({ name, frequency, isTrialClass, isSingle, durationMonths, schedules, priceInfo, totalClasses }) => (
   <div className="confirm-course-card">
     <div className="confirm-course-header">
       <span className="confirm-course-name">{name}</span>
@@ -16,7 +16,7 @@ const CourseSummaryCard = ({ name, frequency, isTrialClass, durationMonths, sche
     <div className="confirm-course-details">
       <div className="confirm-detail-row">
         <span className="confirm-detail-label">Frecuencia</span>
-        <span className="confirm-detail-value">{isTrialClass ? '1 clase' : `${frequency}x por semana`}</span>
+        <span className="confirm-detail-value">{isSingle ? `${totalClasses} ${totalClasses === 1 ? 'clase suelta' : 'clases sueltas'}` : isTrialClass ? '1 clase' : `${frequency}x por semana`}</span>
       </div>
       {schedules?.length > 0 && (
         <div className="confirm-detail-row">
@@ -30,7 +30,7 @@ const CourseSummaryCard = ({ name, frequency, isTrialClass, durationMonths, sche
           </span>
         </div>
       )}
-      {!isTrialClass && (
+      {!isTrialClass && !isSingle && (
         <div className="confirm-detail-row">
           <span className="confirm-detail-label">Duración</span>
           <span className="confirm-detail-value">
@@ -68,6 +68,7 @@ const AddAnotherCoursePrompt = ({ completedEnrollments = [], currentCourse, onAd
             name={enrollment._displayInfo?.technique}
             frequency={enrollment._displayInfo?.frequency}
             isTrialClass={enrollment._displayInfo?.isTrialClass}
+            isSingle={enrollment._displayInfo?.isSingle}
             durationMonths={enrollment._displayInfo?.durationMonths}
             schedules={enrollment._displayInfo?.schedules}
             priceInfo={enrollment._displayInfo?.priceInfo}
@@ -78,6 +79,7 @@ const AddAnotherCoursePrompt = ({ completedEnrollments = [], currentCourse, onAd
           name={currentCourse?.technique}
           frequency={currentCourse?.frequency}
           isTrialClass={currentCourse?.isTrialClass}
+          isSingle={currentCourse?.isSingle}
           durationMonths={currentCourse?.durationMonths}
           schedules={currentCourse?.selectedSchedules}
           priceInfo={currentCourse?.priceInfo}

@@ -155,3 +155,14 @@
     min-width: 20px;
   }
 }
+
+/* Clases sueltas: el número es el precio por clase */
+.frequency-option .frequency-number--price {
+  font-size: var(--font-size-xl, 1.35rem);
+}
+.frequency-option.single .frequency-number {
+  color: var(--color-primary-dark, #2f7f99);
+}
+.frequency-option.single.selected .frequency-number {
+  color: white;
+}

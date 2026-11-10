@@ -4,6 +4,8 @@ import { createEnrollment, getPaymentPeriods, getPreviewClassDates, getRenewal, 
 import TechniqueSelector from './TechniqueSelector';
 import SimplifiedPlanConfigurator from './SimplifiedPlanConfigurator';
 import MultiDayScheduleSelector from './MultiDayScheduleSelector';
+import SingleClassPicker from './SingleClassPicker';
+import { singleClassPrice } from './singleClassPrice';
 import DurationSelector from './DurationSelector';
 import EditableScheduleCalendar from './EditableScheduleCalendar';
 import AddAnotherCoursePrompt from './AddAnotherCoursePrompt';
@@ -259,7 +261,17 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
     return period?.pricing?.discount_percentage ?? 0;
   };
 
+  // Clases sueltas: precio por clase × clases elegidas, sin meses ni descuentos.
+  const isSinglePlan = () => weeklyPlan?.event_type === 'single';
+
   const calculateFinalPrice = () => {
+    if (isSinglePlan()) {
+      const total = classDates.reduce((sum, date) => {
+        const dayOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][new Date(date + 'T00:00:00').getDay()];
+        return sum + singleClassPrice(weeklyPlan, dayOfWeek);
+      }, 0);
+      return { subtotal: total, discountPercent: 0, discountAmount: 0, finalPrice: total, monthlyPrice: weeklyPlan?.price || 0 };
+    }
     if (!durationMonths || !frequency) return { subtotal: 0, discountPercent: 0, discountAmount: 0, finalPrice: 0, monthlyPrice: 0 };
 
     const monthlyPrice = calculateMonthlyPrice();
@@ -282,6 +294,9 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
   // Cantidad de clases del plan. Es la MISMA cuenta que usa el back para cobrar
   // (plan × meses), así que es la que tiene que cuadrar con las fechas enviadas.
   const calculateTotalClasses = (months = durationMonths) => {
+    // Clases sueltas: tantas como fechas eligió (cada una se cobra).
+    if (isSinglePlan()) return classDates.length;
+
     if (!months) return 0;
 
     // Si es clase de prueba, usar number_of_classes del plan
@@ -505,10 +520,17 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
     console.log('📋 Plan completo recibido:', JSON.stringify(plan, null, 2));
     console.log('📋 Plan.price:', plan?.price);
     console.log('📋 Plan.weekly_classes:', plan?.weekly_classes);
+    // Cambiar de plan (p. ej. de mensual a clases sueltas) bota horarios y fechas:
+    // no sirven de un tipo de plan al otro aunque la frecuencia sea la misma.
+    if (weeklyPlan && weeklyPlan.id !== plan.id) {
+      setSelectedSchedules([]);
+      setDurationMonths(null);
+      resetGeneratedDates();
+    }
     setWeeklyPlan(plan);
     console.log('✅ weeklyPlan actualizado');
     // También actualizar la frecuencia para mantener compatibilidad
-    handleFrequencyChange(plan.weekly_classes);
+    handleFrequencyChange(plan.weekly_classes || 1);
   };
 
   // Manejar cambio de horarios con reseteo de duración
@@ -552,7 +574,8 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
       sectionIds,
       sectionDates,
       startDate: classDates.length > 0 ? classDates[0] : null,
-      paymentPeriod: paymentPeriods.find(p => p.months === durationMonths)
+      // Clases sueltas no usan meses: el back cobra por fecha elegida.
+      paymentPeriod: isSinglePlan() ? null : paymentPeriods.find(p => p.months === durationMonths)
     };
   };
 
@@ -595,6 +618,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
         technique: technique?.name,
         frequency,
         isTrialClass: weeklyPlan?.weekly_classes === 1 && weeklyPlan?.number_of_classes === 1,
+        isSingle: isSinglePlan(),
         durationMonths,
         totalClasses: classDates.length,
         schedules: selectedSchedules,
@@ -776,6 +800,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
               technique={technique}
               frequency={frequency}
               selectedDays={[]}
+              selectedPlanId={weeklyPlan?.id}
               onFrequencyChange={handleFrequencyChange}
               onPlanSelect={handlePlanSelect}
               onDaysChange={() => {}}
@@ -784,8 +809,43 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
             />
           )}
 
+          {/* Paso 3 (clases sueltas): días a libre elección, va directo al resumen */}
+          {currentStep === 3 && isSinglePlan() && (
+            <SingleClassPicker
+              technique={technique}
+              weeklyPlan={weeklyPlan}
+              initialPicks={classDates.map((date, i) => {
+                const sectionId = classSectionIds[i];
+                const schedule = (technique?.schedules || []).find(s => s.section?.id === sectionId);
+                return {
+                  date, sectionId, timeSlot: schedule?.timeSlot, teacher: schedule?.teacher,
+                  dayOfWeek: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][new Date(date + 'T00:00:00').getDay()]
+                };
+              })}
+              onContinue={(picks) => {
+                // Un horario por sección (para el payload y el resumen) y las fechas
+                // alineadas por índice con su sección, igual que en los planes mensuales.
+                const bySection = new Map();
+                picks.forEach(p => {
+                  if (!bySection.has(p.sectionId)) {
+                    bySection.set(p.sectionId, { date: p.date, timeSlot: p.timeSlot, dayOfWeek: p.dayOfWeek, sectionId: p.sectionId, teacher: p.teacher });
+                  }
+                });
+                setSelectedSchedules([...bySection.values()]);
+                setDurationMonths(1);
+                setClassDates(picks.map(p => p.date));
+                setClassSectionIds(picks.map(p => p.sectionId));
+                setOriginalClassDates(picks.map(p => p.date));
+                setSkippedDates([]);
+                setDatesError(null);
+                setCurrentStep(completedEnrollments.length >= 1 ? 7 : 6);
+              }}
+              onBack={() => setCurrentStep(2)}
+            />
+          )}
+
           {/* Paso 3: Múltiples fechas y horarios */}
-          {currentStep === 3 && (
+          {currentStep === 3 && !isSinglePlan() && (
             <MultiDayScheduleSelector
               technique={technique}
               frequency={frequency}
@@ -868,6 +928,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
                 technique: technique?.name,
                 frequency,
                 isTrialClass: weeklyPlan?.weekly_classes === 1 && weeklyPlan?.number_of_classes === 1,
+                isSingle: isSinglePlan(),
                 durationMonths,
                 selectedSchedules,
                 priceInfo: calculateFinalPrice(),
@@ -877,7 +938,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
               onContinue={handleContinueToPayment}
               onBack={() => {
                 const isTrial = weeklyPlan?.weekly_classes === 1 && weeklyPlan?.number_of_classes === 1;
-                setCurrentStep(isTrial ? 3 : 5);
+                setCurrentStep(isTrial || isSinglePlan() ? 3 : 5);
               }}
             />
           )}
@@ -896,6 +957,7 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
               currentEnrollment={{
                 technique: technique?.name,
                 frequency,
+                isSingle: isSinglePlan(),
                 durationMonths,
                 totalClasses: classDates.length,
                 schedules: selectedSchedules,
