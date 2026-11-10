@@ -115,7 +115,7 @@ const SimplifiedPlanConfigurator = ({
   return (
     <div className="step-container">
       <div className="step-header">
-        <h2>{singlePlan ? '¿Cómo quieres venir?' : '¿Cuántas veces a la semana quieres venir?'}</h2>
+        <h2>¿Cuántas veces a la semana quieres venir?</h2>
       </div>
 
       {/* Opciones de frecuencia en línea */}
@@ -160,7 +160,7 @@ const SimplifiedPlanConfigurator = ({
             onClick={handleSingleClick}
           >
             <span className="frequency-number frequency-number--price">${Number(singlePlan.price).toLocaleString('es-CL')}</span>
-            <span className="frequency-label">Quiero comprar clases sueltas</span>
+            <span className="frequency-label">Quiero clases sueltas</span>
             <span className="frequency-description">Cada una, eliges tú los días</span>
           </button>
         )}
