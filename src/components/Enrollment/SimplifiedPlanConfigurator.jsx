@@ -160,8 +160,8 @@ const SimplifiedPlanConfigurator = ({
             onClick={handleSingleClick}
           >
             <span className="frequency-number frequency-number--price">${Number(singlePlan.price).toLocaleString('es-CL')}</span>
-            <span className="frequency-label">por clase suelta</span>
-            <span className="frequency-description">Eliges tú los días, sin plan mensual</span>
+            <span className="frequency-label">Quiero comprar clases sueltas</span>
+            <span className="frequency-description">Cada una, eliges tú los días</span>
           </button>
         )}
       </div>

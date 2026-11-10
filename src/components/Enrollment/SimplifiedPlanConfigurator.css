@@ -166,3 +166,9 @@
 .frequency-option.single.selected .frequency-number {
   color: white;
 }
+
+/* En celular la tarjeta de clases sueltas va en una línea: precio + texto */
+@media (max-width: 640px) {
+  .frequency-option.single .frequency-description { display: none; }
+  .frequency-option.single .frequency-label { white-space: nowrap; }
+}
