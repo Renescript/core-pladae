@@ -81,12 +81,8 @@ const SingleClassPicker = ({ technique, weeklyPlan, initialPicks = [], onContinu
     setPicks([...picks, { date: iso, sectionId: slot.sectionId, timeSlot: slot.timeSlot, dayOfWeek: slot.dayOfWeek, teacher: slot.teacher }]);
   };
 
-  const handleDayClick = (iso) => {
-    setActiveDate(iso);
-    // Si ese día hay un solo horario, se marca/desmarca de una (un toque = una clase).
-    const slots = slotsFor(iso);
-    if (slots.length === 1) togglePick(iso, slots[0]);
-  };
+  // Tocar un día solo muestra sus horarios; la clase se agrega al tocar el horario.
+  const handleDayClick = (iso) => setActiveDate(iso);
 
   const sortedPicks = useMemo(
     () => [...picks].sort((a, b) => a.date.localeCompare(b.date) || (a.timeSlot || '').localeCompare(b.timeSlot || '')),
@@ -117,7 +113,7 @@ const SingleClassPicker = ({ technique, weeklyPlan, initialPicks = [], onContinu
       <div className="step-header">
         <h2>Elige tus clases sueltas</h2>
         <p className="step-description">
-          Toca en el calendario <strong>cada día que quieras venir</strong>. Puedes elegir los que quieras, en cualquier horario del taller.
+          Toca un día en el calendario y después <strong>el horario</strong> en que quieres venir. Repite con cada clase que quieras.
           Cada clase cuesta <strong>{formatPrice(unitPrice)}</strong>{satPrice && satPrice !== unitPrice ? ` (sábados ${formatPrice(satPrice)})` : ''}.
         </p>
       </div>
@@ -157,7 +153,10 @@ const SingleClassPicker = ({ technique, weeklyPlan, initialPicks = [], onContinu
 
         <div className={`timeslots-section ${activeDate ? 'active' : 'disabled'}`}>
           <h3>{activeDate ? formatDay(activeDate) : 'Horario'}</h3>
-          {!activeDate && <p className="timeslot-hint">Toca un día del calendario para agregarlo.</p>}
+          {!activeDate && <p className="timeslot-hint">Toca un día del calendario para ver sus horarios.</p>}
+          {activeDate && activeSlots.length > 0 && !activeSlots.some(sl => isPicked(activeDate, sl.sectionId)) && (
+            <p className="timeslot-hint">Toca el horario para agregar esta clase.</p>
+          )}
           {activeDate && activeSlots.length > 0 && (
             <div className="timeslots-list">
               {activeSlots.map(slot => {
