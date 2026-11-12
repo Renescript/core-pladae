@@ -3892,6 +3892,39 @@
   margin: 0 0 0.75rem;
 }
 
+/* ¿Quién va a tomar el taller? (paso Datos y pago) */
+.who-choice {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.who-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 0.9rem 1rem;
+  border: 2px solid #d1d5db;
+  border-radius: var(--radius-md, 10px);
+  background: #fff;
+  color: var(--text-medium, #4a5568);
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  text-align: left;
+  cursor: pointer;
+}
+.who-option strong { font-size: 1rem; color: var(--text-dark, #1f2937); }
+.who-option span { font-size: 0.85rem; line-height: 1.35; }
+.who-option.selected {
+  border-color: var(--color-primary, #47a1bf);
+  background: rgba(71, 161, 191, 0.08);
+  box-shadow: 0 0 0 1px var(--color-primary, #47a1bf);
+}
+.who-option:focus-visible { outline: 3px solid rgba(71, 161, 191, 0.45); outline-offset: 2px; }
+.form-field-wide { grid-column: 1 / -1; }
+@media (max-width: 480px) {
+  .who-choice { grid-template-columns: 1fr; }
+}
+
 /* Pista bajo un campo (ej. correo enmascarado al renovar con link) */
 .field-hint {
   display: block;

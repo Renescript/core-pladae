@@ -34,7 +34,9 @@ const saveDraft = (data) => {
         firstName: data.studentData?.firstName || '',
         lastName: data.studentData?.lastName || '',
         email: data.studentData?.email || '',
-        phone: data.studentData?.phone || ''
+        phone: data.studentData?.phone || '',
+        isMinor: data.studentData?.isMinor,
+        guardianName: data.studentData?.guardianName || ''
       },
       paymentMethod: data.paymentMethod,
       timestamp: Date.now()
@@ -711,8 +713,11 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
       accepts_privacy: Boolean(studentData.acceptsPrivacy),
       image_consent: Boolean(studentData.imageConsent),
       is_minor: Boolean(studentData.isMinor),
-      guardian_email: studentData.isMinor ? (studentData.guardianEmail || '').trim() : '',
-      guardian_phone: studentData.isMinor ? (normalizePhone(studentData.guardianPhone) || (studentData.guardianPhone || '').trim()) : ''
+      // Menor: el correo y teléfono que se piden son los del apoderado (el niño
+      // no suele tener), así que van también como contacto del apoderado.
+      guardian_name: studentData.isMinor ? (studentData.guardianName || '').trim() : '',
+      guardian_email: studentData.isMinor ? (studentData.email || '').trim() : '',
+      guardian_phone: studentData.isMinor ? (normalizePhone(studentData.phone) || (studentData.phone || '').trim()) : ''
     };
 
     const payload = {
@@ -964,6 +969,8 @@ const ProfessionalEnrollmentForm = ({ onClose, onSuccess, renewalToken = null, i
                 priceInfo: calculateFinalPrice()
               }}
               renewalHints={renewal ? { email: renewal.student.email_hint, phone: renewal.student.phone_hint } : null}
+              suggestMinor={[technique?.name, ...completedEnrollments.map(e => e._displayInfo?.technique)]
+                .some(n => /infantil|niñ/i.test(n || ''))}
               onComplete={handleEnrollmentComplete}
               onBack={() => setCurrentStep(6)}
             />

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import GoogleButton from '../Account/GoogleButton';
 import PhoneInput from '../Common/PhoneInput';
 import { isValidPhone } from '../../utils/phone';
@@ -12,6 +12,8 @@ const SimplifiedDataPayment = ({
   // Al renovar con link: correo y teléfono enmascarados de su inscripción, como pista
   // (el link no entrega los datos completos).
   renewalHints = null,
+  // Taller pensado para niños (ej. Arte infantil): parte marcado "un menor de edad".
+  suggestMinor = false,
   // Sesión de Mi cuenta: si hay, se muestra con quién se inscribe; si no, el
   // botón opcional de Google para alumnos que ya tienen cuenta.
   accountUser = null,
@@ -24,6 +26,16 @@ const SimplifiedDataPayment = ({
   // Al volver de Google sin poder entrar, el back agrega ?login_error= a la URL.
   const loginError = new URLSearchParams(window.location.search).get('login_error');
 
+  // isMinor: undefined = todavía no responde quién toma el taller.
+  const minorChosen = studentData.isMinor === true || studentData.isMinor === false;
+  const isMinor = studentData.isMinor === true;
+
+  useEffect(() => {
+    if (suggestMinor && !minorChosen) onStudentDataChange((prev) => ({ ...prev, isMinor: prev.isMinor ?? true }));
+    // Solo al entrar al paso.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleInputChange = (field, value) => {
     onStudentDataChange({ ...studentData, [field]: value });
     if (errors[field]) {
@@ -33,18 +45,14 @@ const SimplifiedDataPayment = ({
 
   const validateForm = () => {
     const newErrors = {};
+    if (!minorChosen) newErrors.isMinor = 'Cuéntanos quién va a tomar el taller';
+    if (isMinor && !studentData.guardianName?.trim()) newErrors.guardianName = 'Requerido';
     if (!studentData.firstName?.trim()) newErrors.firstName = 'Requerido';
     if (!studentData.lastName?.trim()) newErrors.lastName = 'Requerido';
     if (!studentData.email?.trim()) newErrors.email = 'Requerido';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(studentData.email)) newErrors.email = 'Email inválido';
     if (!studentData.phone?.trim()) newErrors.phone = 'Requerido';
     else if (!isValidPhone(studentData.phone)) newErrors.phone = 'Revisa el número (ej: +56 9 1234 5678)';
-    if (studentData.isMinor) {
-      if (!studentData.guardianEmail?.trim()) newErrors.guardianEmail = 'Requerido';
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(studentData.guardianEmail)) newErrors.guardianEmail = 'Email inválido';
-      if (!studentData.guardianPhone?.trim()) newErrors.guardianPhone = 'Requerido';
-      else if (!isValidPhone(studentData.guardianPhone)) newErrors.guardianPhone = 'Revisa el número (ej: +56 9 1234 5678)';
-    }
     if (!studentData.acceptsPrivacy) newErrors.acceptsPrivacy = 'Debes aceptar la política de privacidad para inscribirte';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -67,14 +75,46 @@ const SimplifiedDataPayment = ({
 
   const isFormComplete = () => {
     return (
+      minorChosen &&
+      (!isMinor || studentData.guardianName?.trim()) &&
       studentData.firstName?.trim() &&
       studentData.lastName?.trim() &&
       studentData.email?.trim() &&
       studentData.phone?.trim() &&
-      (!studentData.isMinor || (studentData.guardianEmail?.trim() && studentData.guardianPhone?.trim())) &&
       studentData.acceptsPrivacy
     );
   };
+
+  const contactSuffix = isMinor ? ' del apoderado' : '';
+  const emailAndPhone = (
+    <>
+      <div className="form-field">
+        <label>Email{contactSuffix}</label>
+        <input
+          type="email"
+          value={studentData.email || ''}
+          onChange={(e) => handleInputChange('email', e.target.value)}
+          className={errors.email ? 'error' : ''}
+        />
+        {errors.email && <span className="error-msg">{errors.email}</span>}
+        {renewalHints?.email && !errors.email && (
+          <span className="field-hint">Usa el correo con que te inscribiste ({renewalHints.email}) para conservar tu cupo.</span>
+        )}
+      </div>
+      <div className="form-field">
+        <label>Teléfono{contactSuffix}</label>
+        <PhoneInput
+          value={studentData.phone}
+          onChange={(v) => handleInputChange('phone', v)}
+          className={errors.phone ? 'error' : ''}
+        />
+        {errors.phone && <span className="error-msg">{errors.phone}</span>}
+        {renewalHints?.phone && !errors.phone && (
+          <span className="field-hint">El que tenemos registrado termina en {renewalHints.phone}.</span>
+        )}
+      </div>
+    </>
+  );
 
   return (
     <div className="step-container">
@@ -102,94 +142,80 @@ const SimplifiedDataPayment = ({
       )}
 
       <div className="form-section">
-        <h3>Tus datos</h3>
-        <div className="form-grid">
-          <div className="form-field">
-            <label>Nombre</label>
-            <input
-              type="text"
-              value={studentData.firstName || ''}
-              onChange={(e) => handleInputChange('firstName', e.target.value)}
-              className={errors.firstName ? 'error' : ''}
-            />
-            {errors.firstName && <span className="error-msg">{errors.firstName}</span>}
-          </div>
-          <div className="form-field">
-            <label>Apellido</label>
-            <input
-              type="text"
-              value={studentData.lastName || ''}
-              onChange={(e) => handleInputChange('lastName', e.target.value)}
-              className={errors.lastName ? 'error' : ''}
-            />
-            {errors.lastName && <span className="error-msg">{errors.lastName}</span>}
-          </div>
-          <div className="form-field">
-            <label>Email</label>
-            <input
-              type="email"
-              value={studentData.email || ''}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-              className={errors.email ? 'error' : ''}
-            />
-            {errors.email && <span className="error-msg">{errors.email}</span>}
-            {renewalHints?.email && !errors.email && (
-              <span className="field-hint">Usa el correo con que te inscribiste ({renewalHints.email}) para conservar tu cupo.</span>
-            )}
-          </div>
-          <div className="form-field">
-            <label>Teléfono</label>
-            <PhoneInput
-              value={studentData.phone}
-              onChange={(v) => handleInputChange('phone', v)}
-              className={errors.phone ? 'error' : ''}
-            />
-            {errors.phone && <span className="error-msg">{errors.phone}</span>}
-            {renewalHints?.phone && !errors.phone && (
-              <span className="field-hint">El que tenemos registrado termina en {renewalHints.phone}.</span>
-            )}
-          </div>
+        <h3>¿Quién va a tomar el taller?</h3>
+        <div className="who-choice" role="radiogroup" aria-label="¿Quién va a tomar el taller?">
+          <button
+            type="button"
+            role="radio"
+            aria-checked={studentData.isMinor === false}
+            className={`who-option${studentData.isMinor === false ? ' selected' : ''}`}
+            onClick={() => handleInputChange('isMinor', false)}
+          >
+            <strong>Yo</strong>
+            <span>Soy mayor de edad y me inscribo</span>
+          </button>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={isMinor}
+            className={`who-option${isMinor ? ' selected' : ''}`}
+            onClick={() => handleInputChange('isMinor', true)}
+          >
+            <strong>Un menor de edad</strong>
+            <span>Soy su apoderado y lo inscribo</span>
+          </button>
         </div>
+        {errors.isMinor && <span className="error-msg">{errors.isMinor}</span>}
       </div>
 
-      <div className="form-section">
-        <label className="consent-check">
-          <input
-            type="checkbox"
-            checked={Boolean(studentData.isMinor)}
-            onChange={(e) => handleInputChange('isMinor', e.target.checked)}
-          />
-          <span>La persona que se inscribe es menor de edad</span>
-        </label>
+      {minorChosen && (
+        <div className="form-section">
+          <h3>{isMinor ? 'Datos del alumno (el menor)' : 'Tus datos'}</h3>
+          <div className="form-grid">
+            <div className="form-field">
+              <label>{isMinor ? 'Nombre del alumno' : 'Nombre'}</label>
+              <input
+                type="text"
+                value={studentData.firstName || ''}
+                onChange={(e) => handleInputChange('firstName', e.target.value)}
+                className={errors.firstName ? 'error' : ''}
+              />
+              {errors.firstName && <span className="error-msg">{errors.firstName}</span>}
+            </div>
+            <div className="form-field">
+              <label>{isMinor ? 'Apellido del alumno' : 'Apellido'}</label>
+              <input
+                type="text"
+                value={studentData.lastName || ''}
+                onChange={(e) => handleInputChange('lastName', e.target.value)}
+                className={errors.lastName ? 'error' : ''}
+              />
+              {errors.lastName && <span className="error-msg">{errors.lastName}</span>}
+            </div>
+            {!isMinor && emailAndPhone}
+          </div>
 
-        {studentData.isMinor && (
-          <div className="guardian-fields">
-            <h3>Datos del apoderado</h3>
-            <p className="field-hint">Le enviaremos una copia de la confirmación de la inscripción.</p>
-            <div className="form-grid">
-              <div className="form-field">
-                <label>Email del apoderado</label>
-                <input
-                  type="email"
-                  value={studentData.guardianEmail || ''}
-                  onChange={(e) => handleInputChange('guardianEmail', e.target.value)}
-                  className={errors.guardianEmail ? 'error' : ''}
-                />
-                {errors.guardianEmail && <span className="error-msg">{errors.guardianEmail}</span>}
-              </div>
-              <div className="form-field">
-                <label>Teléfono del apoderado</label>
-                <PhoneInput
-                  value={studentData.guardianPhone}
-                  onChange={(v) => handleInputChange('guardianPhone', v)}
-                  className={errors.guardianPhone ? 'error' : ''}
-                />
-                {errors.guardianPhone && <span className="error-msg">{errors.guardianPhone}</span>}
+          {isMinor && (
+            <div className="guardian-fields">
+              <h3>Datos del apoderado (tú)</h3>
+              <p className="field-hint">Aquí te llegan la confirmación de la inscripción y los avisos de las clases.</p>
+              <div className="form-grid">
+                <div className="form-field form-field-wide">
+                  <label>Nombre y apellido del apoderado</label>
+                  <input
+                    type="text"
+                    value={studentData.guardianName || ''}
+                    onChange={(e) => handleInputChange('guardianName', e.target.value)}
+                    className={errors.guardianName ? 'error' : ''}
+                  />
+                  {errors.guardianName && <span className="error-msg">{errors.guardianName}</span>}
+                </div>
+                {emailAndPhone}
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       <div className="form-section consent-section">
         <label className="consent-check">
